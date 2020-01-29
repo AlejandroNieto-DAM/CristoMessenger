@@ -21,9 +21,10 @@ public class KKServer {
     ArrayList<KKMultiServerThread> conexiones;
     
     KKServer(int port){
-            portNumber = port;
-            listening = true;
-            conexiones = new ArrayList();
+        super();
+        portNumber = port;
+        listening = true;
+        conexiones = new ArrayList();
     }
     
     public void start(){
