@@ -1,3 +1,5 @@
+package toDelete;
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -66,7 +68,6 @@ public class Message_Model extends ConnectToBD{
 
             }
         } catch (SQLException e ) {
-            CristoMessenger.returnException(e.toString());
         }
     } 
 
@@ -78,7 +79,6 @@ public class Message_Model extends ConnectToBD{
         try {
             this.viewTable(this.getConnector(), this.getDBName(), this.getQuery(), messages);
         } catch (SQLException ex) {
-            CristoMessenger.returnException(ex.toString());
         } 
         
     }

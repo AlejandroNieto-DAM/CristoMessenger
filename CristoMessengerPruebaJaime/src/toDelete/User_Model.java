@@ -1,3 +1,5 @@
+package toDelete;
+
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,7 +65,6 @@ public class User_Model extends ConnectToBD{
 
             }
         } catch (SQLException e ) {
-            CristoMessenger.returnException(e.toString());
         }
     } 
 
@@ -74,7 +75,6 @@ public class User_Model extends ConnectToBD{
         try {
             this.viewTable(this.getConnector(), this.getDBName(), this.getQuery(), usuarios);
         } catch (SQLException ex) {
-            CristoMessenger.returnException(ex.toString());
         } 
         
     }
@@ -102,11 +102,8 @@ public class User_Model extends ConnectToBD{
 
           this.getConnector().close();
           
-          CristoMessenger.returnException("Usuario introducido correctamente!!");
         }
         catch (Exception e){
-          CristoMessenger.returnException("Got an exception!");
-          CristoMessenger.returnException(e.getMessage());
         }
     }
     
@@ -132,7 +129,6 @@ public class User_Model extends ConnectToBD{
             
             }
         } catch (SQLException e ) {
-            CristoMessenger.returnException(e.toString());
         }
         
          

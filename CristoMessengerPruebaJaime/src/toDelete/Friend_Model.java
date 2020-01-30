@@ -1,3 +1,5 @@
+package toDelete;
+
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -56,21 +58,18 @@ public class Friend_Model extends ConnectToBD{
             }
         } catch (SQLException e ) {
             
-           CristoMessenger.returnException(e.toString());
            
         }
     } 
 
     public void getFriendsOf(ArrayList<Friend> amigos, String id_user){
         
-        CristoMessenger.returnException("Debug: getFriendsOf");
         
         this.setQuery( "select id_user_orig, id_user_dest, accept_request " + "from " + this.getDBName() + ".friend where id_user_orig = '" + id_user + "' or id_user_dest = '" + id_user + "'"); 
         
         try {
             this.viewTable(this.getConnector(), this.getDBName(), this.getQuery(), amigos);
         } catch (SQLException ex) {
-            CristoMessenger.returnException(ex.toString());
         } 
         
     } 

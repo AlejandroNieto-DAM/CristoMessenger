@@ -1,3 +1,5 @@
+package toDelete;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -110,7 +112,6 @@ public class ConnectToBD {
             conn = DriverManager.getConnection("jdbc:" + this.getDataBase() + ":" + this.getDBName() + ";create=true",connectionProps);
         }
         
-        CristoMessenger.returnException("Connected to database");
         return conn;
     }
         

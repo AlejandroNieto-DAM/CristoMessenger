@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *
  * @author alejandronieto
  */
-public class KKServer {
+public class KKServer extends Thread{
     
     int portNumber;
     boolean listening;
@@ -27,7 +27,8 @@ public class KKServer {
         conexiones = new ArrayList();
     }
     
-    public void start(){
+    @Override
+    public void run(){
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
             while (listening) {
 	            conexiones.add(new KKMultiServerThread(serverSocket.accept()));

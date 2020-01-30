@@ -1,6 +1,9 @@
 
 import java.awt.Image;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 /*
@@ -17,10 +20,10 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
 
     private String login;
     private String passwd;
-    ArrayList<User> usuarios;
+    //ArrayList<User> usuarios;
     ImageIcon imageIcon; 
     
-    CristoMessenger myCristoMessenger;
+    //CristoMessenger myCristoMessenger;
     
 
    
@@ -31,10 +34,10 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
         initComponents();
         login = "";
         passwd = "";
-        usuarios = new ArrayList();
+        //usuarios = new ArrayList();
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIcon.getWidth(), jLabelIcon.getHeight(), Image.SCALE_DEFAULT));
         jLabelIcon.setIcon(imageIcon);
-        myCristoMessenger = new CristoMessenger();
+        //myCristoMessenger = new CristoMessenger();
         
     }
     /**
@@ -46,9 +49,10 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
 
         jTextFieldLogin = new javax.swing.JTextField();
         sendButton = new javax.swing.JButton();
-        jCheckBoxRemindLater = new javax.swing.JCheckBox();
         jLabelIcon = new javax.swing.JLabel();
         jPasswordFieldPassword = new javax.swing.JPasswordField();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField2 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -61,31 +65,32 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
             }
         });
 
-        jCheckBoxRemindLater.setText("Remind me later");
-
         jPasswordFieldPassword.setText("jPasswordField1");
+
+        jTextField1.setText("Port");
+
+        jTextField2.setText("IP");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(125, 125, 125)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxRemindLater, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(106, 106, 106)
-                        .addComponent(jLabelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(106, 106, 106)
+                .addComponent(jLabelIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(110, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextFieldLogin, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
-                    .addComponent(jPasswordFieldPassword))
-                .addGap(68, 68, 68))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jTextFieldLogin, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 252, Short.MAX_VALUE)
+                        .addComponent(jPasswordFieldPassword, javax.swing.GroupLayout.Alignment.LEADING)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -96,11 +101,13 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
                 .addComponent(jTextFieldLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(38, 38, 38)
                 .addComponent(jPasswordFieldPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(56, 56, 56)
-                .addComponent(jCheckBoxRemindLater)
-                .addGap(32, 32, 32)
+                .addGap(48, 48, 48)
                 .addComponent(sendButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(52, 52, 52))
+                .addGap(48, 48, 48)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(40, 40, 40))
         );
 
         pack();
@@ -108,7 +115,7 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         
-        passwd = jPasswordFieldPassword.getText();
+       /* passwd = jPasswordFieldPassword.getText();
         login = jTextFieldLogin.getText();
         
         User_Controller a = new User_Controller();
@@ -136,6 +143,13 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
             myCristoMessenger.setActualUser(login);
             myCristoMessenger.getFriendsOf();
             myCristoMessenger.setVisible(true);
+        }*/
+       
+       KnockKnockClient a = new KnockKnockClient(Integer.parseInt(jTextField1.getText()), jTextField2.getText());
+        try {
+            a.connect();
+        } catch (IOException ex) {
+            Logger.getLogger(CristoMessengerLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_sendButtonActionPerformed
 
@@ -175,9 +189,10 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox jCheckBoxRemindLater;
     private javax.swing.JLabel jLabelIcon;
     private javax.swing.JPasswordField jPasswordFieldPassword;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextFieldLogin;
     private javax.swing.JButton sendButton;
     // End of variables declaration//GEN-END:variables
