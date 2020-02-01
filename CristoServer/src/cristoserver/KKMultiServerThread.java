@@ -33,8 +33,8 @@ public class KKMultiServerThread extends Thread{
         ) {
             String inputLine, outputLine;
             KnockKnockProtocol kkp = new KnockKnockProtocol();
-            outputLine = kkp.processInput(null);
-            out.println(outputLine);
+            
+
 
             while ((inputLine = in.readLine()) != null) {
                 outputLine = kkp.processInput(inputLine);

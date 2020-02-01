@@ -11,6 +11,7 @@
 
 import java.io.*;
 import java.net.*;
+import javax.swing.JFrame;
  
 public class KnockKnockClient {
     
@@ -23,7 +24,7 @@ public class KnockKnockClient {
     }
     
     
-    public void connect() throws IOException {
+    public void connect(String login, String pass, JFrame willy) throws IOException {
          
         try (
             Socket kkSocket = new Socket(hostName, portNumber);
@@ -31,21 +32,95 @@ public class KnockKnockClient {
             BufferedReader in = new BufferedReader(
                 new InputStreamReader(kkSocket.getInputStream()));
         ) {
-            BufferedReader stdIn =
-                new BufferedReader(new InputStreamReader(System.in));
+            
             String fromServer;
             String fromUser;
- 
+
+            fromUser = "PROTOCOLCRISTOMESSENGER1.0#CLIENT#LOGIN#" + login + "#" + pass;
+            out.println(fromUser);
+            
+            fromServer = in.readLine();
+            
+            System.out.println(fromServer);
+
+            int numeroAmigos = 0;
+            int demonio = 0;
+            String numAmigos = "";
+            String amigos = "";
+            
+            int contador1  = 0;
+            for(int i = 0; i < fromServer.length(); i++){
+                if(fromServer.charAt(i) == '#'){
+                    contador1++;
+                }
+                
+                if(contador1 == 6){
+                    numAmigos += fromServer.charAt(i);
+                }
+                
+                if(contador1 >= 7){
+                    amigos += fromServer.charAt(i);
+                    //System.out.println(fromServer.charAt(i));
+                }
+            }
+            
+            numAmigos = numAmigos.substring(1, numAmigos.length());
+            
+            System.out.println("AMIGOS --> " + numAmigos);
+            
+            numeroAmigos = Integer.parseInt(numAmigos);
+            
+            
+            int contadorA = 0;
+            String nomAmigo = "";            
+             
+            System.out.println("TODOS AMIGOS --> " + amigos);
+            String[] names = new String[numeroAmigos];
+            
+            
+            int contadorFriends = 0;
+
+            for(int i = 0; i < amigos.length(); i++){
+                if(amigos.charAt(i) == '#'){
+                    
+                    if(contadorA <= 3){
+                       contadorA++;
+                       
+                    } 
+                    
+                    if(contadorA == 3){
+                      System.out.println("Nombre amigo --> " + nomAmigo.substring(1, nomAmigo.length()));
+                      names[contadorFriends] += nomAmigo.substring(1, nomAmigo.length());
+                      nomAmigo = "";  
+                      contadorFriends++;
+                      contadorA = 0;
+                    }
+                    
+                     
+                }
+                
+                if(contadorA == 2){
+                    nomAmigo += amigos.charAt(i);
+                    System.out.println("nomAmigoooo --> " + nomAmigo);
+                }
+                
+                
+            }
+            
+            
+            
+            CristoMessenger a = new CristoMessenger();
+            a.getFriendsOf(names);
+            a.setVisible(true);
+            willy.setVisible(false);
+            
+            
             while ((fromServer = in.readLine()) != null) {
                 System.out.println("Server: " + fromServer);
                 if (fromServer.equals("Bye."))
                     break;
-                 
-                fromUser = stdIn.readLine();
-                if (fromUser != null) {
-                    System.out.println("Client: " + fromUser);
-                    out.println(fromUser);
-                }
+                
+   
             }
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
