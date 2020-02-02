@@ -21,6 +21,7 @@ public class CristoMessenger extends javax.swing.JFrame{
     String actualUser;
     ImageIcon imageIcon;
     String valor;
+    ArrayList<Message> mensjs;
     
     
            
@@ -48,6 +49,10 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         
         
+    }
+    
+    public void setMessages(ArrayList msjs){
+        this.mensjs = msjs;
     }
     
     public void setActualUser(String login){
@@ -94,7 +99,6 @@ public class CristoMessenger extends javax.swing.JFrame{
         jPanelChatWindow = new javax.swing.JPanel();
         jTextFieldMessageFromUser = new javax.swing.JTextField();
         jButtonSendMessage = new javax.swing.JButton();
-        jPanelChat = new javax.swing.JPanel();
         jTextFieldUserSelectedInListName = new javax.swing.JTextField();
         jLabelIconAboveSearch = new javax.swing.JLabel();
         jTextFieldSearch = new javax.swing.JTextField();
@@ -102,6 +106,8 @@ public class CristoMessenger extends javax.swing.JFrame{
         jScrollPaneJListChat = new javax.swing.JScrollPane();
         jListFriends = new javax.swing.JList<>();
         jLabelUserConnected = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jPanelRegisterWindow = new javax.swing.JPanel();
         jTextFieldInsertLoginRegister = new javax.swing.JTextField();
         jTextFieldUserPasswordRegister = new javax.swing.JTextField();
@@ -128,31 +134,27 @@ public class CristoMessenger extends javax.swing.JFrame{
             }
         });
 
-        jPanelChat.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout jPanelChatLayout = new javax.swing.GroupLayout(jPanelChat);
-        jPanelChat.setLayout(jPanelChatLayout);
-        jPanelChatLayout.setHorizontalGroup(
-            jPanelChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanelChatLayout.setVerticalGroup(
-            jPanelChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 381, Short.MAX_VALUE)
-        );
-
         jTextFieldUserSelectedInListName.setEditable(false);
 
         jTextFieldSearch.setText("Search");
         jTextFieldSearch.setToolTipText("");
         jTextFieldSearch.setActionCommand("<Not Set>");
 
+        jListFriends.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jListFriendsMouseClicked(evt);
+            }
+        });
         jListFriends.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 jListFriendsValueChanged(evt);
             }
         });
         jScrollPaneJListChat.setViewportView(jListFriends);
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout jPanelChatWindowLayout = new javax.swing.GroupLayout(jPanelChatWindow);
         jPanelChatWindow.setLayout(jPanelChatWindowLayout);
@@ -184,15 +186,14 @@ public class CristoMessenger extends javax.swing.JFrame{
                                 .addGap(15, 15, 15)))
                         .addGap(8, 8, 8))
                     .addGroup(jPanelChatWindowLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addGroup(jPanelChatWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 481, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanelChatWindowLayout.createSequentialGroup()
                                 .addComponent(jTextFieldMessageFromUser, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButtonSendMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jPanelChat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())))
+                                .addComponent(jButtonSendMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanelChatWindowLayout.setVerticalGroup(
             jPanelChatWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -212,7 +213,8 @@ public class CristoMessenger extends javax.swing.JFrame{
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addGroup(jPanelChatWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanelChatWindowLayout.createSequentialGroup()
-                        .addComponent(jPanelChat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(6, 6, 6)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanelChatWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jTextFieldMessageFromUser, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -264,7 +266,7 @@ public class CristoMessenger extends javax.swing.JFrame{
                             .addComponent(jLabelErrorPasswordIncorrect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(138, 138, 138)
                         .addComponent(jLabelIconRegisterWindow, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(105, Short.MAX_VALUE))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
         jPanelRegisterWindowLayout.setVerticalGroup(
             jPanelRegisterWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -307,7 +309,7 @@ public class CristoMessenger extends javax.swing.JFrame{
         jPanelDebugWindow.setLayout(jPanelDebugWindowLayout);
         jPanelDebugWindowLayout.setHorizontalGroup(
             jPanelDebugWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPaneDebugWindow, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 889, Short.MAX_VALUE)
+            .addComponent(jScrollPaneDebugWindow, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 893, Short.MAX_VALUE)
         );
         jPanelDebugWindowLayout.setVerticalGroup(
             jPanelDebugWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -366,6 +368,37 @@ public class CristoMessenger extends javax.swing.JFrame{
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonSendMessageActionPerformed
 
+    private void jListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListFriendsMouseClicked
+        this.jTextFieldUserSelectedInListName.setText(this.jListFriends.getSelectedValue());
+        String des = this.jListFriends.getSelectedValue();
+        String dest = "";
+        Boolean parar = false;
+        for(int i = 0; i < des.length() && parar == false; i++){
+            if(des.charAt(i) != ' '){
+                dest += des.charAt(i);
+                System.out.println(dest);
+            } else {
+                parar = true;
+            }
+        }
+        
+        this.jTextArea1.setText("");
+
+        System.out.println("dest --> " + dest + "1" + mensjs.size());
+        for(int i = 0; i < mensjs.size(); i++){
+            System.out.println("orig -->" + mensjs.get(i).getId_user_orig() + "." + "dest -->" + mensjs.get(i).getId_user_dest() + ".");
+            if(mensjs.get(i).getId_user_orig().equals(dest)){
+                
+                this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
+                System.out.println(mensjs.get(i).getText());
+   
+            }  else if (mensjs.get(i).getId_user_dest().equals(dest)){
+                
+                this.jTextArea1.setText(this.jTextArea1.getText() + "\t" + mensjs.get(i).getText() + "\n");
+            }
+        }
+    }//GEN-LAST:event_jListFriendsMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -411,13 +444,14 @@ public class CristoMessenger extends javax.swing.JFrame{
     private javax.swing.JLabel jLabelMessageOfExistingUserRegisterWindow;
     private javax.swing.JLabel jLabelUserConnected;
     private javax.swing.JList<String> jListFriends;
-    private javax.swing.JPanel jPanelChat;
     private javax.swing.JPanel jPanelChatWindow;
     private javax.swing.JPanel jPanelDebugWindow;
     private javax.swing.JPanel jPanelRegisterWindow;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPaneDebugWindow;
     private javax.swing.JScrollPane jScrollPaneJListChat;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextArea jTextArea1;
     private static javax.swing.JTextArea jTextAreaDebugWindow;
     private javax.swing.JTextField jTextFieldInsertLoginRegister;
     private javax.swing.JTextField jTextFieldMessageFromUser;

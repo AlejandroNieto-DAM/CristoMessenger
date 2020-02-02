@@ -14,23 +14,30 @@ import java.net.*;
 import java.util.ArrayList;
 import javax.swing.JFrame;
  
-public class KnockKnockClient {
+public class KnockKnockClient extends Thread{
     
     int portNumber;
     String hostName;
     CristoMessenger myCristoMessenger;
     String login;
+    String pass;
+    JFrame loginFrame;
+    ArrayList<Message> msjs = new ArrayList();
     
-    KnockKnockClient(int port, String host){
+    KnockKnockClient(int port, String host, String login, String pass, JFrame frame){
         this.portNumber = port;
         this.hostName = host;
+        this.login = login;
+        this.pass = pass;
+        this.loginFrame = frame;
+        myCristoMessenger = new CristoMessenger();
+
     }
     
     
-    public void connect(String login, String pass, JFrame willy) throws IOException {
-         
-        this.login = login;
-        
+    @Override
+    public void run(){
+                 
         try (
             Socket kkSocket = new Socket(hostName, portNumber);
             PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
@@ -58,17 +65,28 @@ public class KnockKnockClient {
                 }
             }
             
-
+            fromUser = "PROTOCOLCRISTOMESSENGER1.0#MESSAGES";
+            out.println(fromUser);
             
             
-           /* System.out.println("Hemos pasao la ventana");
-            while ((fromServer = in.readLine()) != null) {
+            fromServer = in.readLine();
+            
+            System.out.println(fromServer);
+            
+            this.leerMsjs(fromServer);
+             
+            myCristoMessenger.setActualUser(login);
+            myCristoMessenger.setVisible(true);
+            this.loginFrame.setVisible(false);
+           
+            
+            /*while ((fromServer = in.readLine()) != null) {
                 System.out.println("Server: " + fromServer);
                 if (fromServer.equals("Bye."))
                     break;
-                
-   
             }*/
+            
+            
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
@@ -77,6 +95,80 @@ public class KnockKnockClient {
                 hostName);
             System.exit(1);
         }
+    }
+    
+    public void leerMsjs(String fromServer){
+        
+        
+        int contadorE = 0;
+        String logOr = "";
+        String logDe = "";
+        String text = "";
+        
+       
+        for(int i = 0; i < fromServer.length(); i++){
+            
+            if(fromServer.charAt(i) == '#'){
+                
+                if(contadorE <= 3){
+                    contadorE++;
+                    
+                }
+                
+                if(contadorE == 3){
+                    contadorE = 0;
+                }
+                
+                if(contadorE == 1 && text != ""){
+                    msjs.add(new Message());
+                    msjs.get(msjs.size() - 1).setId_user_orig(logOr.substring(1, logOr.length()));
+                    msjs.get(msjs.size() - 1).setId_user_dest(logDe.substring(1, logDe.length())); 
+                    msjs.get(msjs.size() - 1).setText(text.substring(1, text.length()));
+                    
+                    text = "";
+                    logDe = "";
+                    logOr = "";
+                    
+                }
+                
+            }
+            
+            if(contadorE == 1){
+                logOr += fromServer.charAt(i);
+                System.out.println(logOr);
+            }
+            
+            if(contadorE == 2){
+                logDe += fromServer.charAt(i);
+                 System.out.println(logDe);
+
+            }
+            
+            if(contadorE == 0){
+                text += fromServer.charAt(i);
+                System.out.println(text);
+
+            }
+            
+            if(i == fromServer.length() - 1){
+                msjs.add(new Message());
+                msjs.get(msjs.size() - 1).setId_user_orig(logOr.substring(1, logOr.length()));
+                msjs.get(msjs.size() - 1).setId_user_dest(logDe.substring(1, logDe.length())); 
+                msjs.get(msjs.size() - 1).setText(text.substring(1, text.length()));
+                    
+            }
+            
+            
+        }
+        
+        
+        System.out.println("Los  mostremos enteros");
+        
+        for(int i = 0; i < msjs.size(); i++){
+            System.out.println(msjs.get(i).getId_user_orig() + " " + msjs.get(i).getId_user_dest() + msjs.get(i).getText());
+        }
+        
+        this.myCristoMessenger.setMessages(msjs);
     }
     
     public void leerAmigos(String fromServer){
@@ -118,10 +210,8 @@ public class KnockKnockClient {
             
 
             for(int i = 0; i < amigos.length(); i++){
-
                 
-                
-                if(amigos.charAt(i) == '#' || i == amigos.length() - 1){
+                if(amigos.charAt(i) == '#'){
                     
                     if(contadorA <= 3){
                        contadorA++;
@@ -136,32 +226,29 @@ public class KnockKnockClient {
                     } 
                     
                     if(contadorA == 1 && primero == true){
-                        names[contadorStado] = names[contadorStado] + " " + conectado;
-                        System.out.println("names[] --> " + conectado);
+                        names[contadorStado] = names[contadorStado] + " " + conectado.substring(1, conectado.length());
                         contadorStado++;
                         conectado = "";
-                    }
-                    
-                    
+                    }    
    
                 } 
                 
                 if(contadorA == 0){
                     conectado += amigos.charAt(i);
-                    System.out.println(conectado);
                 }
                 
-
                 if(contadorA == 2){
                     nomAmigo += amigos.charAt(i);
+                }
+                
+                if( i == amigos.length() - 1){
+                    names[contadorStado] = names[contadorStado] + " " + conectado.substring(1, conectado.length());
                 }
                 
             }
             
             
-            myCristoMessenger = new CristoMessenger();
             myCristoMessenger.setFriendsOf(names);
-            myCristoMessenger.setActualUser(login);
-            myCristoMessenger.setVisible(true);
+            
     }
 }

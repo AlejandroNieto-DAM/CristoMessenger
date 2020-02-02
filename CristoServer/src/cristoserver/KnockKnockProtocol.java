@@ -6,8 +6,10 @@
 package cristoserver;
 
 import Classes.Friend;
+import Classes.Message;
 import Classes.User;
 import Controllers.Friend_Controller;
+import Controllers.Message_Controller;
 import Controllers.User_Controller;
 import java.util.ArrayList;
  
@@ -17,6 +19,8 @@ public class KnockKnockProtocol{
     
     ArrayList<User> usuarios = new ArrayList();
     ArrayList<Friend> friends = new ArrayList();
+    ArrayList<Message> messages = new ArrayList();
+
  
  
     public String processInput(String theInput) {
@@ -71,10 +75,22 @@ public class KnockKnockProtocol{
                      CristoServer.debug("Este usuario no existe");
                      theOutput = "PROTOCOLCRISTOMESSENGER1.0#SERVER#ERROR#BAD_LOGIN";
                  }
-                     
-                 
+     
+            } 
+            
+            if(theInput.contains("MESSAGES")){
+                String login = "@alexinio";
+                Message_Controller myC = new Message_Controller();
+                myC.getMessages(messages, login);
+                theOutput = "";
                 
-                  
+                for(int i = 0; i < messages.size(); i++){
+                    
+                    System.out.println(messages.get(i).getId_user_orig() + " " + messages.get(i).getId_user_dest() + " " + messages.get(i).getText());
+                    theOutput += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getText();
+                }
+                
+                
             }
             
         }

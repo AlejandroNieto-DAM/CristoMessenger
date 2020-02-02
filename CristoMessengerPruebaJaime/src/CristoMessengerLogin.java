@@ -111,12 +111,8 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
 
-       KnockKnockClient a = new KnockKnockClient(Integer.parseInt(jTextField1.getText()), jTextField2.getText());
-        try {
-            a.connect(jTextFieldLogin.getText(), jPasswordFieldPassword.getText(), this);
-        } catch (IOException ex) {
-            Logger.getLogger(CristoMessengerLogin.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       KnockKnockClient a = new KnockKnockClient(Integer.parseInt(jTextField1.getText()), jTextField2.getText(), jTextFieldLogin.getText(), jPasswordFieldPassword.getText(), this);
+       a.start();
     }//GEN-LAST:event_sendButtonActionPerformed
 
     /**

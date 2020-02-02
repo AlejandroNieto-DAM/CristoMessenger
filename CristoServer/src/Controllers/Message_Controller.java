@@ -23,7 +23,7 @@ public class Message_Controller {
         myMessageModel = new Message_Model();
     }
     
-    public void getMessages(ArrayList<Message> messages){
-        myMessageModel.getMessages(messages);
+    public void getMessages(ArrayList<Message> messages, String login){
+        myMessageModel.getMessages(messages, login);
     }
 }

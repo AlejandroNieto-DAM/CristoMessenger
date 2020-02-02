@@ -9,8 +9,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -75,9 +73,9 @@ public class Message_Model extends ConnectToBD{
         }
     } 
 
-    public void getMessages(ArrayList<Message> messages){
+    public void getMessages(ArrayList<Message> messages, String login){
         
-        this.setQuery( "select * " + "from " + this.getDBName() + ".message"); 
+        this.setQuery( "select * " + "from " + this.getDBName() + ".message WHERE id_user_orig = '" + login + "' or id_user_dest = '" + login + "'"); 
         
         
         try {
