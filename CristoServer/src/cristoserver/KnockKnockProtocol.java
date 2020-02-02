@@ -9,20 +9,9 @@ import Classes.Friend;
 import Classes.User;
 import Controllers.Friend_Controller;
 import Controllers.User_Controller;
-import java.net.*;
-import java.io.*;
 import java.util.ArrayList;
  
 public class KnockKnockProtocol{
-    private static final int WAITING = 0;
-    private static final int SENTKNOCKKNOCK = 1;
-    private static final int SENTCLUE = 2;
-    private static final int ANOTHER = 3;
- 
-    private static final int NUMJOKES = 5;
- 
-    private int state = WAITING;
-    private int currentJoke = 0;
     
     private String cadenaPrincipal = "PROTOCOLCRISTOMESSENGER1.0";
     
@@ -35,7 +24,7 @@ public class KnockKnockProtocol{
         
         
  
-        if(theInput.startsWith("PROTOCOLCRISTOMESSENGER1.0")){
+        if(theInput.startsWith(cadenaPrincipal)){
             
             if(theInput.contains("LOGIN")){
                 String login = "";
@@ -62,27 +51,25 @@ public class KnockKnockProtocol{
                  a.getUsuarios(usuarios);  
                  
                  boolean encontrado = false;
-                 int position = 0;
 
                  for(int i = 0; i < usuarios.size() && encontrado == false; i++){
                      
                      CristoServer.debug(usuarios.get(i).getLogin() + usuarios.get(i).getPasswd());
                      
                      if(usuarios.get(i).getLogin().equals(login) && usuarios.get(i).getPasswd().equals(pass)){
-                         System.out.println("Este usuario existe.");
-                         CristoServer.debug("Este usuario existe");
-                         
-                         position  = i;
                          encontrado = true;
-                       // PROTOCOLCRISTOMESSENGER1.0#SERVER#LOGIN_CORRECT#1#Alex#FRIENDS#3#Patri#2#CONNECTED#Pedro#3#NOT_CONNECTED#Pablo#4#CONNECTED
                      }
                      
                  }
                  
                  if(encontrado == true){
+                    System.out.println("Este usuario existe.");
+                    CristoServer.debug("Este usuario existe");
                     theOutput = getFriends(login);
                  } else {
-                     theOutput = "";
+                     System.out.println("Este usuario no existe.");
+                     CristoServer.debug("Este usuario no existe");
+                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#SERVER#ERROR#BAD_LOGIN";
                  }
                      
                  
@@ -91,9 +78,7 @@ public class KnockKnockProtocol{
             }
             
         }
-        
-        
-        
+
         return theOutput;
     }
         

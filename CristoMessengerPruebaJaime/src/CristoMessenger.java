@@ -21,7 +21,8 @@ public class CristoMessenger extends javax.swing.JFrame{
     String actualUser;
     ImageIcon imageIcon;
     String valor;
-   
+    
+    
            
         
     /**
@@ -40,9 +41,10 @@ public class CristoMessenger extends javax.swing.JFrame{
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIconRegisterWindow.getWidth(), jLabelIconRegisterWindow.getHeight(), Image.SCALE_DEFAULT));
         jLabelIconRegisterWindow.setIcon(imageIcon);
         
+        
         jLabelMessageOfExistingUserRegisterWindow.setText("");
         jLabelErrorPasswordIncorrect.setText("");
-     
+        
         
         
         
@@ -59,9 +61,8 @@ public class CristoMessenger extends javax.swing.JFrame{
         CristoMessenger.jTextAreaDebugWindow.setText(CristoMessenger.jTextAreaDebugWindow.getText() + "\n" + exception);
     }
     
-    public void getFriendsOf(String [] names){
-        
-        
+    public void setFriendsOf(String[] names){
+          
         this.jListFriends.setModel(new javax.swing.AbstractListModel(){
             String[] vect = names;
             
@@ -332,13 +333,32 @@ public class CristoMessenger extends javax.swing.JFrame{
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRegisterActionPerformed
+        
+        Boolean existingUser = false;
+        Boolean twoPasswdWll = false;
+        
+        jLabelMessageOfExistingUserRegisterWindow.setText("");
+        jLabelErrorPasswordIncorrect.setText("");
+        
+        
+
+        if(jTextFieldUserPasswordRegister.getText().equals(jTextFieldUserRepeatPasswordRegister.getText())){
+            twoPasswdWll = true;
+        } else {
+            jLabelErrorPasswordIncorrect.setText("Las contraseñas no coinciden.");
+        }
+
        
-       
+        
+        jTextFieldInsertLoginRegister.setText("Login");
+        jTextFieldUserNameRegister.setText("Name");
+        jTextFieldUserSurname1.setText("Surname1");
+        jTextFieldUserSurname2.setText("Surname2");
+        jTextFieldUserPasswordRegister.setText("Password");
+        jTextFieldUserRepeatPasswordRegister.setText("Repeat Password");
     }//GEN-LAST:event_jButtonRegisterActionPerformed
 
     private void jListFriendsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFriendsValueChanged
-        
-        
         
     }//GEN-LAST:event_jListFriendsValueChanged
 

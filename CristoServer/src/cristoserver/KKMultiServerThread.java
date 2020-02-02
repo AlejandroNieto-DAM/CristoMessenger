@@ -42,9 +42,13 @@ public class KKMultiServerThread extends Thread{
                 CristoServer.debug(inputLine);
                 System.out.println(inputLine);
                 
+                
+                
                 out.println(outputLine);
-                if (outputLine.equals("Bye"))
+                
+                if (outputLine.contains("BAD_LOGIN"))
                     break;
+                
             }
             socket.close();
         } catch (IOException e) {

@@ -18,8 +18,7 @@ import javax.swing.ImageIcon;
  */
 public class CristoMessengerLogin extends javax.swing.JFrame {
 
-    ImageIcon imageIcon; 
-    
+    ImageIcon imageIcon;     
     /**
      * Creates new form CristoMessengerLogin
      */
@@ -31,8 +30,8 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
         
         jTextFieldLogin.setText("@alexinio");
         this.jPasswordFieldPassword.setText("meencantanlaslongboards23");
-        this.jTextField1.setText("2345");
-        this.jTextField2.setText("192.168.1.80");
+        this.jTextField1.setText("1234");
+        this.jTextField2.setText("192.168.0.201");
         
     }
     

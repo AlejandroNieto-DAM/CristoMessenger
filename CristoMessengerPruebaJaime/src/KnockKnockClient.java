@@ -11,12 +11,15 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import javax.swing.JFrame;
  
 public class KnockKnockClient {
     
     int portNumber;
     String hostName;
+    CristoMessenger myCristoMessenger;
+    String login;
     
     KnockKnockClient(int port, String host){
         this.portNumber = port;
@@ -26,6 +29,8 @@ public class KnockKnockClient {
     
     public void connect(String login, String pass, JFrame willy) throws IOException {
          
+        this.login = login;
+        
         try (
             Socket kkSocket = new Socket(hostName, portNumber);
             PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
@@ -42,9 +47,41 @@ public class KnockKnockClient {
             fromServer = in.readLine();
             
             System.out.println(fromServer);
+            
+            
+            if(fromServer.contains("PROTOCOLCRISTOMESSENGER1.0")){
+                if(!fromServer.contains("ERROR")){
+                    leerAmigos(fromServer);
+                } else {
+                    System.out.println("BAD LOGIN");
+                    kkSocket.close();
+                }
+            }
+            
 
-            int numeroAmigos = 0;
-            int demonio = 0;
+            
+            
+           /* System.out.println("Hemos pasao la ventana");
+            while ((fromServer = in.readLine()) != null) {
+                System.out.println("Server: " + fromServer);
+                if (fromServer.equals("Bye."))
+                    break;
+                
+   
+            }*/
+        } catch (UnknownHostException e) {
+            System.err.println("Don't know about host " + hostName);
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Couldn't get I/O for the connection to " +
+                hostName);
+            System.exit(1);
+        }
+    }
+    
+    public void leerAmigos(String fromServer){
+        int numeroAmigos = 0;
+            
             String numAmigos = "";
             String amigos = "";
             
@@ -60,75 +97,71 @@ public class KnockKnockClient {
                 
                 if(contador1 >= 7){
                     amigos += fromServer.charAt(i);
-                    //System.out.println(fromServer.charAt(i));
                 }
             }
             
             numAmigos = numAmigos.substring(1, numAmigos.length());
-            
-            System.out.println("AMIGOS --> " + numAmigos);
-            
+                        
             numeroAmigos = Integer.parseInt(numAmigos);
             
             
             int contadorA = 0;
-            String nomAmigo = "";            
+            String nomAmigo = "";
+            String conectado = "";
              
-            System.out.println("TODOS AMIGOS --> " + amigos);
             String[] names = new String[numeroAmigos];
             
             
             int contadorFriends = 0;
+            int contadorStado = 0;
+            boolean primero = false;
+            
 
             for(int i = 0; i < amigos.length(); i++){
-                if(amigos.charAt(i) == '#'){
+
+                
+                
+                if(amigos.charAt(i) == '#' || i == amigos.length() - 1){
                     
                     if(contadorA <= 3){
                        contadorA++;
-                       
                     } 
-                    
+
                     if(contadorA == 3){
-                      System.out.println("Nombre amigo --> " + nomAmigo.substring(1, nomAmigo.length()));
-                      names[contadorFriends] += nomAmigo.substring(1, nomAmigo.length());
+                      names[contadorFriends] = nomAmigo.substring(1, nomAmigo.length());
                       nomAmigo = "";  
                       contadorFriends++;
                       contadorA = 0;
+                      primero = true;
+                    } 
+                    
+                    if(contadorA == 1 && primero == true){
+                        names[contadorStado] = names[contadorStado] + " " + conectado;
+                        System.out.println("names[] --> " + conectado);
+                        contadorStado++;
+                        conectado = "";
                     }
                     
-                     
+                    
+   
+                } 
+                
+                if(contadorA == 0){
+                    conectado += amigos.charAt(i);
+                    System.out.println(conectado);
                 }
                 
+
                 if(contadorA == 2){
                     nomAmigo += amigos.charAt(i);
-                    System.out.println("nomAmigoooo --> " + nomAmigo);
                 }
                 
-                
             }
             
             
-            
-            CristoMessenger a = new CristoMessenger();
-            a.getFriendsOf(names);
-            a.setVisible(true);
-            willy.setVisible(false);
-            
-            
-            while ((fromServer = in.readLine()) != null) {
-                System.out.println("Server: " + fromServer);
-                if (fromServer.equals("Bye."))
-                    break;
-                
-   
-            }
-        } catch (UnknownHostException e) {
-            System.err.println("Don't know about host " + hostName);
-            System.exit(1);
-        } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to " +
-                hostName);
-            System.exit(1);
-        }
+            myCristoMessenger = new CristoMessenger();
+            myCristoMessenger.setFriendsOf(names);
+            myCristoMessenger.setActualUser(login);
+            myCristoMessenger.setVisible(true);
     }
 }
