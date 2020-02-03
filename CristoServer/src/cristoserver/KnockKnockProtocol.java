@@ -79,7 +79,7 @@ public class KnockKnockProtocol{
             } 
             
             if(theInput.contains("MESSAGES")){
-                String login = "@zizou";
+                String login = "@alexinio";
                 Message_Controller myC = new Message_Controller();
                 myC.getMessages(messages, login);
                 theOutput = "PROTOCOLCRISTOMESSENGER1.0MESSAGES";

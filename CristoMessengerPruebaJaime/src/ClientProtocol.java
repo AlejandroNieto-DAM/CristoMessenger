@@ -66,13 +66,14 @@ public class ClientProtocol {
                     myCristoMessenger.setVisible(true);
                     
                     state = ALREADY;
+                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#MESSAGES"; 
                     
                 }
                 
                 
             }
         } else if(state == ALREADY){
-            
+           theOutput = "PROTOCOLCRISTOMESSENGER1.0#MESSAGES"; 
         }
         
         return theOutput;
