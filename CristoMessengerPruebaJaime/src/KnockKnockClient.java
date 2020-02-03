@@ -23,6 +23,7 @@ public class KnockKnockClient extends Thread{
     String pass;
     JFrame loginFrame;
     ArrayList<Message> msjs = new ArrayList();
+    ClientProtocol protocol;
     
     KnockKnockClient(int port, String host, String login, String pass, JFrame frame){
         this.portNumber = port;
@@ -31,6 +32,7 @@ public class KnockKnockClient extends Thread{
         this.pass = pass;
         this.loginFrame = frame;
         myCristoMessenger = new CristoMessenger();
+        protocol = new ClientProtocol(login, pass);
 
     }
     
@@ -47,44 +49,61 @@ public class KnockKnockClient extends Thread{
             
             String fromServer;
             String fromUser;
-
-            fromUser = "PROTOCOLCRISTOMESSENGER1.0#CLIENT#LOGIN#" + login + "#" + pass;
+                        
+            fromUser = protocol.processInput(null);
             out.println(fromUser);
-            
-            fromServer = in.readLine();
-            
-            System.out.println(fromServer);
-            
-            
-            if(fromServer.contains("PROTOCOLCRISTOMESSENGER1.0")){
-                if(!fromServer.contains("ERROR")){
-                    leerAmigos(fromServer);
-                } else {
-                    System.out.println("BAD LOGIN");
-                    kkSocket.close();
+
+            while ((fromServer = in.readLine()) != null) {
+                
+                System.out.println("fromUser " + fromServer);
+
+                fromUser = protocol.processInput(fromServer);
+                
+                out.println(fromUser);
+                
+                if(fromServer.contains("MESSAGES")){
+                    this.loginFrame.setVisible(false);
                 }
+                
+                if (fromUser == null){
+                    
+                }
+                    //break;
+                
+                
             }
             
-            fromUser = "PROTOCOLCRISTOMESSENGER1.0#MESSAGES";
-            out.println(fromUser);
+            
+           /* if(fromServer.contains("PROTOCOLCRISTOMESSENGER1.0")){
+                if(!fromServer.contains("ERROR")){
+                    leerAmigos(fromServer);
+                    
+                    fromUser = "PROTOCOLCRISTOMESSENGER1.0#MESSAGES";
+                    out.println(fromUser);
+
+
+                    fromServer = in.readLine();
+
+                    System.out.println(fromServer);
+
+                    this.leerMsjs(fromServer);
+
+                    myCristoMessenger.setActualUser(login);
+                    myCristoMessenger.setVisible(true);
+                    this.loginFrame.setVisible(false);
+                    
+                    
+                    
+                } else {
+                    System.out.println("BAD_LOGIN");
+                    kkSocket.close();
+                }
+            }*/
             
             
-            fromServer = in.readLine();
-            
-            System.out.println(fromServer);
-            
-            this.leerMsjs(fromServer);
-             
-            myCristoMessenger.setActualUser(login);
-            myCristoMessenger.setVisible(true);
-            this.loginFrame.setVisible(false);
            
             
-            /*while ((fromServer = in.readLine()) != null) {
-                System.out.println("Server: " + fromServer);
-                if (fromServer.equals("Bye."))
-                    break;
-            }*/
+            
             
             
         } catch (UnknownHostException e) {
@@ -125,7 +144,7 @@ public class KnockKnockClient extends Thread{
                     msjs.get(msjs.size() - 1).setId_user_dest(logDe.substring(1, logDe.length())); 
                     msjs.get(msjs.size() - 1).setText(text.substring(1, text.length()));
                     
-                    text = "";
+                    text = "";          
                     logDe = "";
                     logOr = "";
                     
@@ -213,11 +232,11 @@ public class KnockKnockClient extends Thread{
                 
                 if(amigos.charAt(i) == '#'){
                     
-                    if(contadorA <= 3){
+                    if(contadorA <= 2){
                        contadorA++;
                     } 
 
-                    if(contadorA == 3){
+                    if(contadorA == 2){
                       names[contadorFriends] = nomAmigo.substring(1, nomAmigo.length());
                       nomAmigo = "";  
                       contadorFriends++;
@@ -235,9 +254,11 @@ public class KnockKnockClient extends Thread{
                 
                 if(contadorA == 0){
                     conectado += amigos.charAt(i);
+                    
                 }
                 
-                if(contadorA == 2){
+                
+                if(contadorA == 1){
                     nomAmigo += amigos.charAt(i);
                 }
                 

@@ -29,7 +29,7 @@ public class CellRenderer extends DefaultListCellRenderer {
                     list, value, index, isSelected, cellHasFocus);
             
             label.setIcon(imageIcon);
-            label.setHorizontalTextPosition(JLabel.RIGHT);
+            label.setHorizontalTextPosition(JLabel.RIGHT);            
             
             return label;
         }

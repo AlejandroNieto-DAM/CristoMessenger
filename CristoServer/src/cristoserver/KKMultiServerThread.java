@@ -37,6 +37,10 @@ public class KKMultiServerThread extends Thread{
 
 
             while ((inputLine = in.readLine()) != null) {
+                
+                CristoServer.debug(inputLine);
+                System.out.println(inputLine);
+                
                 outputLine = kkp.processInput(inputLine);
                 
                 CristoServer.debug(inputLine);
@@ -45,6 +49,7 @@ public class KKMultiServerThread extends Thread{
                 
                 
                 out.println(outputLine);
+                
                 
                 if (outputLine.contains("BAD_LOGIN"))
                     break;

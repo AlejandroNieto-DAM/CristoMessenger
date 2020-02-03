@@ -376,7 +376,6 @@ public class CristoMessenger extends javax.swing.JFrame{
         for(int i = 0; i < des.length() && parar == false; i++){
             if(des.charAt(i) != ' '){
                 dest += des.charAt(i);
-                System.out.println(dest);
             } else {
                 parar = true;
             }

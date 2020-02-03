@@ -58,7 +58,7 @@ public class KnockKnockProtocol{
 
                  for(int i = 0; i < usuarios.size() && encontrado == false; i++){
                      
-                     CristoServer.debug(usuarios.get(i).getLogin() + usuarios.get(i).getPasswd());
+                     CristoServer.debug(usuarios.get(i).getLogin() + " " + usuarios.get(i).getPasswd() + " " + usuarios.get(i).getEstadoUsuario());
                      
                      if(usuarios.get(i).getLogin().equals(login) && usuarios.get(i).getPasswd().equals(pass)){
                          encontrado = true;
@@ -79,10 +79,10 @@ public class KnockKnockProtocol{
             } 
             
             if(theInput.contains("MESSAGES")){
-                String login = "@alexinio";
+                String login = "@zizou";
                 Message_Controller myC = new Message_Controller();
                 myC.getMessages(messages, login);
-                theOutput = "";
+                theOutput = "PROTOCOLCRISTOMESSENGER1.0MESSAGES";
                 
                 for(int i = 0; i < messages.size(); i++){
                     
@@ -95,6 +95,7 @@ public class KnockKnockProtocol{
             
         }
 
+        CristoServer.debug(theOutput);
         return theOutput;
     }
         
@@ -120,8 +121,8 @@ public class KnockKnockProtocol{
                 amigos++;
                 for(int j = 0; j < usuarios.size(); j++){
                     if(friends.get(i).getLogin_des().equals(usuarios.get(j).getLogin())){
-                        substringFriends += "#" + usuarios.get(j).getNombreUsuario() + "#" + usuarios.get(j).getLogin() + "#";
-                        if(usuarios.get(j).equals(true)){
+                        substringFriends +=  "#" + usuarios.get(j).getLogin() + "#";
+                        if(usuarios.get(j).getEstadoUsuario().equals(true)){
                             substringFriends += "CONNECTED";
                         } else {
                             substringFriends += "NOT_CONNECTED";
@@ -134,6 +135,7 @@ public class KnockKnockProtocol{
         cadena += "#" + amigos + substringFriends;
         
         System.out.println("CADENA --> " + cadena);
+        
         
         return cadena;
     }

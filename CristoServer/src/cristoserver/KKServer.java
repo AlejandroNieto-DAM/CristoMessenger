@@ -31,10 +31,10 @@ public class KKServer extends Thread{
     public void run(){
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
             while (listening) {
-	            conexiones.add(new KKMultiServerThread(serverSocket.accept()));
+	            conexiones.add(new KKMultiServerThread(serverSocket.accept())); 
+                    conexiones.get(conexiones.size() - 1).start(); 
                     CristoServer.debug("Conexion aceptada");
                     System.out.println("Conexion aceptada");
-                    conexiones.get(conexiones.size() - 1).start();
 	        }
         } catch (IOException e) {
             System.err.println("Could not listen on port " + portNumber);
