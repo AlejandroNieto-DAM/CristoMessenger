@@ -79,7 +79,7 @@ public class KnockKnockProtocol{
             } 
             
             if(theInput.contains("MESSAGES")){
-                String login = "@alexinio";
+                String login = "@zizou";
                 Message_Controller myC = new Message_Controller();
                 myC.getMessages(messages, login);
                 theOutput = "PROTOCOLCRISTOMESSENGER1.0MESSAGES";
@@ -93,6 +93,8 @@ public class KnockKnockProtocol{
                 
             }
             
+        } else {
+            CristoServer.debug("MENSAJE INVALIDO");  
         }
 
         CristoServer.debug(theOutput);
@@ -112,7 +114,7 @@ public class KnockKnockProtocol{
                 cadena += login + "#" + usuarios.get(i).getNombreUsuario() + "#FRIENDS";
             }
         }
-        
+              
         
         int amigos = 0;
         String substringFriends = "";
