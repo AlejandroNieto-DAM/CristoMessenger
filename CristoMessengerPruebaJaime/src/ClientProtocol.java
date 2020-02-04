@@ -91,11 +91,11 @@ public class ClientProtocol {
                     contador1++;
                 }
                 
-                if(contador1 == 6){
+                if(contador1 == 5){
                     numAmigos += fromServer.charAt(i);
                 }
                 
-                if(contador1 >= 7){
+                if(contador1 >= 6){
                     amigos += fromServer.charAt(i);
                 }
             }

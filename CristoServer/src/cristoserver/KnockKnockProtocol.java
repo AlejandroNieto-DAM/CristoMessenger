@@ -111,7 +111,7 @@ public class KnockKnockProtocol{
                 
         for(int i = 0; i < usuarios.size(); i++){
             if(usuarios.get(i).getLogin().equals(login)){
-                cadena += login + "#" + usuarios.get(i).getNombreUsuario() + "#FRIENDS";
+                cadena += login  + "#FRIENDS";
             }
         }
               
