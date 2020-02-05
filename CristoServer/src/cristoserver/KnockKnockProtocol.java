@@ -11,6 +11,8 @@ import Classes.User;
 import Controllers.Friend_Controller;
 import Controllers.Message_Controller;
 import Controllers.User_Controller;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
  
 public class KnockKnockProtocol{
@@ -20,14 +22,20 @@ public class KnockKnockProtocol{
     ArrayList<User> usuarios = new ArrayList();
     ArrayList<Friend> friends = new ArrayList();
     ArrayList<Message> messages = new ArrayList();
+    User_Controller a = new User_Controller();
+    Friend_Controller myController = new Friend_Controller();
+    String login;
+    
+    LocalDateTime dateTime = LocalDateTime.now();
+    Message_Controller myC = new Message_Controller();
+               
+
 
  
  
-    public String processInput(String theInput) {
+    public String processInput(String theInput) throws SQLException {
         String theOutput = null;
         
-        
- 
         if(theInput.startsWith(cadenaPrincipal)){
             
             if(theInput.contains("LOGIN")){
@@ -51,7 +59,6 @@ public class KnockKnockProtocol{
                  login = login.substring(1, login.length());
                  pass = pass.substring(1, pass.length());
 
-                 User_Controller a = new User_Controller();
                  a.getUsuarios(usuarios);  
                  
                  boolean encontrado = false;
@@ -69,27 +76,21 @@ public class KnockKnockProtocol{
                  if(encontrado == true){
                     System.out.println("Este usuario existe.");
                     CristoServer.debug("Este usuario existe");
+                    a.setConnected(login);
+                    this.login = login;
                     theOutput = getFriends(login);
                  } else {
                      System.out.println("Este usuario no existe.");
                      CristoServer.debug("Este usuario no existe");
-                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#SERVER#ERROR#BAD_LOGIN";
+                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#SERVER#ERROR#BAD_LOGIN";
                  }
      
             } 
             
-            if(theInput.contains("MESSAGES")){
-                String login = "@zizou";
-                Message_Controller myC = new Message_Controller();
-                myC.getMessages(messages, login);
-                theOutput = "PROTOCOLCRISTOMESSENGER1.0MESSAGES";
-                
-                for(int i = 0; i < messages.size(); i++){
-                    
-                    System.out.println(messages.get(i).getId_user_orig() + " " + messages.get(i).getId_user_dest() + " " + messages.get(i).getText());
-                    theOutput += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getText();
-                }
-                
+            if(theInput.contains("MSGS")){
+  
+                theOutput = getMsgs(theInput); 
+                CristoServer.debug(theOutput);
                 
             }
             
@@ -100,18 +101,45 @@ public class KnockKnockProtocol{
         CristoServer.debug(theOutput);
         return theOutput;
     }
+    
+    
+    public String getMsgs(String theInput){
+        String cadena = "";
+        
+        String[] receive = theInput.split("#");
+        
+        for(String a : receive){
+            System.out.println(a);
+        }
+      
+        myC.getMessages1(messages, receive[3], receive[4]);
+        
+        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#" + receive[3] + "#" + receive[4] + "#LIST#";
+        
+        for(int i = 0; i < messages.size(); i++){
+            cadena += messages.get(i).getId_user_orig() + "#" + messages.get(i).getDate() + "." + messages.get(i).getHour() + "#" + messages.get(i).getText();
+        }
+        
+        return cadena;
+    }
         
     public String getFriends(String login){
         String cadena = "";
         
-        Friend_Controller myController = new Friend_Controller();
         myController.getFriendsOf(this.friends, login);
         
-        cadena = cadenaPrincipal + "#SERVER#LOGIN_CORRECT#";
-                
+        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#LOGIN_CORRECT#";
+        
+        System.out.println("TOTAL USUARIOS --> " + usuarios.size());
         for(int i = 0; i < usuarios.size(); i++){
+            CristoServer.debug(usuarios.get(i).getLogin());
+        }
+                
+        boolean encontrado = false;
+        for(int i = 0; i < usuarios.size() && encontrado == false; i++){
             if(usuarios.get(i).getLogin().equals(login)){
                 cadena += login  + "#FRIENDS";
+                encontrado = true;
             }
         }
               
@@ -140,5 +168,9 @@ public class KnockKnockProtocol{
         
         
         return cadena;
+    }
+    
+    public void setDisconnected() throws SQLException{
+        a.setDisconnected(login);
     }
 }

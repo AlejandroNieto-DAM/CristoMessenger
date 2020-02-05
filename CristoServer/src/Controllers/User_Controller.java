@@ -39,5 +39,13 @@ public class User_Controller {
     public void getUser(User user) throws SQLException{
         a.getUser(user);
     }
+
+    public void setConnected(String login) throws SQLException {
+        a.setConnected(login);
+    }
+    
+    public void setDisconnected(String login) throws SQLException {
+        a.setDisconnected(login);
+    }
     
 }

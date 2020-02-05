@@ -1,4 +1,5 @@
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /*
@@ -19,26 +20,33 @@ public class ClientProtocol {
     private final int ALREADY = 2;
 
     
-    private int state = LOGGING;
+    public int state = LOGGING;
     
     private String login;
     private String passwd;
     
     CristoMessenger myCristoMessenger;
     ArrayList<Message> msjs = new ArrayList();
+    
+    LocalDateTime dateTime;
 
 
     
-    ClientProtocol(String login, String pass){
+    ClientProtocol(String login, String pass, CristoMessenger a){
         cadenaPrincipal = "PROTOCOLCRISTOMESSENGER1.0";
         this.login = login;
         this.passwd = pass;
-        myCristoMessenger = new CristoMessenger();
+        myCristoMessenger = a;
         msjs = new ArrayList();
+        dateTime = LocalDateTime.now();
     }
     
     public String processInput(String theInput){
         String theOutput = null;
+        
+        if(theInput != null){
+            System.out.println(theInput);
+        }
         
         
         if(state == LOGGING){
@@ -52,34 +60,35 @@ public class ClientProtocol {
             if(theInput.startsWith(cadenaPrincipal)){
                 if(theInput.contains("LOGIN_CORRECT")){
                     leerAmigos(theInput);
-                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#MESSAGES";
+                    myCristoMessenger.setActualUser(login);
+                    myCristoMessenger.setVisible(true);
                 }
                 
                 if(theInput.contains("BAD_LOGIN")){
                     theOutput = null;
                 }
                 
-                if(theInput.contains("MESSAGES")){
-                    this.leerMsjs(theInput);
-                    
-                    myCristoMessenger.setActualUser(login);
-                    myCristoMessenger.setVisible(true);
-                    
-                    state = ALREADY;
-                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#MESSAGES"; 
-                    
+                if(theInput.contains("MSGS")){
+                    this.leerMsgs(theInput);
                 }
-                
-                
+   
             }
-        } else if(state == ALREADY){
-           theOutput = "PROTOCOLCRISTOMESSENGER1.0#MESSAGES"; 
         }
         
         return theOutput;
     }
     
+    
+    public String getMsgs(){
+        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend(); 
+        System.out.println(theOutput);
+        
+        return theOutput;
+    }
+    
     public void leerAmigos(String fromServer){
+        
+        
         int numeroAmigos = 0;
             
             String numAmigos = "";
@@ -91,11 +100,11 @@ public class ClientProtocol {
                     contador1++;
                 }
                 
-                if(contador1 == 5){
+                if(contador1 == 6){
                     numAmigos += fromServer.charAt(i);
                 }
                 
-                if(contador1 >= 6){
+                if(contador1 >= 7){
                     amigos += fromServer.charAt(i);
                 }
             }
@@ -162,78 +171,57 @@ public class ClientProtocol {
             
     }
     
-    public void leerMsjs(String fromServer){
+    
+    
+    public void leerMsgs(String fromServer){
         
+        String[] msgs = fromServer.split("#");
         
-        int contadorE = 0;
+        int contadorStt = 0;
         String logOr = "";
-        String logDe = "";
+        String logDest = "";
+        String dateHour = "";
         String text = "";
         
-       
-        for(int i = 34; i < fromServer.length(); i++){
+        for(String stt : msgs){
             
-            if(fromServer.charAt(i) == '#'){
+            if(contadorStt > 2){
                 
-                if(contadorE <= 3){
-                    contadorE++;
+                if(contadorStt % 6 == 0){
+                    text = stt;
+                    Message e = new Message();
+                    e.setId_user_orig(logOr);
+                    e.setId_user_dest(logDest);
+                    e.setText(text);
+                    msjs.add(e);
                     
-                }
-                
-                if(contadorE == 3){
-                    contadorE = 0;
-                }
-                
-                if(contadorE == 1 && text != ""){
-                    msjs.add(new Message());
-                    msjs.get(msjs.size() - 1).setId_user_orig(logOr.substring(1, logOr.length()));
-                    msjs.get(msjs.size() - 1).setId_user_dest(logDe.substring(1, logDe.length())); 
-                    msjs.get(msjs.size() - 1).setText(text.substring(1, text.length()));
-                    
-                    text = "";          
-                    logDe = "";
                     logOr = "";
-                    
+                    logDest = "";
+                    dateHour = "";
+                    text = "";
                 }
+                
+                if(contadorStt % 3 == 0){
+                    logOr = stt;
+                }
+                
+                if(contadorStt % 4 == 0){
+                    logDest = stt;
+                }
+                
+                if(contadorStt % 5 == 0){
+                    dateHour = stt;
+                }
+                
                 
             }
             
-            if(contadorE == 1){
-                logOr += fromServer.charAt(i);
-                System.out.println(logOr);
-            }
-            
-            if(contadorE == 2){
-                logDe += fromServer.charAt(i);
-                 System.out.println(logDe);
-
-            }
-            
-            if(contadorE == 0){
-                text += fromServer.charAt(i);
-                System.out.println(text);
-
-            }
-            
-            if(i == fromServer.length() - 1){
-                msjs.add(new Message());
-                msjs.get(msjs.size() - 1).setId_user_orig(logOr.substring(1, logOr.length()));
-                msjs.get(msjs.size() - 1).setId_user_dest(logDe.substring(1, logDe.length())); 
-                msjs.get(msjs.size() - 1).setText(text.substring(1, text.length()));
-                    
-            }
-            
-            
-        }
-        
-        
-        System.out.println("Los  mostremos enteros");
-        
-        for(int i = 0; i < msjs.size(); i++){
-            System.out.println(msjs.get(i).getId_user_orig() + " " + msjs.get(i).getId_user_dest() + msjs.get(i).getText());
+            contadorStt++;
         }
         
         this.myCristoMessenger.setMessages(msjs);
+        
+        
     }
 
 }

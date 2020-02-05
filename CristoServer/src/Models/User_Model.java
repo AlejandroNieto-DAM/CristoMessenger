@@ -142,4 +142,40 @@ public class User_Model extends ConnectToBD{
         
          
     }
+
+    public void setConnected(String login) throws SQLException {
+        String query = "update " + this.getDBName()+ ".user "
+                + "set state = 1 "
+                + "where id_user = '" + login + "'";
+
+        
+
+        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+        
+        
+        System.out.println("query --> " + query);
+        
+        preparedStmt.executeUpdate();
+        preparedStmt.close();
+        
+        this.getConnector().close();
+
+    }
+    
+    public void setDisconnected(String login) throws SQLException{
+        String query = "update " + this.getDBName()+ ".user "
+                + "set state = 0 "
+                + "where id_user = '" + login + "'";
+
+        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+        
+        
+        System.out.println("query --> " + query);
+
+        preparedStmt.executeUpdate();
+        preparedStmt.close();
+        
+        this.getConnector().close();
+
+    }
 }

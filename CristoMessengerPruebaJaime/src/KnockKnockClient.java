@@ -11,7 +11,6 @@
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 import javax.swing.JFrame;
  
 public class KnockKnockClient extends Thread{
@@ -22,6 +21,7 @@ public class KnockKnockClient extends Thread{
     String pass;
     JFrame loginFrame;
     ClientProtocol protocol;
+   CristoMessenger a;
     
     KnockKnockClient(int port, String host, String login, String pass, JFrame frame){
         this.portNumber = port;
@@ -29,7 +29,8 @@ public class KnockKnockClient extends Thread{
         this.login = login;
         this.pass = pass;
         this.loginFrame = frame;
-        protocol = new ClientProtocol(login, pass);
+        a = new CristoMessenger();
+        protocol = new ClientProtocol(login, pass, a);
 
     }
     
@@ -46,19 +47,31 @@ public class KnockKnockClient extends Thread{
             
             String fromServer;
             String fromUser;
-                        
+            String prueba;
             fromUser = protocol.processInput(null);
             out.println(fromUser);
 
             while ((fromServer = in.readLine()) != null) {
                 
-                System.out.println("fromUser " + fromServer);
-
                 fromUser = protocol.processInput(fromServer);
                 
                 out.println(fromUser);
                 
-                if(fromServer.contains("MESSAGES")){
+                /*try{
+                    prueba = a.getFocusFriend(); 
+                    
+                    
+                    if(prueba != null){
+                       protocol.getMsgs();
+                       System.out.println("focus name " + prueba);
+                    }
+                } catch(NullPointerException e){
+                    
+                }*/
+               
+                
+                
+                if(fromServer.contains("LOGIN_CORRECT")){
                     this.loginFrame.setVisible(false);
                     
                 }

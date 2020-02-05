@@ -28,10 +28,12 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIcon.getWidth(), jLabelIcon.getHeight(), Image.SCALE_DEFAULT));
         jLabelIcon.setIcon(imageIcon);
         
-        jTextFieldLogin.setText("@alexinio");
-        this.jPasswordFieldPassword.setText("meencantanlaslongboards23");
+        jTextFieldLogin.setText("@nieto_off");
+        this.jPasswordFieldPassword.setText("nietillomaquinilla1");
         this.jTextField1.setText("1234");
-        this.jTextField2.setText("172.26.241.129");
+        this.jTextField2.setText("192.168.0.201");
+        
+        
         
     }
     

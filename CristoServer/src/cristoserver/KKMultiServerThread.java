@@ -5,11 +5,16 @@
  */
 package cristoserver;
 
+import Controllers.User_Controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,10 +22,13 @@ import java.net.Socket;
  */
 public class KKMultiServerThread extends Thread{
      private Socket socket = null;
+     KnockKnockProtocol kkp;
+          
 
     public KKMultiServerThread(Socket socket) {
         super("KKMultiServerThread");
         this.socket = socket;
+        this.kkp = new KnockKnockProtocol();
     }
     
     public void run() {
@@ -32,32 +40,42 @@ public class KKMultiServerThread extends Thread{
                     socket.getInputStream()));
         ) {
             String inputLine, outputLine;
-            KnockKnockProtocol kkp = new KnockKnockProtocol();
             
+            
+            try{
+                while ((inputLine = in.readLine()) != null) {
+                
+                    CristoServer.debug(inputLine);
+                    System.out.println(inputLine);
+
+                    outputLine = kkp.processInput(inputLine);
+
+                    CristoServer.debug(outputLine);
+                    System.out.println(outputLine);
+
+                    out.println(outputLine);
 
 
-            while ((inputLine = in.readLine()) != null) {
+                    if (outputLine.contains("BAD_LOGIN") || outputLine == null)
+                        break;
                 
-                CristoServer.debug(inputLine);
-                System.out.println(inputLine);
-                
-                outputLine = kkp.processInput(inputLine);
-                
-                CristoServer.debug(inputLine);
-                System.out.println(inputLine);
+                }
+            } catch(SocketException e){
                 
                 
-                
-                out.println(outputLine);
-                
-                
-                if (outputLine.contains("BAD_LOGIN"))
-                    break;
                 
             }
+            
+            
+            System.out.println("DESCONECTO AL USUARIO");
+            kkp.setDisconnected();
             socket.close();
+            
+    
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        } catch (SQLException ex) {
+             Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
+         }
     }
 }

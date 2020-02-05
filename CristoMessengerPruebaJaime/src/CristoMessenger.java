@@ -23,6 +23,9 @@ public class CristoMessenger extends javax.swing.JFrame{
     String valor;
     ArrayList<Message> mensjs;
     
+    String focusFriend;
+
+    
     
            
         
@@ -368,11 +371,17 @@ public class CristoMessenger extends javax.swing.JFrame{
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonSendMessageActionPerformed
 
+    
+    
+    public String getFocusFriend(){
+        return this.focusFriend;
+    }
     private void jListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListFriendsMouseClicked
         this.jTextFieldUserSelectedInListName.setText(this.jListFriends.getSelectedValue());
         String des = this.jListFriends.getSelectedValue();
         String dest = "";
         Boolean parar = false;
+        System.out.println("");
         for(int i = 0; i < des.length() && parar == false; i++){
             if(des.charAt(i) != ' '){
                 dest += des.charAt(i);
@@ -381,21 +390,19 @@ public class CristoMessenger extends javax.swing.JFrame{
             }
         }
         
-        this.jTextArea1.setText("");
 
-        System.out.println("dest --> " + dest + "1" + mensjs.size());
-        for(int i = 0; i < mensjs.size(); i++){
+        /*for(int i = 0; i < mensjs.size(); i++){
             System.out.println("orig -->" + mensjs.get(i).getId_user_orig() + "." + "dest -->" + mensjs.get(i).getId_user_dest() + ".");
-            if(mensjs.get(i).getId_user_orig().equals(dest)){
+            if(mensjs.get(i).getId_user_orig().equals(focusFriend)){
                 
                 this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
                 System.out.println(mensjs.get(i).getText());
    
-            }  else if (mensjs.get(i).getId_user_dest().equals(dest)){
+            }  else if (mensjs.get(i).getId_user_dest().equals(focusFriend)){
                 
                 this.jTextArea1.setText(this.jTextArea1.getText() + "\t" + mensjs.get(i).getText() + "\n");
             }
-        }
+        }*/
     }//GEN-LAST:event_jListFriendsMouseClicked
 
     /**

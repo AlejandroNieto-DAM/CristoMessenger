@@ -26,4 +26,8 @@ public class Message_Controller {
     public void getMessages(ArrayList<Message> messages, String login){
         myMessageModel.getMessages(messages, login);
     }
+    
+    public void getMessages1(ArrayList<Message> messages, String login, String login_dest){
+        myMessageModel.getMessages1(messages, login, login_dest);
+    }
 }
