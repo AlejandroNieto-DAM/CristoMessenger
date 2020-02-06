@@ -53,11 +53,11 @@ public class KnockKnockProtocol{
                          contador++; 
                      }
 
-                     if(contador == 3){
+                     if(contador == 4){
                              login += theInput.charAt(i);
                      }
 
-                     if(contador == 4){
+                     if(contador == 5){
                          pass += theInput.charAt(i);
                      }
                  }

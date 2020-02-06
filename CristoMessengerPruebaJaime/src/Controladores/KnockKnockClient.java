@@ -83,7 +83,7 @@ public class KnockKnockClient extends Thread{
         } catch (IOException ex) {
             Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-        fromUser = protocol.processInput(fromServer);
+        protocol.processInput(fromServer);
             
             
             
