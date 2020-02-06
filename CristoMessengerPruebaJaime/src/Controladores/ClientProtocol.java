@@ -35,6 +35,8 @@ public class ClientProtocol {
     ArrayList<Message> msjs = new ArrayList();
     
     LocalDateTime dateTime;
+    
+    
 
 
     
@@ -56,7 +58,7 @@ public class ClientProtocol {
         
         
         if(state == LOGGING){
-            theOutput = "PROTOCOLCRISTOMESSENGER1.0#CLIENT#LOGIN#" + login + "#" + passwd;
+            theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#LOGIN#" + login + "#" + passwd;
             state = LOGGED;
             
         } else if (state == LOGGED){
