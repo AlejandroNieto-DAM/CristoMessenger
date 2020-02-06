@@ -95,7 +95,7 @@ public class KnockKnockProtocol{
             
             if(theInput.contains("MSGS")){
   
-                System.out.println("Entro msgs");
+                //System.out.println("Entro msgs");
                 theOutput = getMsgs(theInput); 
                 CristoServer.debug(theOutput);
                 
@@ -116,11 +116,8 @@ public class KnockKnockProtocol{
         
         String[] receive = theInput.split("#");
         
-        for(String a : receive){
-            System.out.println(a);
-        }
       
-        myC.getMessages1(messages, receive[3], receive[4]);
+        myC.getMessages1(messages, receive[4], receive[5]);
         
         cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS#" + receive[3] + "#" + receive[4] + "#LIST";
         

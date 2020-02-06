@@ -68,7 +68,7 @@ public class ClientProtocol {
             if(theInput.startsWith(cadenaPrincipal)){
                 if(theInput.contains("LOGIN_CORRECT")){
                     leerAmigos(theInput);
-                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#MSGS#" + login + "#" + firstFriend; 
+                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + firstFriend; 
                     
                 }
                 
@@ -87,7 +87,7 @@ public class ClientProtocol {
     }
     
     public String getMensajeMensajes(){
-        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend(); 
+        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend(); 
         return theOutput;
     }
     
