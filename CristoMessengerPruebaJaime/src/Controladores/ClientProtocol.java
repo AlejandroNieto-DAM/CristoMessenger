@@ -1,4 +1,8 @@
+package Controladores;
 
+
+import Classes.Message;
+import Vista.CristoMessenger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -24,6 +28,8 @@ public class ClientProtocol {
     
     private String login;
     private String passwd;
+    
+    private String firstFriend;
     
     CristoMessenger myCristoMessenger;
     ArrayList<Message> msjs = new ArrayList();
@@ -60,8 +66,8 @@ public class ClientProtocol {
             if(theInput.startsWith(cadenaPrincipal)){
                 if(theInput.contains("LOGIN_CORRECT")){
                     leerAmigos(theInput);
-                    myCristoMessenger.setActualUser(login);
-                    myCristoMessenger.setVisible(true);
+                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#MSGS#" + login + "#" + firstFriend; 
+                    
                 }
                 
                 if(theInput.contains("BAD_LOGIN")){
@@ -78,11 +84,8 @@ public class ClientProtocol {
         return theOutput;
     }
     
-    
-    public String getMsgs(){
+    public String getMensajeMensajes(){
         String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend(); 
-        System.out.println(theOutput);
-        
         return theOutput;
     }
     
@@ -166,6 +169,8 @@ public class ClientProtocol {
                 
             }
             
+            firstFriend = names[0].substring(0, names[0].indexOf(" "));
+            
             
             myCristoMessenger.setFriendsOf(names);
             
@@ -175,51 +180,63 @@ public class ClientProtocol {
     
     public void leerMsgs(String fromServer){
         
-        String[] msgs = fromServer.split("#");
+        this.msjs.clear();
         
-        int contadorStt = 0;
+        int contadorStt = 1;
         String logOr = "";
         String logDest = "";
         String dateHour = "";
         String text = "";
+        String msgsFiltrado = "";
+        String[] msgs = null;
         
-        for(String stt : msgs){
+        
+        try{
             
-            if(contadorStt > 2){
-                
-                if(contadorStt % 6 == 0){
+            msgsFiltrado = fromServer.substring(fromServer.indexOf("LIST") + 5, fromServer.indexOf("END") - 1);
+            msgs = msgsFiltrado.split("#");
+            
+            for(String stt : msgs){
+
+                if(contadorStt == 1){
+                    logOr = stt;
+                }
+
+
+                if(contadorStt == 2){
+                    dateHour = stt;
+                }
+
+
+                if(contadorStt == 3){
                     text = stt;
                     Message e = new Message();
                     e.setId_user_orig(logOr);
                     e.setId_user_dest(logDest);
                     e.setText(text);
                     msjs.add(e);
-                    
+
                     logOr = "";
                     logDest = "";
                     dateHour = "";
                     text = "";
+
+                    contadorStt = 0;
                 }
-                
-                if(contadorStt % 3 == 0){
-                    logOr = stt;
-                }
-                
-                if(contadorStt % 4 == 0){
-                    logDest = stt;
-                }
-                
-                if(contadorStt % 5 == 0){
-                    dateHour = stt;
-                }
-                
-                
+
+                contadorStt++;
             }
+
+        } catch (StringIndexOutOfBoundsException e){
             
-            contadorStt++;
         }
         
         this.myCristoMessenger.setMessages(msjs);
+        
+        
+        
+        
+        
         
         
     }

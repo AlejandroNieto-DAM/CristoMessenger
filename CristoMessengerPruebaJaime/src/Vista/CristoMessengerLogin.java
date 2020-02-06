@@ -1,7 +1,9 @@
+package Vista;
 
+
+import Controladores.KnockKnockClient;
 import java.awt.Image;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -28,8 +30,8 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIcon.getWidth(), jLabelIcon.getHeight(), Image.SCALE_DEFAULT));
         jLabelIcon.setIcon(imageIcon);
         
-        jTextFieldLogin.setText("@nieto_off");
-        this.jPasswordFieldPassword.setText("nietillomaquinilla1");
+        jTextFieldLogin.setText("@alexinio");
+        this.jPasswordFieldPassword.setText("meencantanlaslongboards23");
         this.jTextField1.setText("1234");
         this.jTextField2.setText("192.168.0.201");
         
@@ -113,8 +115,13 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
 
-       KnockKnockClient a = new KnockKnockClient(Integer.parseInt(jTextField1.getText()), jTextField2.getText(), jTextFieldLogin.getText(), jPasswordFieldPassword.getText(), this);
-       a.start();
+       KnockKnockClient a = null;
+        try {
+            a = new KnockKnockClient(Integer.parseInt(jTextField1.getText()), jTextField2.getText(), jTextFieldLogin.getText(), jPasswordFieldPassword.getText(), this);
+        } catch (IOException ex) {
+            Logger.getLogger(CristoMessengerLogin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        a.start();
     }//GEN-LAST:event_sendButtonActionPerformed
 
     /**

@@ -25,10 +25,10 @@ public class KKMultiServerThread extends Thread{
      KnockKnockProtocol kkp;
           
 
-    public KKMultiServerThread(Socket socket) {
+    public KKMultiServerThread(Socket socket, KnockKnockProtocol mainProtocol) {
         super("KKMultiServerThread");
         this.socket = socket;
-        this.kkp = new KnockKnockProtocol();
+        this.kkp = mainProtocol;
     }
     
     public void run() {

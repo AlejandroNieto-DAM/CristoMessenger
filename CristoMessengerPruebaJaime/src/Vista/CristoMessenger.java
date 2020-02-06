@@ -1,6 +1,14 @@
+package Vista;
 
+
+import Classes.CellRenderer;
+import Classes.Message;
+import Controladores.KnockKnockClient;
 import java.awt.Image;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 
@@ -25,16 +33,17 @@ public class CristoMessenger extends javax.swing.JFrame{
     
     String focusFriend;
 
-    
+    KnockKnockClient myKK;
     
            
         
     /**
      * Creates new form CristoMessenger
      */
-    public CristoMessenger() {
+    public CristoMessenger(KnockKnockClient myKKClient) {
         
         initComponents();
+        
         actualUser = "";
         jListFriends.setModel(new DefaultListModel());
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIconAboveSearch.getWidth(), jLabelIconAboveSearch.getHeight(), Image.SCALE_DEFAULT));
@@ -49,13 +58,31 @@ public class CristoMessenger extends javax.swing.JFrame{
         jLabelMessageOfExistingUserRegisterWindow.setText("");
         jLabelErrorPasswordIncorrect.setText("");
         
+        this.myKK = myKKClient;
+        
         
         
         
     }
+
+    private CristoMessenger() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     public void setMessages(ArrayList msjs){
+        
         this.mensjs = msjs;
+        this.jTextArea1.setText("");
+        
+        System.out.println("mensjss size en la vista locooo --< " + mensjs.size());
+        for(int i = 0; i < mensjs.size(); i++){
+            if (mensjs.get(i).getId_user_orig().equals(actualUser)){
+                
+                this.jTextArea1.setText(this.jTextArea1.getText() + "\t" + mensjs.get(i).getText() + "\n");
+            } else {
+                this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
+            }
+        }
     }
     
     public void setActualUser(String login){
@@ -376,6 +403,8 @@ public class CristoMessenger extends javax.swing.JFrame{
     public String getFocusFriend(){
         return this.focusFriend;
     }
+    
+    
     private void jListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListFriendsMouseClicked
         this.jTextFieldUserSelectedInListName.setText(this.jListFriends.getSelectedValue());
         String des = this.jListFriends.getSelectedValue();
@@ -390,19 +419,14 @@ public class CristoMessenger extends javax.swing.JFrame{
             }
         }
         
-
-        /*for(int i = 0; i < mensjs.size(); i++){
-            System.out.println("orig -->" + mensjs.get(i).getId_user_orig() + "." + "dest -->" + mensjs.get(i).getId_user_dest() + ".");
-            if(mensjs.get(i).getId_user_orig().equals(focusFriend)){
-                
-                this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
-                System.out.println(mensjs.get(i).getText());
-   
-            }  else if (mensjs.get(i).getId_user_dest().equals(focusFriend)){
-                
-                this.jTextArea1.setText(this.jTextArea1.getText() + "\t" + mensjs.get(i).getText() + "\n");
-            }
-        }*/
+        this.focusFriend = dest;
+        
+        try {
+            this.myKK.getMessagesFrom();
+        } catch (IOException ex) {
+            Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }//GEN-LAST:event_jListFriendsMouseClicked
 
     /**
