@@ -145,20 +145,27 @@ public class User_Model extends ConnectToBD{
     
     public String getUserState(String login){
         this.setQuery( "select state " + "from " + this.getDBName() + ".user where id_user = '" + login + "'");
-        String state = "";
+        int state = 0;
         
         try (Statement stmt = this.getConnector().createStatement()) {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
 
-                state = rs.getString("state");
+                state = rs.getInt("state");
                    
             }
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }
         
-        return state;
+        String userState = "";
+        if(state == 1){
+            userState = "CONNECTED";
+        } else {
+            userState = "NOT_CONNECTED";
+        }
+        
+        return userState;
     }
 
     public void setConnected(String login) throws SQLException {

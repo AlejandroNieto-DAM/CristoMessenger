@@ -31,6 +31,8 @@ public class KnockKnockClient extends Thread{
     Socket kkSocket;
     BufferedReader in;
     
+    Integer numeroMsgs = 0;
+    
     public KnockKnockClient(int port, String host, String login, String pass, JFrame frame) throws IOException{
         this.portNumber = port;
         this.hostName = host;
@@ -65,8 +67,7 @@ public class KnockKnockClient extends Thread{
 
 
         if(fromServer.contains("LOGIN_CORRECT")){
-                fromUser = protocol.processInput(fromServer);
-                out.println(fromUser);
+                protocol.processInput(fromServer);
                 this.loginFrame.setVisible(false);
                 this.a.setActualUser(login);
                 this.a.setVisible(true);      
@@ -78,25 +79,38 @@ public class KnockKnockClient extends Thread{
             }
         }
 
-        try {
-            fromServer = in.readLine();
-        } catch (IOException ex) {
-            Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    }
+    
+    
+    public void getFriendStatus() throws IOException{
+        String output = protocol.getFriendStatus();
+        out.println(output);
+        String fromServer = in.readLine();
         protocol.processInput(fromServer);
-            
-            
-            
-           
-            
-        
     }
     
     public void getMessagesFrom() throws IOException{
-       String output =  protocol.getMensajeMensajes();
-       out.println(output);
-       String fromServer = in.readLine();
-       protocol.processInput(fromServer);
+        String output =  protocol.getMensajeMensajes();
+        out.println(output);
+        String fromServer = in.readLine();
+        output = protocol.processInput(fromServer);
+        this.numeroMsgs = protocol.getNumeroDeMensajes();
+        System.out.println("numero de mgsg " + this.numeroMsgs);
+        if(numeroMsgs != 0){
+            int i = 0;
+            out.println(output);
+            
+            while(i < this.numeroMsgs){
+                 fromServer = in.readLine();
+                 output = protocol.processInput(fromServer);
+                 System.out.println("mensaje + " + output);
+                 out.println(output);
+                 i++;
+            }
+            
+        }
+       
+       fromServer = in.readLine();
        
     }
      

@@ -35,10 +35,15 @@ public class CristoMessenger extends javax.swing.JFrame{
 
     KnockKnockClient myKK;
     
+    String[] friends;
+    
+    int numeroAmigos = 0;
+    
            
         
     /**
      * Creates new form CristoMessenger
+     * @param myKKClient
      */
     public CristoMessenger(KnockKnockClient myKKClient) {
         
@@ -98,6 +103,12 @@ public class CristoMessenger extends javax.swing.JFrame{
     
     public void setFriendsOf(String[] names){
           
+        this.friends = names;
+        
+        for(String a : names){
+            this.numeroAmigos++;
+        }
+        
         this.jListFriends.setModel(new javax.swing.AbstractListModel(){
             String[] vect = names;
             
@@ -404,6 +415,11 @@ public class CristoMessenger extends javax.swing.JFrame{
         return this.focusFriend;
     }
     
+    public void setFriendStatus(String status){
+       this.jTextFieldUserSelectedInListName.setText(this.jTextFieldUserSelectedInListName.getText().substring(0, this.jTextFieldUserSelectedInListName.getText().indexOf(" "))  + " " + status);
+       
+    }
+    
     
     private void jListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListFriendsMouseClicked
         this.jTextFieldUserSelectedInListName.setText(this.jListFriends.getSelectedValue());
@@ -423,6 +439,7 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         try {
             this.myKK.getMessagesFrom();
+            this.myKK.getFriendStatus();
         } catch (IOException ex) {
             Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }

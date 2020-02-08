@@ -31,15 +31,15 @@ public class ConnectToBD {
     public ConnectToBD(){
         conector = "jdbc";
         port = "3306";
-        ip = "clasedam2.ddns.net";
-        //ip = "localhost";
-        dbName = "cristomessenger";
-        //dbName = "messenger";
+        //ip = "clasedam2.ddns.net";
+        ip = "localhost";
+        //dbName = "cristomessenger";
+        dbName = "messenger";
         database = "mysql";
-        user = "clasedam2";
-        passwd = "root";
-        //user = "root";
-        //passwd = "cristorey";
+        //user = "clasedam2";
+        //passwd = "root";
+        user = "root";
+        passwd = "cristorey";
     }
     
     

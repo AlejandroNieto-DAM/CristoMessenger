@@ -36,6 +36,8 @@ public class ClientProtocol {
     
     LocalDateTime dateTime;
     
+    int numeroMensajes;
+    
     
 
 
@@ -47,6 +49,7 @@ public class ClientProtocol {
         myCristoMessenger = a;
         msjs = new ArrayList();
         dateTime = LocalDateTime.now();
+        numeroMensajes = 0;
     }
     
     public String processInput(String theInput){
@@ -68,7 +71,7 @@ public class ClientProtocol {
             if(theInput.startsWith(cadenaPrincipal)){
                 if(theInput.contains("LOGIN_CORRECT")){
                     leerAmigos(theInput);
-                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + firstFriend; 
+                    //theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + firstFriend; 
                     
                 }
                 
@@ -76,17 +79,79 @@ public class ClientProtocol {
                     theOutput = null;
                 }
                 
-                if(theInput.contains("MSGS")){
-                    this.leerMsgs(theInput);
+                if(theInput.contains("#MSGS#")){
+                    this.msjs.clear();
+                    this.leerNumeroMensajes(theInput);
+                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!";
+
+                }
+                
+                if(theInput.contains("#MSG#")){
+                    this.leerMsgs(theInput);    
+                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + "#CLIENT#ALL_RECEIVED!";
+                    this.myCristoMessenger.setMessages(msjs);
+                }
+                
+                if(theInput.contains("STATUS")){
+                    String status = this.friendStatus(theInput);
+                    this.myCristoMessenger.setFriendStatus(status);
                 }
    
             }
         }
         
+        
         return theOutput;
     }
     
+    public String friendStatus(String theInput){
+        String cadena = "";
+        
+        String[] cadenas = theInput.split("#");
+        int contadorAtt = 0;
+        
+        for(String att : cadenas){
+            if(contadorAtt == 5){
+                cadena = att;
+            }
+            
+            contadorAtt++;
+        }
+        
+        return cadena;
+    }
+    
+    public String getFriendStatus(){
+        String cadena  = "";
+        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#STATUS#<LOGIN_CLIENT#<LOGIN_AMIGO>
+        cadena = cadenaPrincipal + dateTime + "#CLIENT#STATUS#" + login + "#" + this.myCristoMessenger.getFocusFriend();
+        return cadena;
+    }
+    
+    
+    public void leerNumeroMensajes(String fromServer){
+        
+        String[] msgs = fromServer.split("#");
+        int contadorStt = 0;
+        for(String stt : msgs){
+            
+            if(contadorStt == 6){
+                this.numeroMensajes = Integer.parseInt(stt);
+            }      
+            contadorStt++;
+        }
+        
+        System.out.println("Numero de mensajes " + this.numeroMensajes);
+    }
+    
+    
+    public int getNumeroDeMensajes(){  
+        return this.numeroMensajes;
+    }
+    
     public String getMensajeMensajes(){
+        this.msjs.clear();
+        this.numeroMensajes = 0;
         String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend(); 
         return theOutput;
     }
@@ -182,7 +247,7 @@ public class ClientProtocol {
     
     public void leerMsgs(String fromServer){
         
-        this.msjs.clear();
+        
         
         int contadorStt = 1;
         String logOr = "";
@@ -192,55 +257,43 @@ public class ClientProtocol {
         String msgsFiltrado = "";
         String[] msgs = null;
         
+        msgsFiltrado = fromServer.substring(fromServer.indexOf("MSG") + 4, fromServer.length());
+        msgs = msgsFiltrado.split("#");
+        System.out.println("MSGS RECORTAO + " + msgs);
         
-        try{
-            
-            msgsFiltrado = fromServer.substring(fromServer.indexOf("LIST") + 5, fromServer.indexOf("END") - 1);
-            msgs = msgsFiltrado.split("#");
-            
-            for(String stt : msgs){
-
-                if(contadorStt == 1){
-                    logOr = stt;
-                }
-
-
-                if(contadorStt == 2){
-                    dateHour = stt;
-                }
-
-
-                if(contadorStt == 3){
-                    text = stt;
-                    Message e = new Message();
-                    e.setId_user_orig(logOr);
-                    e.setId_user_dest(logDest);
-                    e.setText(text);
-                    msjs.add(e);
-
-                    logOr = "";
-                    logDest = "";
-                    dateHour = "";
-                    text = "";
-
-                    contadorStt = 0;
-                }
-
-                contadorStt++;
+        for(String att : msgs){
+            if(contadorStt == 1){
+                logOr = att;
             }
-
-        } catch (StringIndexOutOfBoundsException e){
             
+            if(contadorStt == 2){
+                logDest = att;
+            }
+            
+            if(contadorStt == 3){
+                dateHour = att;
+            }
+            
+            if(contadorStt == 4){
+                text = att;
+            }
+            
+            contadorStt++;
         }
         
-        this.myCristoMessenger.setMessages(msjs);
+        Message m = new Message();
+        m.setId_user_orig(logOr);
+        m.setId_user_dest(logDest);
+        //m.setDate(dateHour.substring(0, dateHour.indexOf(".")));
+        //m.setHour(dateHour.substring(dateHour.indexOf("."), dateHour.length()));
+        m.setText(text);
+        this.msjs.add(m);
         
         
         
-        
-        
-        
-        
+            
+        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#MSG#<MESSAGE_X>
+        //    <MESSAGE_X> = <EMISOR>#<RECEPTOR>#<FECHA>#<TEXTO>    
     }
 
 }

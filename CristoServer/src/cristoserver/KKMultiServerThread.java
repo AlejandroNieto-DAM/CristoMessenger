@@ -45,12 +45,12 @@ public class KKMultiServerThread extends Thread{
             try{
                 while ((inputLine = in.readLine()) != null) {
                 
-                    CristoServer.debug(inputLine);
+                    CristoServer.debug("FROMCLIENT " + inputLine);
                     System.out.println(inputLine);
 
                     outputLine = kkp.processInput(inputLine);
 
-                    CristoServer.debug(outputLine);
+                    CristoServer.debug("FROMSERVER " + outputLine);
                     System.out.println(outputLine);
 
                     out.println(outputLine);
