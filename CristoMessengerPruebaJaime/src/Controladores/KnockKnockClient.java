@@ -90,7 +90,7 @@ public class KnockKnockClient extends Thread{
     }
     
     public void getMessagesFrom() throws IOException{
-        String output =  protocol.getMensajeMensajes();
+        String output =  protocol.getMessages();
         out.println(output);
         String fromServer = in.readLine();
         output = protocol.processInput(fromServer);

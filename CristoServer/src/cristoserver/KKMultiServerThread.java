@@ -66,8 +66,7 @@ public class KKMultiServerThread extends Thread{
                 
             }
             
-            
-            System.out.println("DESCONECTO AL USUARIO");
+//            System.out.println("DESCONECTO AL USUARIO");
             kkp.setDisconnected();
             socket.close();
             

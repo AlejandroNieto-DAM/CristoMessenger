@@ -17,28 +17,47 @@ import java.util.ArrayList;
  
 public class KnockKnockProtocol{
     
-    private String cadenaPrincipal = "PROTOCOLCRISTOMESSENGER1.0";
+    private String cadenaPrincipal;
     
-    ArrayList<User> usuarios = new ArrayList();
-    ArrayList<Friend> friends = new ArrayList();
-    ArrayList<Message> messages = new ArrayList();
-    User_Controller a = new User_Controller();
-    Friend_Controller myController = new Friend_Controller();
-    String login;
-    String focusedFriend = "";
-    LocalDateTime dateTime = LocalDateTime.now();
-    Message_Controller myC = new Message_Controller();
+    private ArrayList<User> usuarios;
+    private ArrayList<Friend> friends;
+    private ArrayList<Message> messages;
     
-    int contadorMsg = 0;
-               
+    private Message_Controller message_controller;
+    private Friend_Controller friend_controller;
+    private User_Controller user_controller;
+    
+    private String login_user;
+    private String focusedFriend;
+    
+    private LocalDateTime dateTime;
 
-
- 
- 
+    int contadorMsg;
+    
+    KnockKnockProtocol(){
+        
+        cadenaPrincipal = "PROTOCOLCRISTOMESSENGER1.0";
+                
+        usuarios = new ArrayList();
+        friends = new ArrayList();
+        messages = new ArrayList();
+        
+        user_controller = new User_Controller();
+        friend_controller = new Friend_Controller();
+        message_controller = new Message_Controller();
+        
+        login_user = "";
+        focusedFriend = "";
+        
+        dateTime = LocalDateTime.now();
+        
+        contadorMsg = 0;
+    }
+    
     public String processInput(String theInput) throws SQLException {
         String theOutput = null;
-        this.friends.clear();
         
+        this.friends.clear();
         this.usuarios.clear();
   
         if(theInput.startsWith(cadenaPrincipal)){
@@ -66,7 +85,7 @@ public class KnockKnockProtocol{
                  login = login.substring(1, login.length());
                  pass = pass.substring(1, pass.length());
 
-                 a.getUsuarios(usuarios);  
+                 user_controller.getUsuarios(usuarios);  
                  
                  boolean encontrado = false;
 
@@ -83,8 +102,8 @@ public class KnockKnockProtocol{
                  if(encontrado == true){
                     System.out.println("Este usuario existe.");
                     CristoServer.debug("Este usuario existe");
-                    a.setConnected(login);
-                    this.login = login;
+                    user_controller.setConnected(login);
+                    this.login_user = login;
                     theOutput = getFriends(login);
                  } else {
                      System.out.println("Este usuario no existe.");
@@ -139,7 +158,7 @@ public class KnockKnockProtocol{
         
         String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#STATUS#" + focusedFriend;
         
-        String status = a.getUserState(focusedFriend);
+        String status = user_controller.getUserState(focusedFriend);
         
         cadena += "#" + status;
 
@@ -164,12 +183,12 @@ public class KnockKnockProtocol{
         
         String[] receive = theInput.split("#");
         
-        myC.getMessages1(messages, receive[4], receive[5]);
+        message_controller.getMessages1(messages, receive[4], receive[5]);
         
         //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#MSGS#<LOGIN_CLIENT#<LOGIN_AMIGO>#N_MESSAGES#
         this.focusedFriend = receive[5];
         
-        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS#" + login + "#" + focusedFriend + "#" + messages.size();
+        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS#" + login_user + "#" + focusedFriend + "#" + messages.size();
         
         
         return cadena;
@@ -181,7 +200,7 @@ public class KnockKnockProtocol{
         
         String cadena = "";
         
-        myController.getFriendsOf(this.friends, login);
+        friend_controller.getFriendsOf(this.friends, login);
         
         cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#LOGIN_CORRECT#" + login  + "#FRIENDS";
         
@@ -213,13 +232,11 @@ public class KnockKnockProtocol{
         }
         
         cadena += "#" + amigos + substringFriends;
-        
-        
-        
+
         return cadena;
     }
     
     public void setDisconnected() throws SQLException{
-        a.setDisconnected(login);
+        user_controller.setDisconnected(login_user);
     }
 }

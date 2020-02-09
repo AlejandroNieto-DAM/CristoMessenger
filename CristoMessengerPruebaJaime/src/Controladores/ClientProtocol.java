@@ -149,7 +149,7 @@ public class ClientProtocol {
         return this.numeroMensajes;
     }
     
-    public String getMensajeMensajes(){
+    public String getMessages(){
         this.msjs.clear();
         this.numeroMensajes = 0;
         String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend(); 
