@@ -11,6 +11,9 @@ import Classes.User;
 import Controllers.Friend_Controller;
 import Controllers.Message_Controller;
 import Controllers.User_Controller;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,6 +34,9 @@ public class KnockKnockProtocol{
     private String focusedFriend;
     
     private LocalDateTime dateTime;
+    
+    private PrintWriter out;
+    private BufferedReader in;
 
     int contadorMsg;
     
@@ -54,7 +60,16 @@ public class KnockKnockProtocol{
         contadorMsg = 0;
     }
     
-    public String processInput(String theInput) throws SQLException {
+    
+    public void setPrintWriter(PrintWriter a){
+        this.out = a;
+    }
+    
+    public void setBufferedReader(BufferedReader a){
+        this.in = a;
+    }
+    
+    public String processInput(String theInput) throws SQLException, IOException {
         String theOutput = null;
         
         this.friends.clear();
@@ -116,28 +131,26 @@ public class KnockKnockProtocol{
             if(theInput.contains("MSGS")){
                 
                 if(theInput.contains("OK_SEND")){
-                    theOutput = sendMsg();
+                    theOutput = sendMsg(this.contadorMsg);
                     this.contadorMsg++;
-    
+                                        
                 } else {
                    //System.out.println("Entro msgs");
                     this.messages.clear();
-                    theOutput = getTotalMsgs(theInput); 
-                    contadorMsg = 0;
-                   
+                    theOutput = getTotalMsgs(theInput);                    
                 }
                 
             }
             
-            if(theInput.contains(("ALL_RECEIVED"))){
+            /*if(theInput.contains(("ALL_RECEIVED"))){
                 if(contadorMsg < this.messages.size()){
-                        theOutput = sendMsg();
-                        this.contadorMsg++;
+                    theOutput = sendMsg();
+                    this.contadorMsg++;
                 } else {
                     theOutput = "yeye";
                 }
                 
-            }
+            }*/
             
             if(theInput.contains("STATUS")){
                 theOutput = this.getUserState(theInput);
@@ -166,11 +179,11 @@ public class KnockKnockProtocol{
         
     }
     
-    public String sendMsg(){
+    public String sendMsg(int i){
         
         String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSG";
         //myC.getMessages1(messages, login, this.focusedFriend);
-        cadena += "#" + messages.get(contadorMsg).getId_user_orig() + "#" + messages.get(contadorMsg).getId_user_dest() + "#" + messages.get(contadorMsg).getDate() + "." + messages.get(contadorMsg).getHour() + "#" + messages.get(contadorMsg).getText() ;
+        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "." + messages.get(i).getHour() + "#" + messages.get(i).getText() ;
         
         
         return cadena;

@@ -41,17 +41,19 @@ public class KKMultiServerThread extends Thread{
         ) {
             String inputLine, outputLine;
             
+            kkp.setPrintWriter(out);
+            kkp.setBufferedReader(in);
             
             try{
                 while ((inputLine = in.readLine()) != null) {
                 
                     CristoServer.debug("FROMCLIENT " + inputLine);
-                    System.out.println(inputLine);
+                    //System.out.println(inputLine);
 
                     outputLine = kkp.processInput(inputLine);
 
                     CristoServer.debug("FROMSERVER " + outputLine);
-                    System.out.println(outputLine);
+                    //System.out.println(outputLine);
 
                     out.println(outputLine);
 

@@ -99,18 +99,22 @@ public class KnockKnockClient extends Thread{
         if(numeroMsgs != 0){
             int i = 0;
             out.println(output);
+            System.out.println("output dentro del if + " + output);
             
-            while(i < this.numeroMsgs){
+            for(int j = 0; j< this.numeroMsgs; j++){
                  fromServer = in.readLine();
-                 output = protocol.processInput(fromServer);
-                 System.out.println("mensaje + " + output);
+                 System.out.println("FROMSERVER DENTRO WHILE " + fromServer);
+                 protocol.processInput(fromServer);
                  out.println(output);
-                 i++;
             }
             
         }
+        
+        
+        //String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + "#CLIENT#ALL_RECEIVED!";
+        //out.println(theOutput);
        
-       fromServer = in.readLine();
+       //fromServer = in.readLine();
        
     }
      

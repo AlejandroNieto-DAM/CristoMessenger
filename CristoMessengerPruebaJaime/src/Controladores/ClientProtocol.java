@@ -55,9 +55,9 @@ public class ClientProtocol {
     public String processInput(String theInput){
         String theOutput = null;
         
-        if(theInput != null){
+        /*if(theInput != null){
             System.out.println(theInput);
-        }
+        }*/
         
         
         if(state == LOGGING){
@@ -66,7 +66,7 @@ public class ClientProtocol {
             
         } else if (state == LOGGED){
             
-            System.out.println("entro");
+            //System.out.println("entro");
 
             if(theInput.startsWith(cadenaPrincipal)){
                 if(theInput.contains("LOGIN_CORRECT")){
@@ -88,7 +88,6 @@ public class ClientProtocol {
                 
                 if(theInput.contains("#MSG#")){
                     this.leerMsgs(theInput);    
-                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + "#CLIENT#ALL_RECEIVED!";
                     this.myCristoMessenger.setMessages(msjs);
                 }
                 
@@ -141,7 +140,7 @@ public class ClientProtocol {
             contadorStt++;
         }
         
-        System.out.println("Numero de mensajes " + this.numeroMensajes);
+       //System.out.println("Numero de mensajes " + this.numeroMensajes);
     }
     
     
@@ -259,7 +258,7 @@ public class ClientProtocol {
         
         msgsFiltrado = fromServer.substring(fromServer.indexOf("MSG") + 4, fromServer.length());
         msgs = msgsFiltrado.split("#");
-        System.out.println("MSGS RECORTAO + " + msgs);
+        //System.out.println("MSGS RECORTAO + " + msgs);
         
         for(String att : msgs){
             if(contadorStt == 1){
