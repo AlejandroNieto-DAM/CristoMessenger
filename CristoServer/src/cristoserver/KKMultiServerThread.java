@@ -39,7 +39,8 @@ public class KKMultiServerThread extends Thread{
                 new InputStreamReader(
                     socket.getInputStream()));
         ) {
-            String inputLine, outputLine;
+            String inputLine = ""; 
+            String outputLine = "";
             
             kkp.setPrintWriter(out);
             kkp.setBufferedReader(in);
@@ -50,12 +51,26 @@ public class KKMultiServerThread extends Thread{
                     CristoServer.debug("FROMCLIENT " + inputLine);
                     //System.out.println(inputLine);
 
-                    outputLine = kkp.processInput(inputLine);
+                    if(inputLine.contains("OK_SEND!")){
+                        for(int i = 0; i < kkp.contadorMsg; i++){
+                            outputLine = kkp.sendMsg(i);
+                            out.println(outputLine);
+                        }
+                        
+                        inputLine = in.readLine();
+                        CristoServer.debug("FROMCLIENT " + outputLine);
+
+                        
+                    } else {
+                        outputLine = kkp.processInput(inputLine);
+                        out.println(outputLine);
+                    }
+                    
 
                     CristoServer.debug("FROMSERVER " + outputLine);
                     //System.out.println(outputLine);
 
-                    out.println(outputLine);
+                    
 
 
                     if (outputLine.contains("BAD_LOGIN") || outputLine == null)

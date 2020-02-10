@@ -90,6 +90,7 @@ public class KnockKnockClient extends Thread{
     }
     
     public void getMessagesFrom() throws IOException{
+       
         String output =  protocol.getMessages();
         out.println(output);
         String fromServer = in.readLine();
@@ -105,14 +106,14 @@ public class KnockKnockClient extends Thread{
                  fromServer = in.readLine();
                  System.out.println("FROMSERVER DENTRO WHILE " + fromServer);
                  protocol.processInput(fromServer);
-                 out.println(output);
+                 //out.println(output);
             }
             
         }
         
         
-        //String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + "#CLIENT#ALL_RECEIVED!";
-        //out.println(theOutput);
+        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + "#CLIENT#ALL_RECEIVED!";
+        out.println(theOutput);
        
        //fromServer = in.readLine();
        

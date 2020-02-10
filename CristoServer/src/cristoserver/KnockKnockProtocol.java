@@ -38,7 +38,7 @@ public class KnockKnockProtocol{
     private PrintWriter out;
     private BufferedReader in;
 
-    int contadorMsg;
+    public int contadorMsg;
     
     KnockKnockProtocol(){
         
@@ -131,8 +131,9 @@ public class KnockKnockProtocol{
             if(theInput.contains("MSGS")){
                 
                 if(theInput.contains("OK_SEND")){
-                    theOutput = sendMsg(this.contadorMsg);
-                    this.contadorMsg++;
+                    for(int i = 0; i < messages.size(); i++){
+                        theOutput = sendMsg(i);
+                    }
                                         
                 } else {
                    //System.out.println("Entro msgs");
@@ -203,7 +204,7 @@ public class KnockKnockProtocol{
         
         cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS#" + login_user + "#" + focusedFriend + "#" + messages.size();
         
-        
+        this.contadorMsg = messages.size();
         return cadena;
     }
         
