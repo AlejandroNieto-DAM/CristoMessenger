@@ -52,6 +52,7 @@ public class KKMultiServerThread extends Thread{
                     //System.out.println(inputLine);
 
                     if(inputLine.contains("OK_SEND!")){
+                        
                         for(int i = 0; i < kkp.contadorMsg; i++){
                             outputLine = kkp.sendMsg(i);
                             out.println(outputLine);

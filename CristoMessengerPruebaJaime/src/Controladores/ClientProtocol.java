@@ -5,6 +5,7 @@ import Classes.Message;
 import Vista.CristoMessenger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -37,6 +38,9 @@ public class ClientProtocol {
     LocalDateTime dateTime;
     
     int numeroMensajes;
+    int totalNumeroMensajes;
+    
+    int restar = -1;
     
     
 
@@ -50,6 +54,7 @@ public class ClientProtocol {
         msjs = new ArrayList();
         dateTime = LocalDateTime.now();
         numeroMensajes = 0;
+        totalNumeroMensajes = 0;
     }
     
     public String processInput(String theInput){
@@ -80,9 +85,13 @@ public class ClientProtocol {
                 }
                 
                 if(theInput.contains("#MSGS#")){
+                    
+                    
                     this.msjs.clear();
                     this.leerNumeroMensajes(theInput);
                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!";
+                    
+                   
 
                 }
                 
@@ -135,8 +144,12 @@ public class ClientProtocol {
         for(String stt : msgs){
             
             if(contadorStt == 6){
+                this.totalNumeroMensajes = Integer.parseInt(stt);
+            }
+            
+            if(contadorStt == 7){
                 this.numeroMensajes = Integer.parseInt(stt);
-            }      
+            }
             contadorStt++;
         }
         
@@ -148,10 +161,16 @@ public class ClientProtocol {
         return this.numeroMensajes;
     }
     
+    public int getTotalNumeroDeMensajes(){  
+        return this.totalNumeroMensajes;
+    }
+    
     public String getMessages(){
         this.msjs.clear();
-        this.numeroMensajes = 0;
-        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend(); 
+       // this.numeroMensajes = 0;
+        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend() + "#" + (dateTime.getDayOfMonth() + restar) + "-" + dateTime.getMonthValue() + "-" + dateTime.getYear();
+        Date date = new Date(System.currentTimeMillis() - 24  * 15 * 60 * 60 * 1000L);
+        restar--;
         return theOutput;
     }
     

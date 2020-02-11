@@ -14,6 +14,7 @@ package Controladores;
 import Vista.CristoMessenger;
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -31,7 +32,10 @@ public class KnockKnockClient extends Thread{
     Socket kkSocket;
     BufferedReader in;
     
+    LocalDateTime dateTime = LocalDateTime.now();
+    
     Integer numeroMsgs = 0;
+    int totalNumeroMensajes = 0;
     
     public KnockKnockClient(int port, String host, String login, String pass, JFrame frame) throws IOException{
         this.portNumber = port;
@@ -90,33 +94,41 @@ public class KnockKnockClient extends Thread{
     }
     
     public void getMessagesFrom() throws IOException{
-       
+
         String output =  protocol.getMessages();
         out.println(output);
         String fromServer = in.readLine();
         output = protocol.processInput(fromServer);
         this.numeroMsgs = protocol.getNumeroDeMensajes();
+        this.totalNumeroMensajes = protocol.getTotalNumeroDeMensajes();
         System.out.println("numero de mgsg " + this.numeroMsgs);
-        if(numeroMsgs != 0){
-            int i = 0;
+        
+        if(totalNumeroMensajes != 0){ 
+            
+            do{
+                output =  protocol.getMessages();
+                out.println(output);
+                fromServer = in.readLine();
+                output = protocol.processInput(fromServer);
+                this.numeroMsgs = protocol.getNumeroDeMensajes();
+                System.out.println("numero de mgsg " + this.numeroMsgs);
+            }while(numeroMsgs == 0);
+            
+            
             out.println(output);
             System.out.println("output dentro del if + " + output);
-            
-            for(int j = 0; j< this.numeroMsgs; j++){
+
+            for(int i = 0; i < this.numeroMsgs; i++){
                  fromServer = in.readLine();
                  System.out.println("FROMSERVER DENTRO WHILE " + fromServer);
                  protocol.processInput(fromServer);
-                 //out.println(output);
             }
-            
+
+            String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED!";
+            out.println(theOutput);
+            System.out.println("yeyo en mi ihpen");
+                    
         }
-        
-        
-        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + "#CLIENT#ALL_RECEIVED!";
-        out.println(theOutput);
-       
-       //fromServer = in.readLine();
-       
     }
      
 }

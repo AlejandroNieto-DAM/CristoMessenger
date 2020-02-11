@@ -129,29 +129,13 @@ public class KnockKnockProtocol{
             } 
             
             if(theInput.contains("MSGS")){
-                
-                if(theInput.contains("OK_SEND")){
-                    for(int i = 0; i < messages.size(); i++){
-                        theOutput = sendMsg(i);
-                    }
-                                        
-                } else {
-                   //System.out.println("Entro msgs");
-                    this.messages.clear();
-                    theOutput = getTotalMsgs(theInput);                    
-                }
-                
+                //System.out.println("Entro msgs");
+                 this.messages.clear();
+                 theOutput = getTotalMsgs(theInput);                    
+  
             }
             
-            /*if(theInput.contains(("ALL_RECEIVED"))){
-                if(contadorMsg < this.messages.size()){
-                    theOutput = sendMsg();
-                    this.contadorMsg++;
-                } else {
-                    theOutput = "yeye";
-                }
-                
-            }*/
+            
             
             if(theInput.contains("STATUS")){
                 theOutput = this.getUserState(theInput);
@@ -184,7 +168,7 @@ public class KnockKnockProtocol{
         
         String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSG";
         //myC.getMessages1(messages, login, this.focusedFriend);
-        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "." + messages.get(i).getHour() + "#" + messages.get(i).getText() ;
+        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "//" + messages.get(i).getHour() + "#" + messages.get(i).getText() ;
         
         
         return cadena;
@@ -197,12 +181,13 @@ public class KnockKnockProtocol{
         
         String[] receive = theInput.split("#");
         
-        message_controller.getMessages1(messages, receive[4], receive[5]);
+        
+        message_controller.getMessages1(messages, receive[4], receive[5], receive[6]);
         
         //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#MSGS#<LOGIN_CLIENT#<LOGIN_AMIGO>#N_MESSAGES#
         this.focusedFriend = receive[5];
         
-        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS#" + login_user + "#" + focusedFriend + "#" + messages.size();
+        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS#" + login_user + "#" + focusedFriend + "#" + message_controller.getTotalMessagesOfAConversation(receive[4], receive[5]) + "#" + messages.size();
         
         this.contadorMsg = messages.size();
         return cadena;

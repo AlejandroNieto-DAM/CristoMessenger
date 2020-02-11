@@ -27,7 +27,12 @@ public class Message_Controller {
         myMessageModel.getMessages(messages, login);
     }
     
-    public void getMessages1(ArrayList<Message> messages, String login, String login_dest){
-        myMessageModel.getMessages1(messages, login, login_dest);
+    public void getMessages1(ArrayList<Message> messages, String login, String login_dest, String date){
+        myMessageModel.getMessages1(messages, login, login_dest, date);
+    }
+    
+    public int getTotalMessagesOfAConversation(String login, String login_dest){
+        int a = myMessageModel.getTotalMessagesOfAConversation(login, login_dest);
+        return a;
     }
 }
