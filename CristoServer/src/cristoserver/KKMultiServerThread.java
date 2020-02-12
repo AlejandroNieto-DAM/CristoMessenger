@@ -5,6 +5,8 @@
  */
 package cristoserver;
 
+import Controllers.Friend_Controller;
+import Controllers.Message_Controller;
 import Controllers.User_Controller;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,12 +25,12 @@ import java.util.logging.Logger;
 public class KKMultiServerThread extends Thread{
      private Socket socket = null;
      KnockKnockProtocol kkp;
-          
-
-    public KKMultiServerThread(Socket socket, KnockKnockProtocol mainProtocol) {
+     
+    public KKMultiServerThread(Socket socket) {
         super("KKMultiServerThread");
         this.socket = socket;
-        this.kkp = mainProtocol;
+        
+        this.kkp = new KnockKnockProtocol();
     }
     
     public void run() {

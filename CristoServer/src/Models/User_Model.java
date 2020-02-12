@@ -143,6 +143,23 @@ public class User_Model extends ConnectToBD{
          
     }
     
+    
+    public int getExistUser(String login, String pass){
+        int existe = 0;
+        this.setQuery( "select * " + "from " + this.getDBName() + ".user where id_user = '" + login + "' and password = '" + pass + "'"); 
+        
+        try (Statement stmt = this.getConnector().createStatement()) {
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                existe++;
+            }
+        } catch (SQLException e ) {
+            CristoServer.debug(e.toString());
+        }
+        
+        return existe;
+    }
+    
     public String getUserState(String login){
         this.setQuery( "select state " + "from " + this.getDBName() + ".user where id_user = '" + login + "'");
         int state = 0;

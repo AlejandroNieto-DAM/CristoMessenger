@@ -2,6 +2,7 @@ package Models;
 
 
 import Classes.Friend;
+import Classes.User;
 import DBConnetion.ConnectToBD;
 import cristoserver.CristoServer;
 import java.sql.Connection;
@@ -39,24 +40,21 @@ public class Friend_Model extends ConnectToBD{
         return this.query;
     }
     
-    public void viewTable(Connection con, String dbName, String query, ArrayList<Friend> amigos) throws SQLException {
+    public void viewTable(Connection con, String dbName, String query, ArrayList<User> amigos) throws SQLException {
 
         try (Statement stmt = con.createStatement()) {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
 
-                String login = rs.getString("id_user_orig");
-                String login2 = rs.getString("id_user_dest");
-                int request = rs.getInt("accept_request");
+                String login = rs.getString("id_user");
+                int request = rs.getInt("state");
            
-                Friend auxiliar = new Friend();
-                if(request == 1){
-                    auxiliar.setLogin_orig(login);
-                    auxiliar.setLogin_des(login2);
-                    auxiliar.setAccept_request(request);
-
-                    amigos.add(auxiliar);
-                }
+                User auxiliar = new User();
+                
+                auxiliar.setLogin(login);               
+                auxiliar.setEstadoUsuario(request);
+                amigos.add(auxiliar);
+                
             }
         } catch (SQLException e ) {
             
@@ -65,11 +63,13 @@ public class Friend_Model extends ConnectToBD{
         }
     } 
 
-    public void getFriendsOf(ArrayList<Friend> amigos, String id_user){
+    public void getFriendsOf(ArrayList<User> amigos, String id_user){
         
         CristoServer.debug("Debug: getFriendsOf");
         
-        this.setQuery( "select id_user_orig, id_user_dest, accept_request " + "from " + this.getDBName() + ".friend where id_user_orig = '" + id_user + "' or id_user_dest = '" + id_user + "'"); 
+        //select * from user where id_user IN (select id_user_dest from friend where id_user_orig = '@alexinio');
+        
+        this.setQuery( "select id_user, state " + "from " + this.getDBName() + ".user where id_user IN ( select id_user_dest from " + this.getDBName() + ".friend where id_user_orig = '" + id_user + "')"); 
         
         try {
             this.viewTable(this.getConnector(), this.getDBName(), this.getQuery(), amigos);

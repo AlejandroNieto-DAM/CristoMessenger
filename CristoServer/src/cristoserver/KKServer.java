@@ -19,21 +19,20 @@ public class KKServer extends Thread{
     boolean listening;
     
     ArrayList<KKMultiServerThread> conexiones;
-    KnockKnockProtocol myProtocol;
     
     KKServer(int port){
         super();
         portNumber = port;
         listening = true;
         conexiones = new ArrayList();
-        myProtocol = new KnockKnockProtocol();
+        
     }
     
     @Override
     public void run(){
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
             while (listening) {
-	            conexiones.add(new KKMultiServerThread(serverSocket.accept(), myProtocol)); 
+	            conexiones.add(new KKMultiServerThread(serverSocket.accept())); 
                     conexiones.get(conexiones.size() - 1).start(); 
                     CristoServer.debug("Conexion aceptada");
                     System.out.println("Conexion aceptada");

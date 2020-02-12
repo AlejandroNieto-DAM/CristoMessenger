@@ -48,9 +48,12 @@ public class User_Controller {
         a.setDisconnected(login);
     }
     
-    
     public String getUserState(String login){
         return a.getUserState(login);    
+    }
+    
+    public int getExistUser(String login, String pass){
+        return a.getExistUser(login, pass);
     }
     
 }

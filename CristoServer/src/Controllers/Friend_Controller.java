@@ -2,6 +2,7 @@ package Controllers;
 
 
 import Classes.Friend;
+import Classes.User;
 import Models.Friend_Model;
 import java.util.ArrayList;
 
@@ -23,7 +24,7 @@ public class Friend_Controller {
         a = new Friend_Model();
     }
      
-    public void getFriendsOf(ArrayList<Friend> amigos, String id_user){
+    public void getFriendsOf(ArrayList<User> amigos, String id_user){
         a.getFriendsOf(amigos, id_user);
     }
     

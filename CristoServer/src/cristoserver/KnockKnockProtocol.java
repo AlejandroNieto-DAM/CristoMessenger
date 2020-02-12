@@ -26,14 +26,16 @@ public class KnockKnockProtocol{
     private ArrayList<Friend> friends;
     private ArrayList<Message> messages;
     
-    private Message_Controller message_controller;
-    private Friend_Controller friend_controller;
-    private User_Controller user_controller;
+    
     
     private String login_user;
     private String focusedFriend;
     
     private LocalDateTime dateTime;
+    
+    private Message_Controller message_controller;
+    private Friend_Controller friend_controller;
+    private User_Controller user_controller;
     
     private PrintWriter out;
     private BufferedReader in;
@@ -51,6 +53,7 @@ public class KnockKnockProtocol{
         user_controller = new User_Controller();
         friend_controller = new Friend_Controller();
         message_controller = new Message_Controller();
+        
         
         login_user = "";
         focusedFriend = "";
@@ -100,21 +103,9 @@ public class KnockKnockProtocol{
                  login = login.substring(1, login.length());
                  pass = pass.substring(1, pass.length());
 
-                 user_controller.getUsuarios(usuarios);  
-                 
-                 boolean encontrado = false;
-
-                 for(int i = 0; i < usuarios.size() && encontrado == false; i++){
-                     
-                     CristoServer.debug(usuarios.get(i).getLogin() + " " + usuarios.get(i).getPasswd() + " " + usuarios.get(i).getEstadoUsuario());
-                     
-                     if(usuarios.get(i).getLogin().equals(login) && usuarios.get(i).getPasswd().equals(pass)){
-                         encontrado = true;
-                     }
-                     
-                 }
-                 
-                 if(encontrado == true){
+                 int existe = user_controller.getExistUser(login, pass);  
+                  
+                 if(existe == 1){
                     System.out.println("Este usuario existe.");
                     CristoServer.debug("Este usuario existe");
                     user_controller.setConnected(login);
@@ -167,10 +158,7 @@ public class KnockKnockProtocol{
     public String sendMsg(int i){
         
         String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSG";
-        //myC.getMessages1(messages, login, this.focusedFriend);
-        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "//" + messages.get(i).getHour() + "#" + messages.get(i).getText() ;
-        
-        
+        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText() ; 
         return cadena;
         
     }
@@ -184,7 +172,6 @@ public class KnockKnockProtocol{
         
         message_controller.getMessages1(messages, receive[4], receive[5], receive[6]);
         
-        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#MSGS#<LOGIN_CLIENT#<LOGIN_AMIGO>#N_MESSAGES#
         this.focusedFriend = receive[5];
         
         cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS#" + login_user + "#" + focusedFriend + "#" + message_controller.getTotalMessagesOfAConversation(receive[4], receive[5]) + "#" + messages.size();
@@ -199,38 +186,28 @@ public class KnockKnockProtocol{
         
         String cadena = "";
         
-        friend_controller.getFriendsOf(this.friends, login);
+        friend_controller.getFriendsOf(this.usuarios, login);
         
-        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#LOGIN_CORRECT#" + login  + "#FRIENDS";
+        
+        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#LOGIN_CORRECT#" + login + "#FRIENDS";
         
         int amigos = 0;
         String substringFriends = "";
         
-        for(int i = 0; i < friends.size(); i++){ 
-            
-            if(friends.get(i).getLogin_orig().equals(login)){
-                amigos++;
-                
-                for(int j = 0; j < usuarios.size(); j++){
-                    
-                    if(friends.get(i).getLogin_des().equals(usuarios.get(j).getLogin())){
-                        substringFriends +=  "#" + usuarios.get(j).getLogin() + "#";
-                        
-                        if(usuarios.get(j).getEstadoUsuario().equals(true)){
-                            substringFriends += "CONNECTED";
-                        } else {
-                            substringFriends += "NOT_CONNECTED";
-                        }
-                        
-                    }
-                    
-                }  
-                
-            }
-            
-        }
         
-        cadena += "#" + amigos + substringFriends;
+                
+        for(int j = 0; j < usuarios.size(); j++){
+
+            substringFriends +=  "#" + usuarios.get(j).getLogin() + "#";
+
+            if(usuarios.get(j).getEstadoUsuario().equals(true)){
+                substringFriends += "CONNECTED";
+            } else {
+                substringFriends += "NOT_CONNECTED";
+            }
+        }  
+
+        cadena += "#" + usuarios.size() + substringFriends;
 
         return cadena;
     }
