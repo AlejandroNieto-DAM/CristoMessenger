@@ -175,10 +175,8 @@ public class ClientProtocol {
     
     public String getMessages(){
         this.msjs.clear();
-       // this.numeroMensajes = 0;
-       Timestamp timestamp = new Timestamp(System.currentTimeMillis() - 24 * restar * 60 * 60 * 1000L);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis() - 24 * restar * 60 * 60 * 1000L);
         String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend() + "#" + sdf.format(timestamp);
-        //Date date = new Date(System.currentTimeMillis() - 24  * 15 * 60 * 60 * 1000L);
         restar++;
         return theOutput;
     }

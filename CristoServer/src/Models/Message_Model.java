@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /*
@@ -24,7 +26,9 @@ public class Message_Model extends ConnectToBD{
     
     
     private String query;
-     
+    
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     public Message_Model(){
         
         super();
@@ -101,7 +105,9 @@ public class Message_Model extends ConnectToBD{
     
     public void getMessages1(ArrayList<Message> messages, String login_orig, String login_dest, String previousDate){
         
-        this.setQuery( "select * " + "from " + this.getDBName() + ".message WHERE ((id_user_orig = '" + login_orig + "' and id_user_dest = '" + login_dest + "') or " + "(id_user_orig = '" + login_dest + "' and id_user_dest = '" + login_orig + "')) and datetime = '" + previousDate + "'"); 
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        this.setQuery( "select * " + "from " + this.getDBName() + ".message WHERE ((id_user_orig = '" + login_orig + "' and id_user_dest = '" + login_dest + "') or " + "(id_user_orig = '" + login_dest + "' and id_user_dest = '" + login_orig + "')) and datetime BETWEEN '" + previousDate + "' and '" + sdf.format(timestamp) + "'"); 
         
         
         try (Statement stmt = this.getConnector().createStatement()) {

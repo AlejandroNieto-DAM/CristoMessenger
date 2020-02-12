@@ -68,8 +68,6 @@ public class KnockKnockClient extends Thread{
             Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-
-
         if(fromServer.contains("LOGIN_CORRECT")){
                 protocol.processInput(fromServer);
                 this.loginFrame.setVisible(false);
@@ -84,8 +82,7 @@ public class KnockKnockClient extends Thread{
         }
 
     }
-    
-    
+      
     public void getFriendStatus() throws IOException{
         String output = protocol.getFriendStatus();
         out.println(output);
