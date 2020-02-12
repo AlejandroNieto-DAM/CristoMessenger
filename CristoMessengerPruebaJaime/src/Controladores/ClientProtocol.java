@@ -45,14 +45,7 @@ public class ClientProtocol {
     int restar = 1;
     
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    
-    
-
-    
-    
-
-
-    
+     
     ClientProtocol(String login, String pass, CristoMessenger a){
         cadenaPrincipal = "PROTOCOLCRISTOMESSENGER1.0";
         this.login = login;
@@ -92,21 +85,13 @@ public class ClientProtocol {
                 }
                 
                 if(theInput.contains("#MSGS#")){
-                    
-                    
-                    
+
                     this.msjs.clear();
                     this.leerNumeroMensajes(theInput);
                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!";
-                    
-                   
 
                 }
                 
-                if(theInput.contains("#MSG#")){
-                    this.leerMsgs(theInput);    
-                    this.myCristoMessenger.setMessages(msjs);
-                }
                 
                 if(theInput.contains("STATUS")){
                     String status = this.friendStatus(theInput);
@@ -272,53 +257,54 @@ public class ClientProtocol {
     
     public void leerMsgs(String fromServer){
         
-        
-        
-        int contadorStt = 1;
-        String logOr = "";
-        String logDest = "";
-        String dateHour = "";
-        String text = "";
-        String msgsFiltrado = "";
-        String[] msgs = null;
-        
-        msgsFiltrado = fromServer.substring(fromServer.indexOf("MSG") + 4, fromServer.length());
-        msgs = msgsFiltrado.split("#");
-        //System.out.println("MSGS RECORTAO + " + msgs);
-        
-        for(String att : msgs){
-            if(contadorStt == 1){
-                logOr = att;
-            }
+        if(fromServer.startsWith(cadenaPrincipal)){
             
-            if(contadorStt == 2){
-                logDest = att;
+            int contadorStt = 1;
+            String logOr = "";
+            String logDest = "";
+            String dateHour = "";
+            String text = "";
+            String msgsFiltrado = "";
+            String[] msgs = null;
+
+            msgsFiltrado = fromServer.substring(fromServer.indexOf("MSGS") + 5, fromServer.length());
+            msgs = msgsFiltrado.split("#");
+            System.out.println("MSGS RECORTAO + " + msgs);
+
+            for(String att : msgs){
+                if(contadorStt == 1){
+                    logOr = att;
+                }
+
+                if(contadorStt == 2){
+                    logDest = att;
+                }
+
+                if(contadorStt == 3){
+                    dateHour = att;
+                }
+
+                if(contadorStt == 4){
+                    text = att;
+                }
+
+                contadorStt++;
             }
-            
-            if(contadorStt == 3){
-                dateHour = att;
-            }
-            
-            if(contadorStt == 4){
-                text = att;
-            }
-            
-            contadorStt++;
+
+            Message m = new Message();
+            m.setId_user_orig(logOr);
+            m.setId_user_dest(logDest);
+            //m.setDate(dateHour.substring(0, dateHour.indexOf(".")));
+            //m.setHour(dateHour.substring(dateHour.indexOf("."), dateHour.length()));
+            m.setText(text);
+            this.msjs.add(m);
+
+
+
+            this.myCristoMessenger.setMessages(msjs);
+            //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#MSG#<MESSAGE_X>
+            //    <MESSAGE_X> = <EMISOR>#<RECEPTOR>#<FECHA>#<TEXTO>
         }
-        
-        Message m = new Message();
-        m.setId_user_orig(logOr);
-        m.setId_user_dest(logDest);
-        //m.setDate(dateHour.substring(0, dateHour.indexOf(".")));
-        //m.setHour(dateHour.substring(dateHour.indexOf("."), dateHour.length()));
-        m.setText(text);
-        this.msjs.add(m);
-        
-        
-        
-            
-        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#MSG#<MESSAGE_X>
-        //    <MESSAGE_X> = <EMISOR>#<RECEPTOR>#<FECHA>#<TEXTO>    
     }
 
 }

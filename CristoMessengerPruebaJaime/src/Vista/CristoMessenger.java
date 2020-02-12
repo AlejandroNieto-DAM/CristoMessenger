@@ -423,6 +423,7 @@ public class CristoMessenger extends javax.swing.JFrame{
     
     private void jListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListFriendsMouseClicked
         this.jTextFieldUserSelectedInListName.setText(this.jListFriends.getSelectedValue());
+        this.jTextArea1.setText("");
         String des = this.jListFriends.getSelectedValue();
         String dest = "";
         Boolean parar = false;

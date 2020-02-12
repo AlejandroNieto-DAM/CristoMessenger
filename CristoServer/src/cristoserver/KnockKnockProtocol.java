@@ -157,7 +157,7 @@ public class KnockKnockProtocol{
     
     public String sendMsg(int i){
         
-        String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSG";
+        String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS";
         cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText() ; 
         return cadena;
         

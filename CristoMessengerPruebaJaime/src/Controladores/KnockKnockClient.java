@@ -118,7 +118,7 @@ public class KnockKnockClient extends Thread{
             for(int i = 0; i < this.numeroMsgs; i++){
                  fromServer = in.readLine();
                  System.out.println("FROMSERVER DENTRO WHILE " + fromServer);
-                 protocol.processInput(fromServer);
+                 protocol.leerMsgs(fromServer);
             }
 
             String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED!";

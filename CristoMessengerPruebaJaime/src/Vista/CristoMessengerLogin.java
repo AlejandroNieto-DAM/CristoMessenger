@@ -33,7 +33,7 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
         jTextFieldLogin.setText("@alexinio");
         this.jPasswordFieldPassword.setText("1234");
         this.jTextField1.setText("1234");
-        this.jTextField2.setText("172.26.241.129");
+        this.jTextField2.setText("192.168.0.201");
         
         
         
