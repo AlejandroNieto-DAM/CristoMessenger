@@ -91,11 +91,15 @@ public class ClientProtocol {
                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!";
 
                 }
-                
-                
+
                 if(theInput.contains("STATUS")){
                     String status = this.friendStatus(theInput);
                     this.myCristoMessenger.setFriendStatus(status);
+                }
+                
+                if(theInput.contains("ALLDATA_USER")){
+                    String nombre = this.userData(theInput);
+                    this.myCristoMessenger.setFriendData(nombre);
                 }
    
             }
@@ -103,6 +107,35 @@ public class ClientProtocol {
         
         
         return theOutput;
+    }
+    
+    
+    public String userData(String theInput){
+        String cadena = "";
+        
+        String[] datos = theInput.split("#");
+        cadena = datos[5] + " " + datos[6] + " " + datos[7];
+        System.out.println("pero mira que datos mas frescos " + cadena);
+        return cadena;
+    }
+    
+    public String getFriendData(){
+        String cadena = "";
+        
+        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#ALLDATA_USER#<LOGIN>
+
+        cadena += cadenaPrincipal + "#" + dateTime + "#CLIENT#ALLDATA_USER#" + this.myCristoMessenger.getFocusFriend();
+        
+        return cadena;
+    }
+    
+    
+    public String sendMessage(String text){
+        String cadena = "";
+                
+        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#CHAT#<LOGIN_ORIG#<LOGIN_DEST>#<MESSAGE>
+        cadena += cadenaPrincipal + "#" + dateTime + "#" + "CLIENT#CHAT#" + login + "#" + this.myCristoMessenger.getFocusFriend() + "#" + text;
+        return cadena;
     }
     
     public String friendStatus(String theInput){

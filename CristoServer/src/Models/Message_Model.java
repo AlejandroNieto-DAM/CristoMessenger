@@ -5,6 +5,7 @@ import Classes.Message;
 import DBConnetion.ConnectToBD;
 import cristoserver.CristoServer;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -141,4 +142,33 @@ public class Message_Model extends ConnectToBD{
         
         
     }
+
+    public void insertMessage(String login, String login_dest, String text){
+       
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        
+        try{
+           String query = " insert into message values (?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+            preparedStmt.setString (1, login);
+            preparedStmt.setString (2, login_dest);
+            preparedStmt.setString (3, sdf.format(timestamp));
+            preparedStmt.setInt (4, 0);
+            preparedStmt.setInt (5, 1);
+            preparedStmt.setString (6, text);
+            
+            System.out.println("LA QUERYYYY --> " + query);
+           
+          preparedStmt.execute();
+
+          this.getConnector().close();
+          
+          //CristoServer.debug("Usuario introducido correctamente!!");
+        } catch (Exception e) {
+            CristoServer.debug("Got an exception!");
+            CristoServer.debug(e.getMessage());
+        }
+    }
+
+
 }

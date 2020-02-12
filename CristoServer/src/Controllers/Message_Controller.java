@@ -35,4 +35,8 @@ public class Message_Controller {
         int a = myMessageModel.getTotalMessagesOfAConversation(login, login_dest);
         return a;
     }
+    
+    public void insertMessage(String login, String dest, String text){
+        this.myMessageModel.insertMessage(login, dest, text);
+    }
 }

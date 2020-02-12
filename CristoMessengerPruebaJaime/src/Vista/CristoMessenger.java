@@ -407,6 +407,14 @@ public class CristoMessenger extends javax.swing.JFrame{
 
     private void jButtonSendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendMessageActionPerformed
         // TODO add your handling code here:
+        String text = this.jTextFieldMessageFromUser.getText();
+        if(!text.equals("") && text.length() < 1000){
+            try {
+                myKK.sendMessage(text);
+            } catch (IOException ex) {
+                Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_jButtonSendMessageActionPerformed
 
     
@@ -416,13 +424,17 @@ public class CristoMessenger extends javax.swing.JFrame{
     }
     
     public void setFriendStatus(String status){
-       this.jTextFieldUserSelectedInListName.setText(this.jTextFieldUserSelectedInListName.getText().substring(0, this.jTextFieldUserSelectedInListName.getText().indexOf(" "))  + " " + status);
+       this.jTextFieldUserSelectedInListName.setText(this.jTextFieldUserSelectedInListName.getText() + " " + status);
        
+    }
+    
+    public void setFriendData(String data){
+        this.jTextFieldUserSelectedInListName.setText(data);
     }
     
     
     private void jListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListFriendsMouseClicked
-        this.jTextFieldUserSelectedInListName.setText(this.jListFriends.getSelectedValue());
+        
         this.jTextArea1.setText("");
         String des = this.jListFriends.getSelectedValue();
         String dest = "";
@@ -440,7 +452,9 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         try {
             this.myKK.getMessagesFrom();
+            this.myKK.getFriendData();
             this.myKK.getFriendStatus();
+            
         } catch (IOException ex) {
             Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }

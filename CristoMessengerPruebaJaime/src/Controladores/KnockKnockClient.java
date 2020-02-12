@@ -82,9 +82,24 @@ public class KnockKnockClient extends Thread{
         }
 
     }
+    
+    
+    public void sendMessage(String text) throws IOException{
+        String output = protocol.sendMessage(text);
+        out.println(output);
+        String fromServer = in.readLine();
+        //System.out.println("");
+    }
       
     public void getFriendStatus() throws IOException{
         String output = protocol.getFriendStatus();
+        out.println(output);
+        String fromServer = in.readLine();
+        protocol.processInput(fromServer);
+    }
+    
+    public void getFriendData() throws IOException{
+        String output = protocol.getFriendData();
         out.println(output);
         String fromServer = in.readLine();
         protocol.processInput(fromServer);

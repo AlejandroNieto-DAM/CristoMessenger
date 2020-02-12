@@ -127,9 +127,20 @@ public class KnockKnockProtocol{
             }
             
             
+            if(theInput.contains("#CHAT")){
+                //System.out.println("Entro msgs");
+                 theOutput = this.receiveMessage(theInput);
+            }
+            
+            
             
             if(theInput.contains("STATUS")){
                 theOutput = this.getUserState(theInput);
+                
+            }
+            
+            if(theInput.contains("ALLDATA_USER")){
+                theOutput = this.getAllDataUser(theInput);
                 
             }
             
@@ -139,6 +150,34 @@ public class KnockKnockProtocol{
 
         CristoServer.debug(theOutput);
         return theOutput;
+    }
+    
+    
+    public String getAllDataUser(String theInput) throws SQLException{
+        String cadena = "";
+        
+        String datos[] = theInput.split("#");
+        User focusFriend = new User();
+        focusFriend.setLogin(datos[4]);
+        user_controller.getUser(focusFriend);
+        
+        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#ALLDATA_USER#<LOGIN>#<NAME>#<SURNAME1>#<SURNAME2>
+
+        cadena += cadenaPrincipal + "#" + dateTime + "#SERVER#ALLDATA_USER#" +  focusFriend.getLogin() + "#"
+                    + focusFriend.getNombreUsuario() + "#" + focusFriend.getApellido1() + "#" + focusFriend.getApellido2();
+          
+        return cadena;
+    }
+    
+    
+    public String receiveMessage(String theInput){
+        String cadena = "ksfjhsdl";
+        //FILTRAR QUE SEAN AMIGOS Y ESTEN REGISTRADOS
+        String[] datos = theInput.split("#");
+        System.out.println("MEnsaje que se va a insertar --> " + datos[6]);
+        message_controller.insertMessage(datos[4], datos[5], datos[6]);
+        
+        return cadena;
     }
     
     
