@@ -11,6 +11,7 @@ package Controladores;
  * @author alejandronieto
  */
 
+import Classes.RefrescarListaAmigos;
 import Vista.CristoMessenger;
 import java.io.*;
 import java.net.*;
@@ -34,6 +35,8 @@ public class KnockKnockClient extends Thread{
     
     LocalDateTime dateTime = LocalDateTime.now();
     
+    RefrescarListaAmigos friendRefresh;
+    
     Integer numeroMsgs = 0;
     int totalNumeroMensajes = 0;
     
@@ -49,6 +52,8 @@ public class KnockKnockClient extends Thread{
         out = new PrintWriter(kkSocket.getOutputStream(), true);
         in = new BufferedReader(
                 new InputStreamReader(kkSocket.getInputStream()));
+        
+        friendRefresh = new RefrescarListaAmigos(this);
 
     }
     
@@ -72,7 +77,9 @@ public class KnockKnockClient extends Thread{
                 protocol.processInput(fromServer);
                 this.loginFrame.setVisible(false);
                 this.a.setActualUser(login);
-                this.a.setVisible(true);      
+                this.a.setVisible(true);     
+            
+                this.friendRefresh.start();
         } else {
             try {
                 kkSocket.close();
@@ -81,6 +88,18 @@ public class KnockKnockClient extends Thread{
             }
         }
 
+    }
+    
+    public void processMsg(String theInput){
+        //TODO 
+        protocol.processInput(theInput);
+    }
+    
+    public void refreshFriends() throws IOException{
+        //TODO
+        out.println("cadena protocolo");
+        String fromServer = in.readLine();
+        protocol.processInput(fromServer);
     }
     
     
@@ -110,6 +129,8 @@ public class KnockKnockClient extends Thread{
         String output =  protocol.getMessages();
         out.println(output);
         String fromServer = in.readLine();
+        
+        System.out.println("ILLO QUE PASA MIRA QUE CADENA RECIBO " + fromServer);
         output = protocol.processInput(fromServer);
         this.numeroMsgs = protocol.getNumeroDeMensajes();
         this.totalNumeroMensajes = protocol.getTotalNumeroDeMensajes();
@@ -123,7 +144,6 @@ public class KnockKnockClient extends Thread{
                 fromServer = in.readLine();
                 output = protocol.processInput(fromServer);
                 this.numeroMsgs = protocol.getNumeroDeMensajes();
-                System.out.println("numero de mgsg " + this.numeroMsgs);
             }while(numeroMsgs == 0);
             
             
@@ -136,11 +156,15 @@ public class KnockKnockClient extends Thread{
                  protocol.leerMsgs(fromServer);
             }
 
-            String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED!";
+            String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED";
             out.println(theOutput);
             System.out.println("yeyo en mi ihpen");
                     
         }
+        
+        this.numeroMsgs = 0;
+        this.totalNumeroMensajes = 0;
+             
     }
      
 }

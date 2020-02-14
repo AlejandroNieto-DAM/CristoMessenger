@@ -254,4 +254,8 @@ public class KnockKnockProtocol{
     public void setDisconnected() throws SQLException{
         user_controller.setDisconnected(login_user);
     }
+    
+    public String getLogin(){
+        return this.login_user;
+    }
 }

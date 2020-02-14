@@ -32,7 +32,7 @@ public class KKServer extends Thread{
     public void run(){
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
             while (listening) {
-	            conexiones.add(new KKMultiServerThread(serverSocket.accept())); 
+	            conexiones.add(new KKMultiServerThread(serverSocket.accept(), this)); 
                     conexiones.get(conexiones.size() - 1).start(); 
                     CristoServer.debug("Conexion aceptada");
                     System.out.println("Conexion aceptada");
@@ -41,6 +41,16 @@ public class KKServer extends Thread{
             System.err.println("Could not listen on port " + portNumber);
             System.exit(-1);
         }
+    }
+    
+    
+    public int getHebrasSize(){
+        return conexiones.size();
+    }
+    
+    
+    public KKMultiServerThread getConexionAt(int i){
+        return conexiones.get(i);
     }
     
 }

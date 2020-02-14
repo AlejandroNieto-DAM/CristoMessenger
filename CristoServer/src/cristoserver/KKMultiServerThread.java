@@ -7,7 +7,6 @@ package cristoserver;
 
 import Controllers.Friend_Controller;
 import Controllers.Message_Controller;
-import Controllers.User_Controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,12 +24,17 @@ import java.util.logging.Logger;
 public class KKMultiServerThread extends Thread{
      private Socket socket = null;
      KnockKnockProtocol kkp;
+     KKServer myKKS;
      
-    public KKMultiServerThread(Socket socket) {
+     String login = "";
+     
+    public KKMultiServerThread(Socket socket, KKServer myKKS) {
         super("KKMultiServerThread");
         this.socket = socket;
         
         this.kkp = new KnockKnockProtocol();
+        
+        this.myKKS = myKKS;
     }
     
     public void run() {
@@ -64,6 +68,10 @@ public class KKMultiServerThread extends Thread{
                         CristoServer.debug("FROMCLIENT " + outputLine);
 
                         
+                    } else if(inputLine.contains("CHAT")){
+                        
+                        this.sendMessage(inputLine);
+                        
                     } else {
                         outputLine = kkp.processInput(inputLine);
                         out.println(outputLine);
@@ -96,5 +104,16 @@ public class KKMultiServerThread extends Thread{
         } catch (SQLException ex) {
              Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
          }
+    }
+    
+
+    public String getLogin(){
+        return this.kkp.getLogin();
+    }
+    
+    public void sendMessage(String inputLine){
+        for(int i = 0; i < myKKS.getHebrasSize(); i++){
+            System.out.println("PERO MIRA QUE COSITI --> " + this.myKKS.getConexionAt(i).getLogin());
+        }
     }
 }

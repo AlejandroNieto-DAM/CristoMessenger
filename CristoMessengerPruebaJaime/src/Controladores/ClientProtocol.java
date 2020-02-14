@@ -64,6 +64,7 @@ public class ClientProtocol {
             System.out.println(theInput);
         }*/
         
+        System.out.println("FROM SERVER --> " + theInput);
         
         if(state == LOGGING){
             theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#LOGIN#" + login + "#" + passwd;
@@ -101,6 +102,11 @@ public class ClientProtocol {
                     String nombre = this.userData(theInput);
                     this.myCristoMessenger.setFriendData(nombre);
                 }
+                
+                if(theInput.contains("CHAT")){
+                    //String nombre = this.userData(theInput);
+                    //this.myCristoMessenger.setFriendData(nombre);
+                }
    
             }
         }
@@ -132,9 +138,10 @@ public class ClientProtocol {
     
     public String sendMessage(String text){
         String cadena = "";
-                
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        
         //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#CHAT#<LOGIN_ORIG#<LOGIN_DEST>#<MESSAGE>
-        cadena += cadenaPrincipal + "#" + dateTime + "#" + "CLIENT#CHAT#" + login + "#" + this.myCristoMessenger.getFocusFriend() + "#" + text;
+        cadena += cadenaPrincipal + "#" + this.sdf.format(timestamp) + "#" + "CLIENT#CHAT#" + login + "#" + this.myCristoMessenger.getFocusFriend() + "#" + text;
         return cadena;
     }
     
