@@ -96,10 +96,25 @@ public class KnockKnockClient extends Thread{
     }
     
     public void refreshFriends() throws IOException{
-        //TODO
-        out.println("cadena protocolo");
-        String fromServer = in.readLine();
-        protocol.processInput(fromServer);
+        String[] friends = this.a.getFriends();
+        int contadorF = 0;
+        
+        for(String friend : friends){
+            contadorF++;
+        }
+        
+        String[] refreshFriends = new String[contadorF];
+        int contador2 = 0;
+        for(String f : friends){
+            String loginF  = f.substring(0, f.indexOf(" "));                            //TODO FALTA UN GET LOGIN
+            String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#STATUS#" + login + "#" + loginF;
+            out.println(cadena);
+            String estado = this.protocol.friendStatus(in.readLine());
+            refreshFriends[contador2] = loginF + " " + estado;
+            contador2++;
+        }
+        
+        this.a.setFriendsOf(refreshFriends);
     }
     
     
@@ -114,6 +129,7 @@ public class KnockKnockClient extends Thread{
         String output = protocol.getFriendStatus();
         out.println(output);
         String fromServer = in.readLine();
+        System.out.println("PERO MIRA QUE ESTADOOOOO " + fromServer);
         protocol.processInput(fromServer);
     }
     

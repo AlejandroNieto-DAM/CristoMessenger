@@ -121,7 +121,7 @@ public class ClientProtocol {
         
         String[] datos = theInput.split("#");
         cadena = datos[5] + " " + datos[6] + " " + datos[7];
-        System.out.println("pero mira que datos mas frescos " + cadena);
+        //System.out.println("pero mira que datos mas frescos " + cadena);
         return cadena;
     }
     
@@ -165,7 +165,7 @@ public class ClientProtocol {
     public String getFriendStatus(){
         String cadena  = "";
         //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#STATUS#<LOGIN_CLIENT#<LOGIN_AMIGO>
-        cadena = cadenaPrincipal + dateTime + "#CLIENT#STATUS#" + login + "#" + this.myCristoMessenger.getFocusFriend();
+        cadena = cadenaPrincipal + "#" + dateTime + "#CLIENT#STATUS#" + login + "#" + this.myCristoMessenger.getFocusFriend();
         return cadena;
     }
     

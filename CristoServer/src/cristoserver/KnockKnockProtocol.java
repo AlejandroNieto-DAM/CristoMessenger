@@ -183,10 +183,11 @@ public class KnockKnockProtocol{
     
     public String getUserState(String theInput){
         
+        String[] datos = theInput.split("#");
         
-        String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#STATUS#" + focusedFriend;
+        String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#STATUS#" + datos[5];
         
-        String status = user_controller.getUserState(focusedFriend);
+        String status = user_controller.getUserState(datos[5]);
         
         cadena += "#" + status;
 

@@ -97,6 +97,15 @@ public class CristoMessenger extends javax.swing.JFrame{
         
     }
     
+    public String getActualUser(){
+        return actualUser;
+    }
+    
+    
+    public String[] getFriends(){
+        return friends;
+    }
+    
     public static void returnException(String exception){
         CristoMessenger.jTextAreaDebugWindow.setText(CristoMessenger.jTextAreaDebugWindow.getText() + "\n" + exception);
     }
