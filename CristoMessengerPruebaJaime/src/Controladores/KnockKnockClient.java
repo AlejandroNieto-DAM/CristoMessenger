@@ -141,6 +141,9 @@ public class KnockKnockClient extends Thread{
     }
     
     public void getMessagesFrom() throws IOException{
+        
+        this.numeroMsgs = 0;
+        this.totalNumeroMensajes = 0;
 
         String output =  protocol.getMessages();
         out.println(output);
@@ -158,6 +161,7 @@ public class KnockKnockClient extends Thread{
                 output =  protocol.getMessages();
                 out.println(output);
                 fromServer = in.readLine();
+                System.out.println("From server --> " + fromServer);
                 output = protocol.processInput(fromServer);
                 this.numeroMsgs = protocol.getNumeroDeMensajes();
             }while(numeroMsgs == 0);
