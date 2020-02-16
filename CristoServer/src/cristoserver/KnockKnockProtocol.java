@@ -120,28 +120,23 @@ public class KnockKnockProtocol{
             } 
             
             if(theInput.contains("MSGS")){
-                //System.out.println("Entro msgs");
-                 this.messages.clear();
-                 theOutput = getTotalMsgs(theInput);                    
-  
+                this.messages.clear();
+                theOutput = getTotalMsgs(theInput);                    
+                //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_MSGPKG";
             }
-            
-            
+             
             if(theInput.contains("#CHAT")){
-                //System.out.println("Entro msgs");
                  theOutput = this.receiveMessage(theInput);
             }
-            
-            
-            
+ 
             if(theInput.contains("STATUS")){
-                theOutput = this.getUserState(theInput);
-                
+                theOutput = this.getUserState(theInput); 
+                //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_PKG";
             }
             
             if(theInput.contains("ALLDATA_USER")){
-                theOutput = this.getAllDataUser(theInput);
-                
+                theOutput = this.getAllDataUser(theInput);   
+                //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_PKG";
             }
             
         } else {
@@ -170,12 +165,20 @@ public class KnockKnockProtocol{
     }
     
     
-    public String receiveMessage(String theInput){
+    public String receiveMessage(String theInput) throws SQLException{
         String cadena = "ksfjhsdl";
-        //FILTRAR QUE SEAN AMIGOS Y ESTEN REGISTRADOS
         String[] datos = theInput.split("#");
-        System.out.println("MEnsaje que se va a insertar --> " + datos[6]);
-        message_controller.insertMessage(datos[4], datos[5], datos[6]);
+        
+        Boolean existeUser1 = user_controller.findUser(datos[4]);
+        Boolean existeUser2 = user_controller.findUser(datos[5]); 
+        Boolean areFriends = friend_controller.getRelation(datos[4], datos[5]);
+
+       if(existeUser1 && existeUser2 && areFriends){
+            message_controller.insertMessage(datos[4], datos[5], datos[6]);
+            cadena = "Bien";
+       } else {
+            cadena = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#FORBIDDEN_CHAT";
+       }
         
         return cadena;
     }
@@ -258,5 +261,17 @@ public class KnockKnockProtocol{
     
     public String getLogin(){
         return this.login_user;
+    }
+    
+    
+    public String getFriend(String theInput){
+        String friend = "";
+        
+       String[] datos = theInput.split("#");
+       friend = datos[5];
+       
+       
+            
+        return friend;
     }
 }

@@ -11,6 +11,7 @@ package Controladores;
  * @author alejandronieto
  */
 
+import Classes.EscuchaMensajes;
 import Classes.RefrescarListaAmigos;
 import Vista.CristoMessenger;
 import java.io.*;
@@ -33,9 +34,11 @@ public class KnockKnockClient extends Thread{
     Socket kkSocket;
     BufferedReader in;
     
+    
     LocalDateTime dateTime = LocalDateTime.now();
     
     RefrescarListaAmigos friendRefresh;
+    EscuchaMensajes msgListener;
     
     Integer numeroMsgs = 0;
     int totalNumeroMensajes = 0;
@@ -54,6 +57,7 @@ public class KnockKnockClient extends Thread{
                 new InputStreamReader(kkSocket.getInputStream()));
         
         friendRefresh = new RefrescarListaAmigos(this);
+        msgListener = new EscuchaMensajes(this, in);
 
     }
     
@@ -74,12 +78,19 @@ public class KnockKnockClient extends Thread{
         }
 
         if(fromServer.contains("LOGIN_CORRECT")){
+                
                 protocol.processInput(fromServer);
+                
+                
+                
                 this.loginFrame.setVisible(false);
                 this.a.setActualUser(login);
                 this.a.setVisible(true);     
-            
-                this.friendRefresh.start();
+                
+                this.friendRefresh.run();
+                //this.msgListener.run();
+                
+                System.out.println("Activada");
         } else {
             try {
                 kkSocket.close();

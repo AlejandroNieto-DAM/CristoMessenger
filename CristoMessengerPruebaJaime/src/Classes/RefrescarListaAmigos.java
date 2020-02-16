@@ -28,8 +28,7 @@ public class RefrescarListaAmigos extends Thread {
     @Override
     public void run(){
         while(true){
-           
-            
+
             if((fin - inicio) / 1000 > 10){
                 
                 try {

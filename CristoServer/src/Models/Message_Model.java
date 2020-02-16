@@ -118,7 +118,7 @@ public class Message_Model extends ConnectToBD{
                 String login = rs.getString("id_user_orig");
                 String login2 = rs.getString("id_user_dest");
                 String date = rs.getString("datetime");
-                int read = rs.getInt("read");
+                int read = rs.getInt("read_msg");
                 int sent = rs.getInt("sent");
                 String text = rs.getString("text");
                 

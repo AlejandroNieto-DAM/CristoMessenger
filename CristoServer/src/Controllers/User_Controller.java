@@ -56,4 +56,8 @@ public class User_Controller {
         return a.getExistUser(login, pass);
     }
     
+    public Boolean findUser(String login) throws SQLException{
+        return a.findUser(login);
+    }
+    
 }

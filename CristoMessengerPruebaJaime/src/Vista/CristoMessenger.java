@@ -460,7 +460,9 @@ public class CristoMessenger extends javax.swing.JFrame{
         this.focusFriend = dest;
         
         try {
+            
             this.myKK.getMessagesFrom();
+            System.out.println("Yeyo");
             this.myKK.getFriendData();
             this.myKK.getFriendStatus();
             

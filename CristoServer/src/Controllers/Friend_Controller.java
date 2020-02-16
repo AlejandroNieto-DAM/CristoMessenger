@@ -28,4 +28,7 @@ public class Friend_Controller {
         a.getFriendsOf(amigos, id_user);
     }
     
+    public Boolean getRelation(String friend1, String friend2){
+        return a.getRelation(friend1, friend2);
+    }
 }

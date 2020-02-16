@@ -220,4 +220,27 @@ public class User_Model extends ConnectToBD{
         this.getConnector().close();
 
     }
+    
+    
+    public Boolean findUser(String login) throws SQLException{
+        this.setQuery( "select * " + "from " + this.getDBName() + ".user where id_user = '" + login + "'");
+        int state = 0;
+        Boolean existe = false;
+        
+        try (Statement stmt = this.getConnector().createStatement()) {
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                state++;                
+            }
+        } catch (SQLException e ) {
+            CristoServer.debug(e.toString());
+        }
+        
+        if(state != 0){
+            existe = true;
+        }
+        
+        return existe;
+
+    }
 }

@@ -14,6 +14,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +29,11 @@ public class KKMultiServerThread extends Thread{
      KKServer myKKS;
      
      String login = "";
+     PrintWriter out;
+     BufferedReader in;
+     
+     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
      
     public KKMultiServerThread(Socket socket, KKServer myKKS) {
         super("KKMultiServerThread");
@@ -38,13 +45,15 @@ public class KKMultiServerThread extends Thread{
     }
     
     public void run() {
-
-        try (
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(
-                    socket.getInputStream()));
-        ) {
+        
+        try {
+            
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(
+                     new InputStreamReader(
+                             socket.getInputStream()));
+             
+             
             String inputLine = ""; 
             String outputLine = "";
             
@@ -94,7 +103,6 @@ public class KKMultiServerThread extends Thread{
                 
             }
             
-//            System.out.println("DESCONECTO AL USUARIO");
             kkp.setDisconnected();
             socket.close();
             
@@ -106,14 +114,30 @@ public class KKMultiServerThread extends Thread{
          }
     }
     
+    public PrintWriter getOutputStream(){
+        return this.out;
+    }
+            
+    
 
     public String getLogin(){
         return this.kkp.getLogin();
     }
     
     public void sendMessage(String inputLine){
+        
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        
+        System.out.println("Tamo activos aqui con nuestro papito");
+
         for(int i = 0; i < myKKS.getHebrasSize(); i++){
-            System.out.println("PERO MIRA QUE COSITI --> " + this.myKKS.getConexionAt(i).getLogin());
+            String loginFriend = this.kkp.getFriend(inputLine);
+            System.out.println("Login friend pa mandar --> " + loginFriend);
+            if(this.myKKS.getConexionAt(i).getLogin().equals(loginFriend)){
+                PrintWriter out = this.myKKS.getConexionAt(i).getOutputStream();
+                out.println(inputLine + "#" + sdf.format(timestamp));
+                System.out.println("Hacio ejjeje");
+            }
         }
     }
 }

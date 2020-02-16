@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  *
  * @author alejandronieto
  */
-public class EscuchaMensajes extends Thread {
+public class EscuchaMensajes extends Thread{
     
     KnockKnockClient myKKClient;
     BufferedReader in;
@@ -30,14 +30,30 @@ public class EscuchaMensajes extends Thread {
     
     @Override
     public void run(){
+        System.out.println("MIRA AQUI POR LO MENOS HEMOS LLEGAO ");
+
         try {
-            while(in.readLine() != null){
-                String fromServer = in.readLine();
-                if(fromServer.startsWith("PROTOCOLCRISTOMESSENGER1.0") && fromServer.contains("CHAT")){
-                    this.myKKClient.processMsg(fromServer);
+                           
+
+            while(true){
+                 System.out.println("2");
+                    in.mark(0);
+                    String fromServer = in.readLine();
+                    
+                    if(fromServer.contains("CHAT")){
+                    System.out.println("Una cadena no vasia");
+                        if(fromServer.startsWith("PROTOCOLCRISTOMESSENGER1.0") && fromServer.contains("CHAT")){
+                            System.out.println("YEYO EN MI IPHONE QUE FUNCIONA!!" );
+                            this.myKKClient.processMsg(fromServer);
+                        }
+                } else {
+                    in.reset();
+                    System.out.println("Reset demoniaco");
                 }
+              
             }
         } catch (IOException ex) {
+            System.out.println("Ex que pasa tio  " + ex);
             Logger.getLogger(EscuchaMensajes.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

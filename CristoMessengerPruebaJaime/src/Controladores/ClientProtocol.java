@@ -59,10 +59,7 @@ public class ClientProtocol {
     
     public String processInput(String theInput){
         String theOutput = null;
-        
-        /*if(theInput != null){
-            System.out.println(theInput);
-        }*/
+          
         
         System.out.println("FROM SERVER --> " + theInput);
         

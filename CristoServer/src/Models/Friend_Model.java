@@ -78,5 +78,27 @@ public class Friend_Model extends ConnectToBD{
         } 
         
     } 
+
+    public Boolean getRelation(String friend1, String friend2) {
+        Boolean areFriends = false;
+        //select * from friend where (id_user_orig = '@zizou' and id_user_dest = '@alexinio') or  (id_user_orig = '@alexinio' and id_user_dest = '@zizou');
+        this.setQuery( "select * " + "from " + this.getDBName() + ".frien where (id_user_orig = '" + friend1 + "' and id_user_dest = '" + friend2 + "') or (id_user_orig = '" + friend2 + "' and id_user_dest = '" + friend1 + "')");
+        int state = 0;
+        
+        try (Statement stmt = this.getConnector().createStatement()) {
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                state++;                
+            }
+        } catch (SQLException e ) {
+            CristoServer.debug(e.toString());
+        }
+        
+        if(state == 2){
+            areFriends = true;
+        }
+        
+        return areFriends;
+    }
     
 }
