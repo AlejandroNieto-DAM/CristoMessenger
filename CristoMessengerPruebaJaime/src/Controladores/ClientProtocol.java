@@ -161,6 +161,7 @@ public class ClientProtocol {
     
     public String getFriendStatus(){
         String cadena  = "";
+        this.restar = 0;
         //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#STATUS#<LOGIN_CLIENT#<LOGIN_AMIGO>
         cadena = cadenaPrincipal + "#" + dateTime + "#CLIENT#STATUS#" + login + "#" + this.myCristoMessenger.getFocusFriend();
         return cadena;
@@ -331,16 +332,11 @@ public class ClientProtocol {
             Message m = new Message();
             m.setId_user_orig(logOr);
             m.setId_user_dest(logDest);
-            //m.setDate(dateHour.substring(0, dateHour.indexOf(".")));
-            //m.setHour(dateHour.substring(dateHour.indexOf("."), dateHour.length()));
+            m.setDate(dateHour);
             m.setText(text);
+            
             this.msjs.add(m);
-
-
-
             this.myCristoMessenger.setMessages(msjs);
-            //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#MSG#<MESSAGE_X>
-            //    <MESSAGE_X> = <EMISOR>#<RECEPTOR>#<FECHA>#<TEXTO>
         }
     }
 

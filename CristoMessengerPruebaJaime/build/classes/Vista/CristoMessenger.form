@@ -204,6 +204,9 @@
                     <Property name="columns" type="int" value="20"/>
                     <Property name="rows" type="int" value="5"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="mouseWheelMoved" listener="java.awt.event.MouseWheelListener" parameters="java.awt.event.MouseWheelEvent" handler="jTextArea1MouseWheelMoved"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
@@ -368,7 +371,7 @@
                     <Property name="rows" type="int" value="5"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="10"/>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
                   </AuxValues>
                 </Component>
               </SubComponents>

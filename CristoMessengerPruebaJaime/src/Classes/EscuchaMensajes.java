@@ -6,10 +6,9 @@
 package Classes;
 
 import Controladores.KnockKnockClient;
+import Vista.CristoMessenger;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,41 +18,23 @@ import java.util.logging.Logger;
  */
 public class EscuchaMensajes extends Thread{
     
-    KnockKnockClient myKKClient;
-    BufferedReader in;
+    BufferedReader myKKClient;
     
-    public EscuchaMensajes(KnockKnockClient myKKClient, BufferedReader in){
-        this.myKKClient = myKKClient;
-        this.in = in;
-        
+    public EscuchaMensajes(BufferedReader myKKClient) throws IOException{
+        this.myKKClient = myKKClient;  
     }
     
     @Override
     public void run(){
-        System.out.println("MIRA AQUI POR LO MENOS HEMOS LLEGAO ");
-
+        String inputLine = "";
         try {
-                           
+            while((inputLine = myKKClient.readLine()) != null){
 
-            while(true){
-                 System.out.println("2");
-                    in.mark(0);
-                    String fromServer = in.readLine();
-                    
-                    if(fromServer.contains("CHAT")){
-                    System.out.println("Una cadena no vasia");
-                        if(fromServer.startsWith("PROTOCOLCRISTOMESSENGER1.0") && fromServer.contains("CHAT")){
-                            System.out.println("YEYO EN MI IPHONE QUE FUNCIONA!!" );
-                            this.myKKClient.processMsg(fromServer);
-                        }
-                } else {
-                    in.reset();
-                    System.out.println("Reset demoniaco");
-                }
-              
-            }
+                System.out.println("En la hebra eh" + inputLine);
+
+                CristoMessenger.jTextAreaDebugWindow.setText(CristoMessenger.jTextAreaDebugWindow.getText() + "\nyeyo");
+            }  
         } catch (IOException ex) {
-            System.out.println("Ex que pasa tio  " + ex);
             Logger.getLogger(EscuchaMensajes.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-
+import java.util.*;
 
 
 /*
@@ -79,10 +79,11 @@ public class CristoMessenger extends javax.swing.JFrame{
         this.mensjs = msjs;
         this.jTextArea1.setText("");
         
+        Collections.sort(mensjs, Message.StuNameComparator);
+        
         System.out.println("mensjss size en la vista locooo --< " + mensjs.size());
         for(int i = 0; i < mensjs.size(); i++){
-            if (mensjs.get(i).getId_user_orig().equals(actualUser)){
-                
+            if (mensjs.get(i).getId_user_orig().equals(actualUser)){    
                 this.jTextArea1.setText(this.jTextArea1.getText() + "\t" + mensjs.get(i).getText() + "\n");
             } else {
                 this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
@@ -90,11 +91,11 @@ public class CristoMessenger extends javax.swing.JFrame{
         }
     }
     
+    
+    
     public void setActualUser(String login){
         actualUser = login;
-        jLabelUserConnected.setText(login);
-        
-        
+        jLabelUserConnected.setText(login); 
     }
     
     public String getActualUser(){
@@ -204,6 +205,11 @@ public class CristoMessenger extends javax.swing.JFrame{
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
+        jTextArea1.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                jTextArea1MouseWheelMoved(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout jPanelChatWindowLayout = new javax.swing.GroupLayout(jPanelChatWindow);
@@ -462,7 +468,7 @@ public class CristoMessenger extends javax.swing.JFrame{
         try {
             
             this.myKK.getMessagesFrom();
-            System.out.println("Yeyo");
+            this.mensjs.clear();
             this.myKK.getFriendData();
             this.myKK.getFriendStatus();
             
@@ -471,6 +477,10 @@ public class CristoMessenger extends javax.swing.JFrame{
         }
         
     }//GEN-LAST:event_jListFriendsMouseClicked
+
+    private void jTextArea1MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_jTextArea1MouseWheelMoved
+        System.out.println("Que pasa demonio");
+    }//GEN-LAST:event_jTextArea1MouseWheelMoved
 
     /**
      * @param args the command line arguments
@@ -525,7 +535,7 @@ public class CristoMessenger extends javax.swing.JFrame{
     private javax.swing.JScrollPane jScrollPaneJListChat;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextArea jTextArea1;
-    private static javax.swing.JTextArea jTextAreaDebugWindow;
+    public static javax.swing.JTextArea jTextAreaDebugWindow;
     private javax.swing.JTextField jTextFieldInsertLoginRegister;
     private javax.swing.JTextField jTextFieldMessageFromUser;
     private javax.swing.JTextField jTextFieldSearch;

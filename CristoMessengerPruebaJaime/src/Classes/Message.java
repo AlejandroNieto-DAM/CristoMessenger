@@ -1,5 +1,7 @@
 package Classes;
 
+import java.util.Comparator;
+
 
 
 /*
@@ -99,6 +101,21 @@ public class Message {
     public String getText() {
         return text;
     }
+    
+    public static Comparator<Message> StuNameComparator = new Comparator<Message>() {
+
+        @Override
+        public int compare(Message o1, Message o2) {
+           String StudentName1 = o1.getDate();
+	   String StudentName2 = o2.getDate();
+
+	   //ascending order
+	   return StudentName1.compareTo(StudentName2);
+
+	   //descending order
+	   //return StudentName2.compareTo(StudentName1);
+        }
+    };
     
     
 }

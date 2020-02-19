@@ -81,8 +81,7 @@ public class KnockKnockProtocol{
         if(theInput.startsWith(cadenaPrincipal)){
             
             if(theInput.contains("LOGIN")){
-                
-                
+                     
                 String login = "";
                 String pass = "";
                  int contador = 0;
@@ -172,8 +171,14 @@ public class KnockKnockProtocol{
         Boolean existeUser1 = user_controller.findUser(datos[4]);
         Boolean existeUser2 = user_controller.findUser(datos[5]); 
         Boolean areFriends = friend_controller.getRelation(datos[4], datos[5]);
+        
+        System.out.println("Existe 1 --> " + existeUser1);
+        System.out.println("Existe 2 --> " + existeUser2);
+        System.out.println("Son amigos --> " + areFriends);
 
-       if(existeUser1 && existeUser2 && areFriends){
+
+
+       if(existeUser1 && existeUser2){
             message_controller.insertMessage(datos[4], datos[5], datos[6]);
             cadena = "Bien";
        } else {
@@ -273,5 +278,16 @@ public class KnockKnockProtocol{
        
             
         return friend;
+    }
+    
+    public int contadorPaquetes(String theInput){
+       int contadorPaquetes = 0;
+       String[] datos = theInput.split("#");
+       
+       for(String paquete : datos){
+           contadorPaquetes++;
+       }
+       
+       return contadorPaquetes;
     }
 }

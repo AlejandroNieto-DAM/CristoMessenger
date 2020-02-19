@@ -79,7 +79,9 @@ public class KKMultiServerThread extends Thread{
                         
                     } else if(inputLine.contains("CHAT")){
                         
-                        this.sendMessage(inputLine);
+                        //this.sendMessage(inputLine);
+                        outputLine = kkp.processInput(inputLine);
+                        out.println(outputLine);
                         
                     } else {
                         outputLine = kkp.processInput(inputLine);
@@ -98,9 +100,7 @@ public class KKMultiServerThread extends Thread{
                 
                 }
             } catch(SocketException e){
-                
-                
-                
+                                  
             }
             
             kkp.setDisconnected();
@@ -114,12 +114,6 @@ public class KKMultiServerThread extends Thread{
          }
     }
     
-    public PrintWriter getOutputStream(){
-        return this.out;
-    }
-            
-    
-
     public String getLogin(){
         return this.kkp.getLogin();
     }
@@ -139,5 +133,9 @@ public class KKMultiServerThread extends Thread{
                 System.out.println("Hacio ejjeje");
             }
         }
+    }
+    
+    public PrintWriter getOutputStream(){
+        return this.out;
     }
 }

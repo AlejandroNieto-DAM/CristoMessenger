@@ -28,15 +28,24 @@ public class RefrescarListaAmigos extends Thread {
     @Override
     public void run(){
         while(true){
+            
+            /*if((fin - inicio) / 1000 > 5){
+                
+                try {
+                    this.myKKClient.getMessagesFrom();
+                } catch (IOException ex) {
+                    Logger.getLogger(RefrescarListaAmigos.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                inicio = System.currentTimeMillis();
+            }*/
 
-            if((fin - inicio) / 1000 > 10){
+            if((fin - inicio) / 1000 > 30){
                 
                 try {
                     this.myKKClient.refreshFriends();
                 } catch (IOException ex) {
                     Logger.getLogger(RefrescarListaAmigos.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                //System.out.println("antonio aqui tamos funcionando " + inicio);
                 inicio = System.currentTimeMillis();
             }
             
