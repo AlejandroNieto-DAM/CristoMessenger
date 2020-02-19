@@ -28,6 +28,7 @@ public class CristoMessenger extends javax.swing.JFrame{
 
     String actualUser;
     ImageIcon imageIcon;
+    ImageIcon imageIconUser;
     String valor;
     ArrayList<Message> mensjs;
     
@@ -53,8 +54,9 @@ public class CristoMessenger extends javax.swing.JFrame{
         jListFriends.setModel(new DefaultListModel());
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIconAboveSearch.getWidth(), jLabelIconAboveSearch.getHeight(), Image.SCALE_DEFAULT));
         jLabelIconAboveSearch.setIcon(imageIcon); 
-        imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIconUserConnected.getWidth(), jLabelIconUserConnected.getHeight(), Image.SCALE_DEFAULT));
-        jLabelIconUserConnected.setIcon(imageIcon);
+        
+        
+        
         
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIconRegisterWindow.getWidth(), jLabelIconRegisterWindow.getHeight(), Image.SCALE_DEFAULT));
         jLabelIconRegisterWindow.setIcon(imageIcon);
@@ -64,10 +66,12 @@ public class CristoMessenger extends javax.swing.JFrame{
         jLabelErrorPasswordIncorrect.setText("");
         
         this.myKK = myKKClient;
-        
-        
-        
-        
+             
+    }
+    
+    public void loadPhoto(){
+       imageIconUser = new ImageIcon(new ImageIcon("userPhoto.jpg").getImage().getScaledInstance(jLabelIconUserConnected.getWidth(), jLabelIconUserConnected.getHeight(), Image.SCALE_DEFAULT));
+       jLabelIconUserConnected.setIcon(imageIconUser); 
     }
 
     private CristoMessenger() {

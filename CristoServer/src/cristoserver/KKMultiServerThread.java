@@ -57,8 +57,7 @@ public class KKMultiServerThread extends Thread{
             String inputLine = ""; 
             String outputLine = "";
             
-            kkp.setPrintWriter(out);
-            kkp.setBufferedReader(in);
+        
             
             try{
                 while ((inputLine = in.readLine()) != null) {
@@ -82,6 +81,19 @@ public class KKMultiServerThread extends Thread{
                         //this.sendMessage(inputLine);
                         outputLine = kkp.processInput(inputLine);
                         out.println(outputLine);
+                        
+                    } else if(inputLine.contains("GET_PHOTO")){
+                        
+                        System.out.println("entramos aquine");
+                        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin());
+                        kkp.loadFile(inputLine);
+                        
+                        while(kkp.getSeparador() > 0 ){
+                            out.println(kkp.getPhotoUser());
+                        }
+                        outputLine = kkp.getPhotoUser();
+                               
+                        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#ENDING_MULTIMEDIA_TRANSMISSION#" + this.getLogin());
                         
                     } else {
                         outputLine = kkp.processInput(inputLine);

@@ -45,6 +45,8 @@ public class ClientProtocol {
     int restar = 1;
     
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
      
     ClientProtocol(String login, String pass, CristoMessenger a){
         cadenaPrincipal = "PROTOCOLCRISTOMESSENGER1.0";
@@ -113,6 +115,15 @@ public class ClientProtocol {
     }
     
     
+    public String getPhoto(){
+        String cadena = "";
+        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#GET_PHOTO#<LOGIN_CLIENTE>
+        cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#GET_PHOTO#" + this.login;
+        
+        return cadena;
+    }
+    
+    
     public String userData(String theInput){
         String cadena = "";
         
@@ -135,7 +146,6 @@ public class ClientProtocol {
     
     public String sendMessage(String text){
         String cadena = "";
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         
         //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#CHAT#<LOGIN_ORIG#<LOGIN_DEST>#<MESSAGE>
         cadena += cadenaPrincipal + "#" + this.sdf.format(timestamp) + "#" + "CLIENT#CHAT#" + login + "#" + this.myCristoMessenger.getFocusFriend() + "#" + text;

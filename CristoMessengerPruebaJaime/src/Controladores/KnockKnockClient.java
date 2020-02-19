@@ -20,6 +20,9 @@ import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import java.util.Base64;
+import java.util.ArrayList;
+
  
 public class KnockKnockClient extends Thread{
     
@@ -80,14 +83,22 @@ public class KnockKnockClient extends Thread{
 
         if(fromServer.contains("LOGIN_CORRECT")){
                 
-                protocol.processInput(fromServer);
- 
-                this.loginFrame.setVisible(false);
-                this.a.setActualUser(login);
-                this.a.setVisible(true);     
+            protocol.processInput(fromServer);
                 
-                this.friendRefresh.run();
-                //this.msgListener.run();
+            try {
+                this.getPhoto();
+            } catch (IOException ex) {
+                Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+ 
+            this.a.loadPhoto();
+            this.loginFrame.setVisible(false);
+            this.a.setActualUser(login);
+            this.a.setVisible(true); 
+           
+
+            this.friendRefresh.run();
+            //this.msgListener.run();
 
                 
         } else {
@@ -98,6 +109,39 @@ public class KnockKnockClient extends Thread{
             }
         }
 
+    }
+    
+    
+    public void getPhoto() throws IOException{
+        String output = protocol.getPhoto();
+        out.println(output);
+        ArrayList<String> cadenas = new ArrayList();
+        ArrayList<String> decodedBytes = new ArrayList();
+        
+        String fromServer = in.readLine();
+        
+        while(!(fromServer = in.readLine()).contains("ENDING_MULTIMEDIA_TRANSMISSION")){
+            String datos[] = fromServer.split("#");
+            cadenas.add(new String(datos[7]));
+        }
+        
+        System.out.println("Img --> " + fromServer);
+        for(String s : cadenas){
+            decodedBytes.add(new String(Base64.getDecoder().decode(s.getBytes())));
+        }
+       
+        
+        File file = new File("userPhoto.jpg");
+        file.createNewFile();
+        FileOutputStream fos = new FileOutputStream(file);
+        for (String s : decodedBytes) {
+            for (char c : s.toCharArray()) {
+                fos.write(c);
+            }
+        }
+        fos.flush();
+        fos.close();
+    
     }
     
     

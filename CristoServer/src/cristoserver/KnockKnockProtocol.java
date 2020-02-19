@@ -17,7 +17,13 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
- 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.File;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Base64;
+
 public class KnockKnockProtocol{
     
     private String cadenaPrincipal;
@@ -41,6 +47,16 @@ public class KnockKnockProtocol{
     private BufferedReader in;
 
     public int contadorMsg;
+    
+    File file;
+    FileInputStream fin = null;
+   
+    int separador = 0;
+    
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+
     
     KnockKnockProtocol(){
         
@@ -138,12 +154,72 @@ public class KnockKnockProtocol{
                 //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_PKG";
             }
             
+            
+            
         } else {
             CristoServer.debug("MENSAJE INVALIDO");  
         }
 
         CristoServer.debug(theOutput);
         return theOutput;
+    }
+    
+    public void loadFile(String theInput) throws FileNotFoundException{
+        file = new File("data/Alejandro_Nieto/Alejandro_Nieto.jpg");
+        fin = new FileInputStream(file);
+        
+        separador = (int)file.length();
+    }
+    
+    public int getSeparador(){
+        return separador;
+    }
+    
+    public String getPhotoUser() throws FileNotFoundException, IOException{
+        String cadena = "";
+
+        int  i = 0;
+        int contador = 0;
+        int[] fileContent;
+        int bytesPorLeer = 511;
+        String toEncode = "";
+        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#RESPONSE_MULTIMEDIA#<LOGIN_CLIENTE>#<TOTAL_BYTES_MULTIMEDIA>#<SIZE_PACKET_MULTIMEDIA>#@512BYTES_FOTO
+        cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#RESPONSE_MULTIMEDIA#" + 
+                this.login_user + "#" + 
+                (int)file.length() + "#";
+
+        if(separador > bytesPorLeer){
+            fileContent = new int[bytesPorLeer];
+            cadena += bytesPorLeer + "#";
+        } else {
+            fileContent = new int[separador];
+            bytesPorLeer = separador;
+            cadena += separador + "#";
+        }
+
+        while(contador < bytesPorLeer){
+            i = fin.read();
+            fileContent[contador] = i;
+            toEncode += (char)i;
+            
+            contador++;
+        }
+        
+        
+        String encodedString = Base64.getEncoder().encodeToString(toEncode.getBytes());
+        
+        cadena += encodedString;
+
+        contador = 0;
+
+        separador -= 512; 
+        
+        if(separador < 0){
+            separador = 0;
+            fin.close();
+        }
+  
+        return cadena;
     }
     
     
