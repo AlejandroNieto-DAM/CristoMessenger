@@ -65,7 +65,7 @@ public class KKMultiServerThread extends Thread{
                     CristoServer.debug("FROMCLIENT " + inputLine);
                     //System.out.println(inputLine);
 
-                    if(inputLine.contains("OK_SEND!")){
+                    if(inputLine.contains("OK_SEND!") && kkp.contadorPaquetes(inputLine) == 5){
                         
                         for(int i = 0; i < kkp.contadorMsg; i++){
                             outputLine = kkp.sendMsg(i);
@@ -73,18 +73,17 @@ public class KKMultiServerThread extends Thread{
                         }
                         
                         inputLine = in.readLine();
-                        CristoServer.debug("FROMCLIENT " + outputLine);
+                        CristoServer.debug("FROMCLIENTDEMONIO " + outputLine);
 
                         
                     } else if(inputLine.contains("CHAT")){
                         
-                        //this.sendMessage(inputLine);
-                        outputLine = kkp.processInput(inputLine);
-                        out.println(outputLine);
+                        this.sendMessage(inputLine);
+                        //outputLine = kkp.processInput(inputLine);
+                        //out.println(outputLine);
                         
                     } else if(inputLine.contains("GET_PHOTO")){
                         
-                        System.out.println("entramos aquine");
                         out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin());
                         kkp.loadFile(inputLine);
                         

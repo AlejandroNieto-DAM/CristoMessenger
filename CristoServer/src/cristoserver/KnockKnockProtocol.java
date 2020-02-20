@@ -96,7 +96,7 @@ public class KnockKnockProtocol{
   
         if(theInput.startsWith(cadenaPrincipal)){
             
-            if(theInput.contains("LOGIN")){
+            if(theInput.contains("LOGIN") && this.contadorPaquetes(theInput) == 6){
                      
                 String login = "";
                 String pass = "";
@@ -134,22 +134,22 @@ public class KnockKnockProtocol{
      
             } 
             
-            if(theInput.contains("MSGS")){
+            if(theInput.contains("MSGS") && this.contadorPaquetes(theInput) == 7){
                 this.messages.clear();
                 theOutput = getTotalMsgs(theInput);                    
                 //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_MSGPKG";
             }
              
-            if(theInput.contains("#CHAT")){
+            if(theInput.contains("#CHAT") && this.contadorPaquetes(theInput) == 7){
                  theOutput = this.receiveMessage(theInput);
             }
  
-            if(theInput.contains("STATUS")){
+            if(theInput.contains("STATUS") && this.contadorPaquetes(theInput) == 6){
                 theOutput = this.getUserState(theInput); 
                 //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_PKG";
             }
             
-            if(theInput.contains("ALLDATA_USER")){
+            if(theInput.contains("ALLDATA_USER") && this.contadorPaquetes(theInput) == 5){
                 theOutput = this.getAllDataUser(theInput);   
                 //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_PKG";
             }
@@ -165,7 +165,7 @@ public class KnockKnockProtocol{
     }
     
     public void loadFile(String theInput) throws FileNotFoundException{
-        file = new File("data/Alejandro_Nieto/Alejandro_Nieto.jpg");
+        file = new File("data/Alejandro_Muñoz/Alejandro_Muñoz.jpg");
         fin = new FileInputStream(file);
         
         separador = (int)file.length();
@@ -351,9 +351,7 @@ public class KnockKnockProtocol{
        String[] datos = theInput.split("#");
        friend = datos[5];
        
-       
-            
-        return friend;
+       return friend;
     }
     
     public int contadorPaquetes(String theInput){

@@ -88,7 +88,7 @@ public class ClientProtocol {
 
                     this.msjs.clear();
                     this.leerNumeroMensajes(theInput);
-                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!";
+                    
 
                 }
 
@@ -179,6 +179,8 @@ public class ClientProtocol {
     
     
     public void leerNumeroMensajes(String fromServer){
+        
+        System.out.println("Aquine leo esto de feos");
         
         String[] msgs = fromServer.split("#");
         int contadorStt = 0;

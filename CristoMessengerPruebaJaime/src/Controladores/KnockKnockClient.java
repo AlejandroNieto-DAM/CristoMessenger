@@ -73,44 +73,92 @@ public class KnockKnockClient extends Thread{
 
 
         fromUser = protocol.processInput(null);
-
         out.println(fromUser);
+
+        
         try {
-            fromServer = in.readLine();
+            
+            while((fromServer = in.readLine()) != null){
+
+                if(fromServer.contains("LOGIN_CORRECT")){
+
+                    protocol.processInput(fromServer);
+
+                    try {
+                        this.getPhoto();
+                    } catch (IOException ex) {
+                        Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    this.a.loadPhoto();
+                    this.loginFrame.setVisible(false);
+                    this.a.setActualUser(login);
+                    this.a.setVisible(true); 
+                    //this.friendRefresh.run();
+                    
+
+                }
+
+                if(fromServer.contains("MSGS")){
+                    
+                    System.out.println("Hemos entrao o k");
+                    if(this.numeroMsgs == 0){
+                        
+                        protocol.processInput(fromServer);
+                        this.numeroMsgs = protocol.getNumeroDeMensajes();
+                        
+                        System.out.println("Numero de msgs = " + this.numeroMsgs);
+                        
+                        if(this.numeroMsgs == 0){
+                            out.println(protocol.getMessages());
+                        } else {
+                            out.println("PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!");
+                        }
+                        
+                        //System.out.println("output del clinete --> " + protocol.getMessages());
+                        
+                    } else {
+                        
+                        if(numeroMsgs > 0){                        
+                            protocol.leerMsgs(fromServer);
+                            this.numeroMsgs--;
+                            if(this.numeroMsgs == 0){
+
+                                String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED";
+                                out.println(theOutput);
+                                System.out.println("PERO MIRA QUE NUMERO --> " + this.numeroMsgs);
+
+                                this.numeroMsgs = 1;
+                                this.totalNumeroMensajes = 0;
+                            }
+                        } 
+                       
+                    }
+                   
+                   
+                }
+                
+                if(fromServer.contains("CHAT")){
+                    System.out.println("YEYO EN MI PUTA MADRE QUE FUNCIONA " + fromServer);
+                }
+                
+                
+                /*else {
+                    try {
+                        kkSocket.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }*/
+            }
+            
         } catch (IOException ex) {
             Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        if(fromServer.contains("LOGIN_CORRECT")){
-                
-            protocol.processInput(fromServer);
-                
-            try {
-                this.getPhoto();
-            } catch (IOException ex) {
-                Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
- 
-            this.a.loadPhoto();
-            this.loginFrame.setVisible(false);
-            this.a.setActualUser(login);
-            this.a.setVisible(true); 
-           
-
-            this.friendRefresh.run();
-            //this.msgListener.run();
-
-                
-        } else {
-            try {
-                kkSocket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
     }
     
+
     
     public void getPhoto() throws IOException{
         String output = protocol.getPhoto();
@@ -145,10 +193,10 @@ public class KnockKnockClient extends Thread{
     }
     
     
-    public void getInput() throws IOException{
+    public void getInput(String msg) throws IOException{
         //String msg =   in.readLine().contains("CHAT") ?  in.readLine() : "mal";
        // System.out.println(msg);
-        //this.processMsg(msg);
+       this.processMsg(msg);
     }
     
     
@@ -183,7 +231,7 @@ public class KnockKnockClient extends Thread{
     public void sendMessage(String text) throws IOException{
         String output = protocol.sendMessage(text);
         out.println(output);
-        String fromServer = in.readLine();
+        //String fromServer = in.readLine();
         //System.out.println("");
     }
       
@@ -207,45 +255,8 @@ public class KnockKnockClient extends Thread{
         this.numeroMsgs = 0;
         this.totalNumeroMensajes = 0;
         
-
         String output =  protocol.getMessages();
         out.println(output);
-        String fromServer = in.readLine();
-
-        output = protocol.processInput(fromServer);
-        this.numeroMsgs = protocol.getNumeroDeMensajes();
-        this.totalNumeroMensajes = protocol.getTotalNumeroDeMensajes();
-        
-        if(totalNumeroMensajes != 0){ 
-            
-            do{
-                output =  protocol.getMessages();
-                out.println(output);
-                fromServer = in.readLine();
-                output = protocol.processInput(fromServer);
-                this.numeroMsgs = protocol.getNumeroDeMensajes();
-            }while(numeroMsgs == 0);
- 
-            out.println(output);
-
-            for(int i = 0; i < this.numeroMsgs; i++){
-                 fromServer = in.readLine();
-                 System.out.println("FROMSERVER DENTRO WHILE " + fromServer);
-                 protocol.leerMsgs(fromServer);
-            }
-
-            String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED";
-            out.println(theOutput);
-            
-        }
-        
-        this.numeroMsgs = 0;
-        this.totalNumeroMensajes = 0;
              
     }
-    
-    public String getStringBuffer() throws IOException{
-        return in.readLine();
-    }
-     
 }
