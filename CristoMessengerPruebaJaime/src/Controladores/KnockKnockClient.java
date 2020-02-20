@@ -11,7 +11,6 @@ package Controladores;
  * @author alejandronieto
  */
 
-import Classes.EscuchaMensajes;
 import Classes.RefrescarListaAmigos;
 import Vista.CristoMessenger;
 import java.io.*;
@@ -25,7 +24,7 @@ import java.util.ArrayList;
 
  
 public class KnockKnockClient extends Thread{
-    
+
     int portNumber;
     String hostName;
     String login;
@@ -41,7 +40,6 @@ public class KnockKnockClient extends Thread{
     LocalDateTime dateTime = LocalDateTime.now();
     
     RefrescarListaAmigos friendRefresh;
-    EscuchaMensajes msgListener;
     
     Integer numeroMsgs = 0;
     int totalNumeroMensajes = 0;
@@ -60,7 +58,6 @@ public class KnockKnockClient extends Thread{
                 new InputStreamReader(kkSocket.getInputStream()));
         
         friendRefresh = new RefrescarListaAmigos(this);
-        msgListener = new EscuchaMensajes(in);
 
     }
     
@@ -99,48 +96,23 @@ public class KnockKnockClient extends Thread{
 
                 }
 
-                if(fromServer.contains("MSGS")){
-                    
-                    System.out.println("Hemos entrao o k");
-                    if(this.numeroMsgs == 0){
-                        
-                        protocol.processInput(fromServer);
-                        this.numeroMsgs = protocol.getNumeroDeMensajes();
-                        
-                        System.out.println("Numero de msgs = " + this.numeroMsgs);
-                        
-                        if(this.numeroMsgs == 0){
-                            out.println(protocol.getMessages());
-                        } else {
-                            out.println("PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!");
-                        }
-                        
-                        //System.out.println("output del clinete --> " + protocol.getMessages());
-                        
-                    } else {
-                        
-                        if(numeroMsgs > 0){                        
-                            protocol.leerMsgs(fromServer);
-                            this.numeroMsgs--;
-                            if(this.numeroMsgs == 0){
-
-                                String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED";
-                                out.println(theOutput);
-                                System.out.println("PERO MIRA QUE NUMERO --> " + this.numeroMsgs);
-
-                                this.numeroMsgs = 1;
-                                this.totalNumeroMensajes = 0;
-                            }
-                        } 
-                       
-                    }
-                   
-                   
+                if(fromServer.contains("MSGS")){      
+                    this.getMessagesFromPrueba(fromServer);
+                }
+                
+                if(fromServer.contains("STATUS")){      
+                     protocol.processInput(fromServer);
+                }
+                
+                if(fromServer.contains("ALLDATA_USER")){      
+                    protocol.processInput(fromServer);
                 }
                 
                 if(fromServer.contains("CHAT")){
                     System.out.println("YEYO EN MI PUTA MADRE QUE FUNCIONA " + fromServer);
                 }
+                
+                
                 
                 
                 /*else {
@@ -238,16 +210,13 @@ public class KnockKnockClient extends Thread{
     public void getFriendStatus() throws IOException{
         String output = protocol.getFriendStatus();
         out.println(output);
-        String fromServer = in.readLine();
-        System.out.println("PERO MIRA QUE ESTADOOOOO " + fromServer);
-        protocol.processInput(fromServer);
+        
+       
     }
     
     public void getFriendData() throws IOException{
         String output = protocol.getFriendData();
         out.println(output);
-        String fromServer = in.readLine();
-        protocol.processInput(fromServer);
     }
     
     public void getMessagesFrom() throws IOException{
@@ -257,6 +226,46 @@ public class KnockKnockClient extends Thread{
         
         String output =  protocol.getMessages();
         out.println(output);
+             
+    }
+    
+    public void getMessagesFromPrueba(String fromServer) throws IOException{
+        
+        this.numeroMsgs = 0;
+        this.totalNumeroMensajes = 0;
+
+        String output = protocol.processInput(fromServer);
+        this.numeroMsgs = protocol.getNumeroDeMensajes();
+        this.totalNumeroMensajes = protocol.getTotalNumeroDeMensajes();
+        
+        if(totalNumeroMensajes != 0){ 
+            
+            do{
+                output =  protocol.getMessages();
+                out.println(output);
+                fromServer = in.readLine();
+                output = protocol.processInput(fromServer);
+                this.numeroMsgs = protocol.getNumeroDeMensajes();
+            }while(numeroMsgs == 0);
+            
+            System.out.println("output --> " + output);
+ 
+            out.println(output);
+            
+
+            for(int i = 0; i < this.numeroMsgs; i++){
+                 fromServer = in.readLine();
+                 System.out.println("FROMSERVER DENTRO WHILE " + fromServer);
+                 protocol.leerMsgs(fromServer);
+            }
+
+            String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED";
+            out.println(theOutput);
+            
+        }
+        
+        this.numeroMsgs = 0;
+        this.totalNumeroMensajes = 0;
              
     }
 }

@@ -471,9 +471,10 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         try {
             
+            this.myKK.getFriendData();
+            this.myKK.getFriendStatus();
             this.myKK.getMessagesFrom();
-            //this.myKK.getFriendData();
-            //this.myKK.getFriendStatus();
+            
             
         } catch (IOException ex) {
             Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);

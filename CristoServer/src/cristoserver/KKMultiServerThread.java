@@ -8,6 +8,7 @@ package cristoserver;
 import Controllers.Friend_Controller;
 import Controllers.Message_Controller;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -31,6 +32,8 @@ public class KKMultiServerThread extends Thread{
      String login = "";
      PrintWriter out;
      BufferedReader in;
+     String inputLine = ""; 
+            String outputLine = "";
      
      private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -54,60 +57,19 @@ public class KKMultiServerThread extends Thread{
                              socket.getInputStream()));
              
              
-            String inputLine = ""; 
-            String outputLine = "";
+            
             
         
             
             try{
                 while ((inputLine = in.readLine()) != null) {
                 
-                    CristoServer.debug("FROMCLIENT " + inputLine);
-                    //System.out.println(inputLine);
-
-                    if(inputLine.contains("OK_SEND!") && kkp.contadorPaquetes(inputLine) == 5){
-                        
-                        for(int i = 0; i < kkp.contadorMsg; i++){
-                            outputLine = kkp.sendMsg(i);
-                            out.println(outputLine);
-                        }
-                        
-                        inputLine = in.readLine();
-                        CristoServer.debug("FROMCLIENTDEMONIO " + outputLine);
-
-                        
-                    } else if(inputLine.contains("CHAT")){
-                        
-                        this.sendMessage(inputLine);
-                        //outputLine = kkp.processInput(inputLine);
-                        //out.println(outputLine);
-                        
-                    } else if(inputLine.contains("GET_PHOTO")){
-                        
-                        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin());
-                        kkp.loadFile(inputLine);
-                        
-                        while(kkp.getSeparador() > 0 ){
-                            out.println(kkp.getPhotoUser());
-                        }
-                        outputLine = kkp.getPhotoUser();
-                               
-                        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#ENDING_MULTIMEDIA_TRANSMISSION#" + this.getLogin());
-                        
-                    } else {
-                        outputLine = kkp.processInput(inputLine);
-                        out.println(outputLine);
-                    }
                     
-
-                    CristoServer.debug("FROMSERVER " + outputLine);
-                    //System.out.println(outputLine);
-
+                    this.filtrado(inputLine);
                     
-
-
                     if (outputLine.contains("BAD_LOGIN") || outputLine == null)
                         break;
+                   
                 
                 }
             } catch(SocketException e){
@@ -123,6 +85,49 @@ public class KKMultiServerThread extends Thread{
         } catch (SQLException ex) {
              Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
          }
+    }
+    
+    public synchronized void filtrado(String inputLine) throws FileNotFoundException, IOException, SQLException{
+        CristoServer.debug("FROMCLIENT " + inputLine);
+        //System.out.println(inputLine);
+
+        if(inputLine.contains("OK_SEND!") && kkp.contadorPaquetes(inputLine) == 5){
+
+            for(int i = 0; i < kkp.contadorMsg; i++){
+                outputLine = kkp.sendMsg(i);
+                out.println(outputLine);
+            }
+
+            inputLine = in.readLine();
+            CristoServer.debug("FROMCLIENTDEMONIO " + outputLine);
+
+
+        } else if(inputLine.contains("CHAT")){
+
+            this.sendMessage(inputLine);
+            //outputLine = kkp.processInput(inputLine);
+            //out.println(outputLine);
+
+        } else if(inputLine.contains("GET_PHOTO")){
+
+            out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin());
+            kkp.loadFile(inputLine);
+
+            while(kkp.getSeparador() > 0 ){
+                out.println(kkp.getPhotoUser());
+            }
+            outputLine = kkp.getPhotoUser();
+
+            out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#ENDING_MULTIMEDIA_TRANSMISSION#" + this.getLogin());
+
+        } else {
+            outputLine = kkp.processInput(inputLine);
+            out.println(outputLine);
+        }
+
+         CristoServer.debug("FROMSERVER " + outputLine);
+        //System.out.println(outputLine);  
+                    
     }
     
     public String getLogin(){
