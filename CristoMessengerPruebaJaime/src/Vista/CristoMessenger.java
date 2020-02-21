@@ -4,6 +4,7 @@ package Vista;
 import Classes.CellRenderer;
 import Classes.Message;
 import Controladores.KnockKnockClient;
+import Controladores.User;
 import java.awt.Image;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class CristoMessenger extends javax.swing.JFrame{
     KnockKnockClient myKK;
     
     String[] friends;
+    ArrayList<User> friendList;
     
     int numeroAmigos = 0;
     
@@ -78,7 +80,7 @@ public class CristoMessenger extends javax.swing.JFrame{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public void setMessages(ArrayList msjs){
+    public void setMessages(ArrayList msjs) throws IOException{
         
         this.mensjs = msjs;
         this.jTextArea1.setText("");
@@ -93,6 +95,7 @@ public class CristoMessenger extends javax.swing.JFrame{
                 this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
             }
         }
+
     }
     
     
@@ -107,16 +110,30 @@ public class CristoMessenger extends javax.swing.JFrame{
     }
     
     
-    public String[] getFriends(){
-        return friends;
+    public ArrayList getFriends(){
+        return this.friendList;
     }
     
     public static void returnException(String exception){
         CristoMessenger.jTextAreaDebugWindow.setText(CristoMessenger.jTextAreaDebugWindow.getText() + "\n" + exception);
     }
     
-    public void setFriendsOf(String[] names){
-          
+    public void setFriendsOf(ArrayList<User> friendList){
+        
+        this.friendList = friendList;
+        
+        String[] names = new String[friendList.size()];
+        
+        for(int i = 0; i < friendList.size(); i++){
+             
+            if(friendList.get(i).getEstadoUsuario() == true){
+                names[i] = friendList.get(i).getLogin() + " " + "CONNECTED";
+            } else {
+                names[i] = friendList.get(i).getLogin() + " " + "NOT_CONNECTED";
+            }
+           
+        }
+        
         this.friends = names;
         
         for(String a : names){
@@ -409,9 +426,7 @@ public class CristoMessenger extends javax.swing.JFrame{
         } else {
             jLabelErrorPasswordIncorrect.setText("Las contraseñas no coinciden.");
         }
-
-       
-        
+ 
         jTextFieldInsertLoginRegister.setText("Login");
         jTextFieldUserNameRegister.setText("Name");
         jTextFieldUserSurname1.setText("Surname1");
@@ -448,6 +463,7 @@ public class CristoMessenger extends javax.swing.JFrame{
     }
     
     public void setFriendData(String data){
+        this.jTextFieldUserSelectedInListName.setText("");
         this.jTextFieldUserSelectedInListName.setText(data);
     }
     
@@ -471,9 +487,16 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         try {
             
+            if(this.mensjs != null){
+                this.mensjs.clear();
+            }
+            
             this.myKK.getFriendData();
             this.myKK.getFriendStatus();
             this.myKK.getMessagesFrom();
+            
+            
+            
             
             
         } catch (IOException ex) {

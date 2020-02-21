@@ -153,9 +153,7 @@ public class KnockKnockProtocol{
                 theOutput = this.getAllDataUser(theInput);   
                 //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_PKG";
             }
-            
-            
-            
+    
         } else {
             CristoServer.debug("MENSAJE INVALIDO");  
         }
@@ -165,8 +163,15 @@ public class KnockKnockProtocol{
     }
     
     public void loadFile(String theInput) throws FileNotFoundException{
-        file = new File("data/Alejandro_Muñoz/Alejandro_Muñoz.jpg");
-        fin = new FileInputStream(file);
+        String[] datos = theInput.split("#"); 
+        String foto = this.user_controller.getUrlPhoto(datos[4]);
+        try{
+            file = new File(foto);
+            fin = new FileInputStream(file);
+        } catch(FileNotFoundException e){
+            file = new File("data/defaultPhoto.jpeg");
+            fin = new FileInputStream(file);
+        }
         
         separador = (int)file.length();
     }
@@ -241,7 +246,7 @@ public class KnockKnockProtocol{
     
     
     public String receiveMessage(String theInput) throws SQLException{
-        String cadena = "ksfjhsdl";
+        String cadena = "";
         String[] datos = theInput.split("#");
         
         Boolean existeUser1 = user_controller.findUser(datos[4]);

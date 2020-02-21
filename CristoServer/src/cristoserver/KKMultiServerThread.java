@@ -25,6 +25,8 @@ import java.util.logging.Logger;
  * @author alejandronieto
  */
 public class KKMultiServerThread extends Thread{
+    
+     boolean esperar = false;
      private Socket socket = null;
      KnockKnockProtocol kkp;
      KKServer myKKS;
@@ -55,25 +57,24 @@ public class KKMultiServerThread extends Thread{
             in = new BufferedReader(
                      new InputStreamReader(
                              socket.getInputStream()));
-             
-             
-            
-            
-        
             
             try{
                 while ((inputLine = in.readLine()) != null) {
-                
-                    
+ 
                     this.filtrado(inputLine);
+                    
+                    //System.out.println("outputline null? --> " + outputLine);
                     
                     if (outputLine.contains("BAD_LOGIN") || outputLine == null)
                         break;
-                   
-                
+
                 }
             } catch(SocketException e){
                                   
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             kkp.setDisconnected();
@@ -87,27 +88,38 @@ public class KKMultiServerThread extends Thread{
          }
     }
     
-    public synchronized void filtrado(String inputLine) throws FileNotFoundException, IOException, SQLException{
+    public synchronized void filtrado(String inputLine) throws FileNotFoundException, IOException, SQLException, InterruptedException{
         CristoServer.debug("FROMCLIENT " + inputLine);
         //System.out.println(inputLine);
+        
+        /*if(esperar){
+            wait();
+        }*/
 
+        esperar = true;
+        
         if(inputLine.contains("OK_SEND!") && kkp.contadorPaquetes(inputLine) == 5){
+
 
             for(int i = 0; i < kkp.contadorMsg; i++){
                 outputLine = kkp.sendMsg(i);
                 out.println(outputLine);
             }
 
-            inputLine = in.readLine();
-            CristoServer.debug("FROMCLIENTDEMONIO " + outputLine);
-
-
-        } else if(inputLine.contains("CHAT")){
+        }else if (inputLine.contains("ALL_RECEIVED")){
+           
+            outputLine = "1";
+            
+        }else if(inputLine.contains("CHAT")){
 
             this.sendMessage(inputLine);
-            //outputLine = kkp.processInput(inputLine);
-            //out.println(outputLine);
 
+        } else if(inputLine.contains("RECEIVED_MESSAGE")){
+            
+            System.out.println("Hemos entrao en lo que hemos recibio o no");
+            
+            this.sendReceivedMessage(inputLine);
+            
         } else if(inputLine.contains("GET_PHOTO")){
 
             out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin());
@@ -120,13 +132,20 @@ public class KKMultiServerThread extends Thread{
 
             out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#ENDING_MULTIMEDIA_TRANSMISSION#" + this.getLogin());
 
+
         } else {
+     
             outputLine = kkp.processInput(inputLine);
             out.println(outputLine);
-        }
 
-         CristoServer.debug("FROMSERVER " + outputLine);
+        }
+        
+        //sperar = false;
+        //notifyAll();
+
+        CristoServer.debug("FROMSERVER " + outputLine);
         //System.out.println(outputLine);  
+        
                     
     }
     
@@ -134,24 +153,34 @@ public class KKMultiServerThread extends Thread{
         return this.kkp.getLogin();
     }
     
-    public void sendMessage(String inputLine){
+    public void sendReceivedMessage(String inputLine){
+        
+        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#CHAT#<LOGIN_ORIG#<LOGIN_DEST>#MESSAGE_SUCCESFULLY_PROCESSED#TIMESTAMP");
+    }
+    
+    public void sendMessage(String inputLine) throws SQLException{
         
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Boolean encontrado = false;
         
-        System.out.println("Tamo activos aqui con nuestro papito");
-
-        for(int i = 0; i < myKKS.getHebrasSize(); i++){
+        for(int i = 0; i < myKKS.getHebrasSize() && !encontrado; i++){
             String loginFriend = this.kkp.getFriend(inputLine);
-            System.out.println("Login friend pa mandar --> " + loginFriend);
             if(this.myKKS.getConexionAt(i).getLogin().equals(loginFriend)){
-                PrintWriter out = this.myKKS.getConexionAt(i).getOutputStream();
-                out.println(inputLine + "#" + sdf.format(timestamp));
-                System.out.println("Hacio ejjeje");
+                PrintWriter outB = this.myKKS.getConexionAt(i).getOutputStream();
+                outB.println(inputLine + "#" + sdf.format(timestamp));
+                encontrado = true;
             }
         }
+        
+
+        //kkp.receiveMessage(inputLine);
     }
     
     public PrintWriter getOutputStream(){
         return this.out;
+    }
+    
+    public BufferedReader getInputStream(){
+        return this.in;
     }
 }

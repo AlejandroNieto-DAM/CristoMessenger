@@ -37,11 +37,12 @@ public class KnockKnockClient extends Thread{
     BufferedReader in;
     
     
+  
     LocalDateTime dateTime = LocalDateTime.now();
     
     RefrescarListaAmigos friendRefresh;
     
-    Integer numeroMsgs = 0;
+    int numeroMsgs = 0;
     int totalNumeroMensajes = 0;
     
     public KnockKnockClient(int port, String host, String login, String pass, JFrame frame) throws IOException{
@@ -68,16 +69,23 @@ public class KnockKnockClient extends Thread{
         String fromServer = "";
         String fromUser = "";
 
-
         fromUser = protocol.processInput(null);
         out.println(fromUser);
-
         
         try {
-            
-            while((fromServer = in.readLine()) != null){
+            while((fromServer = in.readLine()) != null){   
+                this.filtrado(fromServer);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-                if(fromServer.contains("LOGIN_CORRECT")){
+    }
+    
+    
+    public synchronized void filtrado(String fromServer) throws IOException{
+        
+        if(fromServer.contains("LOGIN_CORRECT")){
 
                     protocol.processInput(fromServer);
 
@@ -91,12 +99,11 @@ public class KnockKnockClient extends Thread{
                     this.loginFrame.setVisible(false);
                     this.a.setActualUser(login);
                     this.a.setVisible(true); 
-                    //this.friendRefresh.run();
-                    
+                    //this.friendRefresh.start();  
 
                 }
 
-                if(fromServer.contains("MSGS")){      
+                if(fromServer.contains("MSGS")){
                     this.getMessagesFromPrueba(fromServer);
                 }
                 
@@ -110,29 +117,18 @@ public class KnockKnockClient extends Thread{
                 
                 if(fromServer.contains("CHAT")){
                     System.out.println("YEYO EN MI PUTA MADRE QUE FUNCIONA " + fromServer);
+                    out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#CHAT#RECEIVED_MESSAGE#LOGIN_ORIGEN#TIMESTAMP");
+                    
+                    
                 }
                 
+                if(fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){
+                    System.out.println(fromServer);
+                }
                 
-                
-                
-                /*else {
-                    try {
-                        kkSocket.close();
-                    } catch (IOException ex) {
-                        Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }*/
-            }
-            
-        } catch (IOException ex) {
-            Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
     }
     
-
-    
-    public void getPhoto() throws IOException{
+    public synchronized void getPhoto() throws IOException{
         String output = protocol.getPhoto();
         out.println(output);
         ArrayList<String> cadenas = new ArrayList();
@@ -163,80 +159,62 @@ public class KnockKnockClient extends Thread{
         fos.close();
     
     }
-    
-    
-    public void getInput(String msg) throws IOException{
-        //String msg =   in.readLine().contains("CHAT") ?  in.readLine() : "mal";
-       // System.out.println(msg);
-       this.processMsg(msg);
-    }
-    
-    
-    public void processMsg(String theInput) throws IOException{
-        //TODO   
+     
+    public synchronized void processMsg(String theInput) throws IOException{
         protocol.processInput(theInput);  
     }
     
-    public void refreshFriends() throws IOException{
-        String[] friends = this.a.getFriends();
-        int contadorF = 0;
+    public synchronized void refreshFriends() throws IOException{
+        ArrayList<User> friendList = this.a.getFriends();
         
-        for(String friend : friends){
-            contadorF++;
-        }
-        
-        String[] refreshFriends = new String[contadorF];
-        int contador2 = 0;
-        for(String f : friends){
-            String loginF  = f.substring(0, f.indexOf(" "));                            //TODO FALTA UN GET LOGIN
-            String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#STATUS#" + login + "#" + loginF;
+        for(int i = 0; i < friendList.size(); i++){
+            String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#STATUS#" + login + "#" + friendList.get(i).getLogin();
             out.println(cadena);
             String estado = this.protocol.friendStatus(in.readLine());
-            refreshFriends[contador2] = loginF + " " + estado;
-            contador2++;
+            if(estado.equals("CONNECTED")){
+                friendList.get(i).setEstadoUsuario(1);
+            } else {
+                friendList.get(i).setEstadoUsuario(0);
+            }
         }
-        
-        this.a.setFriendsOf(refreshFriends);
+     
+        this.a.setFriendsOf(friendList);
     }
     
     
-    public void sendMessage(String text) throws IOException{
+    public synchronized void sendMessage(String text) throws IOException{
         String output = protocol.sendMessage(text);
         out.println(output);
-        //String fromServer = in.readLine();
-        //System.out.println("");
     }
       
-    public void getFriendStatus() throws IOException{
+    public synchronized void getFriendStatus() throws IOException{
         String output = protocol.getFriendStatus();
-        out.println(output);
-        
-       
+        out.println(output);  
     }
     
-    public void getFriendData() throws IOException{
+    public synchronized void getFriendData() throws IOException{
         String output = protocol.getFriendData();
         out.println(output);
     }
     
-    public void getMessagesFrom() throws IOException{
+    public synchronized void getMessagesFrom() throws IOException{
         
         this.numeroMsgs = 0;
         this.totalNumeroMensajes = 0;
-        
+
         String output =  protocol.getMessages();
         out.println(output);
              
     }
     
-    public void getMessagesFromPrueba(String fromServer) throws IOException{
-        
-        this.numeroMsgs = 0;
-        this.totalNumeroMensajes = 0;
+    public synchronized void getMessagesFromPrueba(String fromServer) throws IOException{
 
+        
+        System.out.println("ILLO QUE PASA MIRA QUE CADENA RECIBO " + fromServer);
         String output = protocol.processInput(fromServer);
         this.numeroMsgs = protocol.getNumeroDeMensajes();
         this.totalNumeroMensajes = protocol.getTotalNumeroDeMensajes();
+        System.out.println("numero de mgsg " + this.numeroMsgs);
         
         if(totalNumeroMensajes != 0){ 
             
@@ -246,26 +224,32 @@ public class KnockKnockClient extends Thread{
                 fromServer = in.readLine();
                 output = protocol.processInput(fromServer);
                 this.numeroMsgs = protocol.getNumeroDeMensajes();
+                System.out.println("numero de mgsg " + this.numeroMsgs);
+        
             }while(numeroMsgs == 0);
             
-            System.out.println("output --> " + output);
- 
-            out.println(output);
             
+            
+            
+            out.println(output);
+            System.out.println("output dentro del if + " + output);
 
             for(int i = 0; i < this.numeroMsgs; i++){
                  fromServer = in.readLine();
                  System.out.println("FROMSERVER DENTRO WHILE " + fromServer);
                  protocol.leerMsgs(fromServer);
             }
-
+            
+            
             String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED";
             out.println(theOutput);
-            
+            System.out.println("yeyo en mi ihpen");
+                    
         }
         
         this.numeroMsgs = 0;
         this.totalNumeroMensajes = 0;
+        protocol.restar = 1;
              
     }
 }

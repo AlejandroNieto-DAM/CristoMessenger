@@ -243,5 +243,21 @@ public class User_Model extends ConnectToBD{
         return existe;
 
     }
+
+    public String getUrlPhoto(String login) {
+        this.setQuery( "select photo " + "from " + this.getDBName() + ".user where id_user = '" + login + "'");
+        String url = "";
+        
+        try (Statement stmt = this.getConnector().createStatement()) {
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                url = rs.getString("photo");
+            }
+        } catch (SQLException e ) {
+            CristoServer.debug(e.toString());
+        }
+ 
+        return url;
+    }
     
 }

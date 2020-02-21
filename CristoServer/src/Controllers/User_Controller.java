@@ -60,4 +60,8 @@ public class User_Controller {
         return a.findUser(login);
     }
     
+    public String getUrlPhoto(String login){
+        return a.getUrlPhoto(login);
+    }
+    
 }

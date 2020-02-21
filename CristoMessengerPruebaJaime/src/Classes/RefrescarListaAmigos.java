@@ -28,10 +28,8 @@ public class RefrescarListaAmigos extends Thread {
     @Override
     public void run(){
         while(true){
-            
-            
 
-            if((fin - inicio) / 1000 > 30){
+            if((fin - inicio) / 1000 > 5){
                 
                 try {
                     this.myKKClient.refreshFriends();
@@ -42,7 +40,6 @@ public class RefrescarListaAmigos extends Thread {
             }
             
             fin = System.currentTimeMillis();
-            
         }
     }
 }

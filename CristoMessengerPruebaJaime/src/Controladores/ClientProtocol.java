@@ -3,6 +3,7 @@ package Controladores;
 
 import Classes.Message;
 import Vista.CristoMessenger;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -21,28 +22,25 @@ import java.util.Date;
  */
 public class ClientProtocol {
     
-    private String cadenaPrincipal;
+    private final String cadenaPrincipal;
     private final int LOGGING = 0;
     private final int LOGGED = 1;
-    private final int ALREADY = 2;
-
     
     public int state = LOGGING;
     
     private String login;
     private String passwd;
-    
-    private String firstFriend;
-    
+        
     CristoMessenger myCristoMessenger;
     ArrayList<Message> msjs = new ArrayList();
+    ArrayList<User> friendList = new ArrayList();
     
     LocalDateTime dateTime;
     
     int numeroMensajes;
     int totalNumeroMensajes;
     
-    int restar = 1;
+    public int restar = 1;
     
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -71,13 +69,9 @@ public class ClientProtocol {
             
         } else if (state == LOGGED){
             
-            //System.out.println("entro");
-
             if(theInput.startsWith(cadenaPrincipal)){
                 if(theInput.contains("LOGIN_CORRECT")){
-                    leerAmigos(theInput);
-                    //theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + firstFriend; 
-                    
+                    leerAmigos(theInput);                    
                 }
                 
                 if(theInput.contains("BAD_LOGIN")){
@@ -85,13 +79,9 @@ public class ClientProtocol {
                 }
                 
                 if(theInput.contains("#MSGS#")){
-
                     this.msjs.clear();
                     this.leerNumeroMensajes(theInput);
                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!";
-
-                    
-
                 }
 
                 if(theInput.contains("STATUS")){
@@ -119,37 +109,27 @@ public class ClientProtocol {
     
     public String getPhoto(){
         String cadena = "";
-        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#GET_PHOTO#<LOGIN_CLIENTE>
         cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#GET_PHOTO#" + this.login;
-        
         return cadena;
     }
     
     
     public String userData(String theInput){
-        String cadena = "";
-        
+        String cadena = ""; 
         String[] datos = theInput.split("#");
         cadena = datos[5] + " " + datos[6] + " " + datos[7];
-        //System.out.println("pero mira que datos mas frescos " + cadena);
         return cadena;
     }
     
     public String getFriendData(){
         String cadena = "";
-        
-        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#ALLDATA_USER#<LOGIN>
-
         cadena += cadenaPrincipal + "#" + dateTime + "#CLIENT#ALLDATA_USER#" + this.myCristoMessenger.getFocusFriend();
-        
         return cadena;
     }
     
     
     public String sendMessage(String text){
         String cadena = "";
-        
-        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#CHAT#<LOGIN_ORIG#<LOGIN_DEST>#<MESSAGE>
         cadena += cadenaPrincipal + "#" + this.sdf.format(timestamp) + "#" + "CLIENT#CHAT#" + login + "#" + this.myCristoMessenger.getFocusFriend() + "#" + text;
         return cadena;
     }
@@ -172,16 +152,13 @@ public class ClientProtocol {
     }
     
     public String getFriendStatus(){
-        String cadena  = "";
-        this.restar = 0;
-        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#STATUS#<LOGIN_CLIENT#<LOGIN_AMIGO>
+        String cadena  = ""; 
         cadena = cadenaPrincipal + "#" + dateTime + "#CLIENT#STATUS#" + login + "#" + this.myCristoMessenger.getFocusFriend();
         return cadena;
     }
     
     
-    public void leerNumeroMensajes(String fromServer){
-                
+    public void leerNumeroMensajes(String fromServer){         
         String[] msgs = fromServer.split("#");
         int contadorStt = 0;
         for(String stt : msgs){
@@ -194,9 +171,7 @@ public class ClientProtocol {
                 this.numeroMensajes = Integer.parseInt(stt);
             }
             contadorStt++;
-        }
-        
-       //System.out.println("Numero de mensajes " + this.numeroMensajes);
+        }  
     }
     
     
@@ -216,96 +191,49 @@ public class ClientProtocol {
         return theOutput;
     }
     
-    public void leerAmigos(String fromServer){
+    public void leerAmigos(String fromServer){       
+        String[] datos = fromServer.split("#");
         
+        int contador = 0;
+        boolean nombre = true;
         
-        int numeroAmigos = 0;
-            
-            String numAmigos = "";
-            String amigos = "";
-            
-            int contador1  = 0;
-            for(int i = 0; i < fromServer.length(); i++){
-                if(fromServer.charAt(i) == '#'){
-                    contador1++;
-                }
+        String loginF = "";
+        
+        for(String s : datos){
+            if(contador > 6){
                 
-                if(contador1 == 6){
-                    numAmigos += fromServer.charAt(i);
-                }
-                
-                if(contador1 >= 7){
-                    amigos += fromServer.charAt(i);
-                }
-            }
-            
-            numAmigos = numAmigos.substring(1, numAmigos.length());
-                        
-            numeroAmigos = Integer.parseInt(numAmigos);
-            
-            
-            int contadorA = 0;
-            String nomAmigo = "";
-            String conectado = "";
-             
-            String[] names = new String[numeroAmigos];
-            
-            
-            int contadorFriends = 0;
-            int contadorStado = 0;
-            boolean primero = false;
-            
-
-            for(int i = 0; i < amigos.length(); i++){
-                
-                if(amigos.charAt(i) == '#'){
+                if(nombre){
                     
-                    if(contadorA <= 2){
-                       contadorA++;
-                    } 
-
-                    if(contadorA == 2){
-                      names[contadorFriends] = nomAmigo.substring(1, nomAmigo.length());
-                      nomAmigo = "";  
-                      contadorFriends++;
-                      contadorA = 0;
-                      primero = true;
-                    } 
+                    loginF = s;
+                    nombre = false;
+                    System.out.println("yeyo");
                     
-                    if(contadorA == 1 && primero == true){
-                        names[contadorStado] = names[contadorStado] + " " + conectado.substring(1, conectado.length());
-                        contadorStado++;
-                        conectado = "";
-                    }    
-   
-                } 
-                
-                if(contadorA == 0){
-                    conectado += amigos.charAt(i);
+                } else {
                     
-                }
-                
-                
-                if(contadorA == 1){
-                    nomAmigo += amigos.charAt(i);
-                }
-                
-                if( i == amigos.length() - 1){
-                    names[contadorStado] = names[contadorStado] + " " + conectado.substring(1, conectado.length());
+                    User aux = new User();
+                    aux.setLogin(loginF);
+                    if(s.equals("CONNECTED")){
+                       aux.setEstadoUsuario(1);
+                    } else {
+                       aux.setEstadoUsuario(0);
+                    }
+                    
+                    friendList.add(aux);
+                    
+                    nombre = true;
                 }
                 
             }
+            contador++;
+        }
             
-            firstFriend = names[0].substring(0, names[0].indexOf(" "));
-            
-            
-            myCristoMessenger.setFriendsOf(names);
+        myCristoMessenger.setFriendsOf(friendList);
             
     }
     
     
     
-    public void leerMsgs(String fromServer){
+    public void leerMsgs(String fromServer) throws IOException{
         
         if(fromServer.startsWith(cadenaPrincipal)){
             
