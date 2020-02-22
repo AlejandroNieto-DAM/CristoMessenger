@@ -4,7 +4,7 @@ package Vista;
 import Classes.CellRenderer;
 import Classes.Message;
 import Controladores.KnockKnockClient;
-import Controladores.User;
+import Classes.User;
 import java.awt.Image;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -60,9 +60,7 @@ public class CristoMessenger extends javax.swing.JFrame{
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIconAboveSearch.getWidth(), jLabelIconAboveSearch.getHeight(), Image.SCALE_DEFAULT));
         jLabelIconAboveSearch.setIcon(imageIcon); 
         
-        
-        
-        
+
         imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(jLabelIconRegisterWindow.getWidth(), jLabelIconRegisterWindow.getHeight(), Image.SCALE_DEFAULT));
         jLabelIconRegisterWindow.setIcon(imageIcon);
         
@@ -90,10 +88,10 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         Collections.sort(mensjs, Message.StuNameComparator);
         
-        System.out.println("mensjss size en la vista locooo --< " + mensjs.size());
+        //System.out.println("mensjss size en la vista locooo --< " + mensjs.size());
         for(int i = 0; i < mensjs.size(); i++){
             if (mensjs.get(i).getId_user_orig().equals(actualUser)){    
-                this.jTextArea1.setText(this.jTextArea1.getText() + "\t" + mensjs.get(i).getText() + "\n");
+                this.jTextArea1.setText(this.jTextArea1.getText() + "\t\t\t" + mensjs.get(i).getText() + "\n");
             } else {
                 this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
             }
@@ -463,6 +461,8 @@ public class CristoMessenger extends javax.swing.JFrame{
         } catch (IOException ex) {
             Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        this.jTextFieldMessageFromUser.setText("");
     }//GEN-LAST:event_jButtonSendMessageActionPerformed
 
     
@@ -480,15 +480,14 @@ public class CristoMessenger extends javax.swing.JFrame{
         this.jTextFieldUserSelectedInListName.setText("");
         this.jTextFieldUserSelectedInListName.setText(data);
     }
-    
-    
+     
     private void jListFriendsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListFriendsMouseClicked
         
         this.jTextArea1.setText("");
         String des = this.jListFriends.getSelectedValue();
         String dest = "";
         Boolean parar = false;
-        System.out.println("");
+        System.out.println("Esto que es lo que es  --> " + des);
         for(int i = 0; i < des.length() && parar == false; i++){
             if(des.charAt(i) != ' '){
                 dest += des.charAt(i);
@@ -508,10 +507,6 @@ public class CristoMessenger extends javax.swing.JFrame{
             this.myKK.getFriendData();
             this.myKK.getFriendStatus();
             this.myKK.getMessagesIniciarAccion();
-            
-            
-            
-            
             
         } catch (IOException ex) {
             Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);

@@ -1,6 +1,7 @@
 package Controladores;
 
 
+import Classes.User;
 import Classes.Message;
 import Vista.CristoMessenger;
 import java.io.IOException;
@@ -107,6 +108,10 @@ public class ClientProtocol {
     }
     
     
+    public String msgAllReceived(){
+        return cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#ALL_RECEIVED";
+    }
+    
     public String getPhoto(){
         String cadena = "";
         cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#GET_PHOTO#" + this.login;
@@ -118,6 +123,18 @@ public class ClientProtocol {
         String cadena = ""; 
         String[] datos = theInput.split("#");
         cadena = datos[5] + " " + datos[6] + " " + datos[7];
+        
+        ArrayList<User> friends = this.myCristoMessenger.getFriends();
+        for(int i = 0; i < friends.size(); i++){
+            if(datos[4].equals(friends.get(i).getLogin())){
+                if(friends.get(i).getEstadoUsuario() == false){
+                    cadena += " " + "NOT_CONNECTED";
+                } else {
+                    cadena += " " + "CONNECTED";
+                }
+            }
+        }
+        
         return cadena;
     }
     
@@ -153,7 +170,7 @@ public class ClientProtocol {
     
     public String getFriendStatus(){
         String cadena  = ""; 
-        cadena = cadenaPrincipal + "#" + dateTime + "#CLIENT#STATUS#" + login + "#" + this.myCristoMessenger.getFocusFriend();
+        cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#STATUS#" + login + "#";
         return cadena;
     }
     

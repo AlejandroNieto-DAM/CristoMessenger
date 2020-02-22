@@ -23,6 +23,8 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KnockKnockProtocol{
     
@@ -37,7 +39,7 @@ public class KnockKnockProtocol{
     private String login_user;
     private String focusedFriend;
     
-    private LocalDateTime dateTime;
+    //private LocalDateTime dateTime;
     
     private Message_Controller message_controller;
     private Friend_Controller friend_controller;
@@ -74,7 +76,7 @@ public class KnockKnockProtocol{
         login_user = "";
         focusedFriend = "";
         
-        dateTime = LocalDateTime.now();
+        //dateTime = LocalDateTime.now();
         
         contadorMsg = 0;
     }
@@ -129,29 +131,40 @@ public class KnockKnockProtocol{
                  } else {
                      System.out.println("Este usuario no existe.");
                      CristoServer.debug("Este usuario no existe");
-                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#SERVER#ERROR#BAD_LOGIN";
+                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#ERROR#BAD_LOGIN";
                  }
      
             } 
             
-            if(theInput.contains("MSGS") && this.contadorPaquetes(theInput) == 7){
-                this.messages.clear();
-                theOutput = getTotalMsgs(theInput);                    
-                //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_MSGPKG";
+            if(theInput.contains("MSGS")){
+                if(this.contadorPaquetes(theInput) == 7){
+                    this.messages.clear();
+                    theOutput = getTotalMsgs(theInput);  
+                } else {
+                    theOutput = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_MSGPKG";
+                }   
             }
  
-            if(theInput.contains("STATUS") && this.contadorPaquetes(theInput) == 6){
-                theOutput = this.getUserState(theInput); 
-                //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_PKG";
+            if(theInput.contains("STATUS")){
+                if(this.contadorPaquetes(theInput) == 6){
+                    theOutput = this.getUserState(theInput); 
+                } else {
+                    theOutput = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_PKG";
+                }                
             }
             
-            if(theInput.contains("ALLDATA_USER") && this.contadorPaquetes(theInput) == 5){
-                theOutput = this.getAllDataUser(theInput);   
-                //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_PKG";
+            if(theInput.contains("ALLDATA_USER")){
+                if(this.contadorPaquetes(theInput) == 5){
+                   theOutput = this.getAllDataUser(theInput); 
+                } else {
+                   theOutput = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_PKG"; 
+                }
             }
     
         } else {
+            
             CristoServer.debug("MENSAJE INVALIDO");  
+            
         }
 
         CristoServer.debug(theOutput);
@@ -184,7 +197,7 @@ public class KnockKnockProtocol{
         int[] fileContent;
         int bytesPorLeer = 511;
         String toEncode = "";
-        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#RESPONSE_MULTIMEDIA#<LOGIN_CLIENTE>#<TOTAL_BYTES_MULTIMEDIA>#<SIZE_PACKET_MULTIMEDIA>#@512BYTES_FOTO
+
         cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#RESPONSE_MULTIMEDIA#" + 
                 this.login_user + "#" + 
                 (int)file.length() + "#";
@@ -205,8 +218,7 @@ public class KnockKnockProtocol{
             
             contador++;
         }
-        
-        
+
         String encodedString = Base64.getEncoder().encodeToString(toEncode.getBytes());
         
         cadena += encodedString;
@@ -224,19 +236,21 @@ public class KnockKnockProtocol{
     }
     
     
-    public String getAllDataUser(String theInput) throws SQLException{
+    public String getAllDataUser(String theInput){
         String cadena = "";
         
         String datos[] = theInput.split("#");
         User focusFriend = new User();
         focusFriend.setLogin(datos[4]);
-        user_controller.getUser(focusFriend);
-        
-        //PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#ALLDATA_USER#<LOGIN>#<NAME>#<SURNAME1>#<SURNAME2>
-
-        cadena += cadenaPrincipal + "#" + dateTime + "#SERVER#ALLDATA_USER#" +  focusFriend.getLogin() + "#"
+        try {
+            user_controller.getUser(focusFriend);
+            cadena += cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#ALLDATA_USER#" +  focusFriend.getLogin() + "#"
                     + focusFriend.getNombreUsuario() + "#" + focusFriend.getApellido1() + "#" + focusFriend.getApellido2();
-          
+        } catch (SQLException ex) {
+            //Logger.getLogger(KnockKnockProtocol.class.getName()).log(Level.SEVERE, null, ex);
+            cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_PKG";          
+        }
+  
         return cadena;
     }
     
@@ -249,17 +263,15 @@ public class KnockKnockProtocol{
         Boolean existeUser2 = user_controller.findUser(datos[5]); 
         Boolean areFriends = friend_controller.getRelation(datos[4], datos[5]);
         
-        System.out.println("Existe 1 --> " + existeUser1);
-        System.out.println("Existe 2 --> " + existeUser2);
-        System.out.println("Son amigos --> " + areFriends);
-
-
+        //System.out.println("Existe 1 --> " + existeUser1);
+        //System.out.println("Existe 2 --> " + existeUser2);
+        //System.out.println("Son amigos --> " + areFriends);
 
        if(existeUser1 && existeUser2 && areFriends){
             message_controller.insertMessage(datos[4], datos[5], datos[6], userConnected);
             cadena = "Bien";
        } else {
-            cadena = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#FORBIDDEN_CHAT";
+            cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#FORBIDDEN_CHAT";
        }
         
         return cadena;
@@ -270,7 +282,7 @@ public class KnockKnockProtocol{
         
         String[] datos = theInput.split("#");
         
-        String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#STATUS#" + datos[5];
+        String cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#STATUS#" + datos[5];
         
         String status = user_controller.getUserState(datos[5]);
         
@@ -282,44 +294,45 @@ public class KnockKnockProtocol{
     
     public String sendMsg(int i){
         
-        String cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS";
+        String cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#MSGS";
         cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText() ; 
         return cadena;
         
     }
     
-    public String getTotalMsgs(String theInput) throws SQLException{
+    public String getTotalMsgs(String theInput){
         
         String cadena = "";
         
         String[] receive = theInput.split("#");
         
         
-        message_controller.getMessages1(messages, receive[4], receive[5], receive[6]);
+        try {
+            message_controller.getMessages1(messages, receive[4], receive[5], receive[6]);
+            this.focusedFriend = receive[5];
         
-        this.focusedFriend = receive[5];
+            cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#MSGS#" + login_user + "#" + focusedFriend + "#" + message_controller.getTotalMessagesOfAConversation(receive[4], receive[5]) + "#" + messages.size();
+
+            this.contadorMsg = messages.size();
+            
+        } catch (SQLException ex) {
+            //Logger.getLogger(KnockKnockProtocol.class.getName()).log(Level.SEVERE, null, ex);
+            cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_MSGPKG";
+        }
         
-        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#MSGS#" + login_user + "#" + focusedFriend + "#" + message_controller.getTotalMessagesOfAConversation(receive[4], receive[5]) + "#" + messages.size();
+        return cadena; 
         
-        this.contadorMsg = messages.size();
-        return cadena;
     }
         
     public String getFriends(String login){
         
-        
-        
         String cadena = "";
         
         friend_controller.getFriendsOf(this.usuarios, login);
+
+        cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#LOGIN_CORRECT#" + login + "#FRIENDS";
         
-        
-        cadena = cadenaPrincipal + "#" + dateTime + "#SERVER#LOGIN_CORRECT#" + login + "#FRIENDS";
-        
-        int amigos = 0;
-        String substringFriends = "";
-        
-        
+        String substringFriends = "";  
                 
         for(int j = 0; j < usuarios.size(); j++){
 

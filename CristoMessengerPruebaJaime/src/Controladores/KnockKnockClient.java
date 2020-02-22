@@ -11,11 +11,11 @@ package Controladores;
  * @author alejandronieto
  */
 
+import Classes.User;
 import Classes.RefrescarListaAmigos;
 import Vista.CristoMessenger;
 import java.io.*;
 import java.net.*;
-import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -37,8 +37,6 @@ public class KnockKnockClient extends Thread{
     BufferedReader in;
     
     
-  
-    LocalDateTime dateTime = LocalDateTime.now();
     
     RefrescarListaAmigos friendRefresh;
     
@@ -99,7 +97,7 @@ public class KnockKnockClient extends Thread{
                     this.loginFrame.setVisible(false);
                     this.a.setActualUser(login);
                     this.a.setVisible(true); 
-                    //this.friendRefresh.start();  
+                    this.friendRefresh.start();  
 
                 }
 
@@ -107,8 +105,8 @@ public class KnockKnockClient extends Thread{
                     this.getMessagesFrom(fromServer);
                 }
                 
-                if(fromServer.contains("STATUS")){      
-                     protocol.processInput(fromServer);
+                if(fromServer.contains("STATUS")){    
+                    this.changeFriendsState(fromServer);
                 }
                 
                 if(fromServer.contains("ALLDATA_USER")){      
@@ -169,21 +167,33 @@ public class KnockKnockClient extends Thread{
         protocol.processInput(theInput);  
     }
     
+    public void changeFriendsState(String fromServer){
+        ArrayList<User> friendList = this.a.getFriends();
+        
+        String[] datos = fromServer.split("#");
+
+        for(int i = 0; i < friendList.size(); i++){
+            String estado = this.protocol.friendStatus(fromServer);
+            if(datos[4].equals(friendList.get(i).getLogin())){
+                if(estado.equals("CONNECTED")){
+                    friendList.get(i).setEstadoUsuario(1);
+                } else {
+                    friendList.get(i).setEstadoUsuario(0);
+                }
+            }
+        }
+        
+        this.a.setFriendsOf(friendList);
+    }
+    
     public synchronized void refreshFriends() throws IOException{
         ArrayList<User> friendList = this.a.getFriends();
         
         for(int i = 0; i < friendList.size(); i++){
-            String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#STATUS#" + login + "#" + friendList.get(i).getLogin();
+            String cadena = protocol.getFriendStatus() + friendList.get(i).getLogin();
             out.println(cadena);
-            String estado = this.protocol.friendStatus(in.readLine());
-            if(estado.equals("CONNECTED")){
-                friendList.get(i).setEstadoUsuario(1);
-            } else {
-                friendList.get(i).setEstadoUsuario(0);
-            }
         }
-     
-        this.a.setFriendsOf(friendList);
+  
     }
     
     
@@ -241,7 +251,7 @@ public class KnockKnockClient extends Thread{
             }
             
             
-            String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED";
+            String theOutput = protocol.msgAllReceived();
             out.println(theOutput);
                     
         }
