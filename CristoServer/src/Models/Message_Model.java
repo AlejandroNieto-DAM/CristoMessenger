@@ -53,7 +53,7 @@ public class Message_Model extends ConnectToBD{
                 String login = rs.getString("id_user_orig");
                 String login2 = rs.getString("id_user_dest");
                 String date = rs.getString("datetime");
-                int read = rs.getInt("read");
+                int read = rs.getInt("read_msg");
                 int sent = rs.getInt("sent");
                 String text = rs.getString("text");
                 
@@ -104,7 +104,7 @@ public class Message_Model extends ConnectToBD{
         return totalMensajes;
     }
     
-    public void getMessages1(ArrayList<Message> messages, String login_orig, String login_dest, String previousDate){
+    public void getMessages1(ArrayList<Message> messages, String login_orig, String login_dest, String previousDate) throws SQLException{
         
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -118,7 +118,7 @@ public class Message_Model extends ConnectToBD{
                 String login = rs.getString("id_user_orig");
                 String login2 = rs.getString("id_user_dest");
                 String date = rs.getString("datetime");
-                int read = rs.getInt("read");
+                int read = rs.getInt("read_msg");
                 int sent = rs.getInt("sent");
                 String text = rs.getString("text");
                 
@@ -140,10 +140,23 @@ public class Message_Model extends ConnectToBD{
             CristoServer.debug(e.toString());
         }
         
+        for(int i = 0; i < messages.size(); i++){
+            if(messages.get(i).getRead() == false){
+                String query = "update " + this.getDBName() + ".message "
+                        + "set read_msg = 1 "
+                        + "where datetime = '" + messages.get(i).getDate() + "' "
+                        + "and id_user_orig = '" + messages.get(i).getId_user_orig() + "' "
+                        + "and id_user_dest = '" + messages.get(i).getId_user_dest() + "'";
+                
+                PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+                preparedStmt.executeUpdate();
+            }
+        }
+        
         
     }
 
-    public void insertMessage(String login, String login_dest, String text){
+    public void insertMessage(String login, String login_dest, String text, int userDestState){
        
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         
@@ -153,17 +166,14 @@ public class Message_Model extends ConnectToBD{
             preparedStmt.setString (1, login);
             preparedStmt.setString (2, login_dest);
             preparedStmt.setString (3, sdf.format(timestamp));
-            preparedStmt.setInt (4, 0);
+            preparedStmt.setInt (4, userDestState);
             preparedStmt.setInt (5, 1);
             preparedStmt.setString (6, text);
-            
-            System.out.println("LA QUERYYYY --> " + query);
-           
+                       
           preparedStmt.execute();
 
           this.getConnector().close();
           
-          //CristoServer.debug("Usuario introducido correctamente!!");
         } catch (Exception e) {
             CristoServer.debug("Got an exception!");
             CristoServer.debug(e.getMessage());

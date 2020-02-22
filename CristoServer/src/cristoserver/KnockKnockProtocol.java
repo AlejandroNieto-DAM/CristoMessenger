@@ -139,10 +139,6 @@ public class KnockKnockProtocol{
                 theOutput = getTotalMsgs(theInput);                    
                 //theOutput = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#BAD_MSGPKG";
             }
-             
-            if(theInput.contains("#CHAT") && this.contadorPaquetes(theInput) == 7){
-                 theOutput = this.receiveMessage(theInput);
-            }
  
             if(theInput.contains("STATUS") && this.contadorPaquetes(theInput) == 6){
                 theOutput = this.getUserState(theInput); 
@@ -245,7 +241,7 @@ public class KnockKnockProtocol{
     }
     
     
-    public String receiveMessage(String theInput) throws SQLException{
+    public String receiveMessage(String theInput, int userConnected) throws SQLException{
         String cadena = "";
         String[] datos = theInput.split("#");
         
@@ -259,8 +255,8 @@ public class KnockKnockProtocol{
 
 
 
-       if(existeUser1 && existeUser2){
-            message_controller.insertMessage(datos[4], datos[5], datos[6]);
+       if(existeUser1 && existeUser2 && areFriends){
+            message_controller.insertMessage(datos[4], datos[5], datos[6], userConnected);
             cadena = "Bien";
        } else {
             cadena = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#FORBIDDEN_CHAT";
@@ -292,7 +288,7 @@ public class KnockKnockProtocol{
         
     }
     
-    public String getTotalMsgs(String theInput){
+    public String getTotalMsgs(String theInput) throws SQLException{
         
         String cadena = "";
         

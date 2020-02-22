@@ -20,6 +20,8 @@ import javax.swing.JList;
  */
 public class CellRenderer extends DefaultListCellRenderer {
     
+        
+    
         ImageIcon imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
         
         @Override

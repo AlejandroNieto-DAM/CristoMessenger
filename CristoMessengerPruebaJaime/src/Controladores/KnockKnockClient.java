@@ -104,7 +104,7 @@ public class KnockKnockClient extends Thread{
                 }
 
                 if(fromServer.contains("MSGS")){
-                    this.getMessagesFromPrueba(fromServer);
+                    this.getMessagesFrom(fromServer);
                 }
                 
                 if(fromServer.contains("STATUS")){      
@@ -116,16 +116,21 @@ public class KnockKnockClient extends Thread{
                 }
                 
                 if(fromServer.contains("CHAT")){
-                    System.out.println("YEYO EN MI PUTA MADRE QUE FUNCIONA " + fromServer);
-                    out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#CHAT#RECEIVED_MESSAGE#LOGIN_ORIGEN#TIMESTAMP");
+                    if(!fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){                      
+                        this.addNewMsg(fromServer);
+                    }
                     
-                    
-                }
-                
-                if(fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){
-                    System.out.println(fromServer);
-                }
-                
+                }          
+    }
+    
+    
+    public void addNewMsg(String fromServer) throws IOException{
+        String datos[] = fromServer.split("#");
+        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#CHAT#RECEIVED_MESSAGE#" + datos[4] + "#TIMESTAMP");
+
+        if(this.a.getFocusFriend().equals(datos[4])){
+            protocol.addNewMsg(fromServer);
+        }
     }
     
     public synchronized void getPhoto() throws IOException{
@@ -197,7 +202,7 @@ public class KnockKnockClient extends Thread{
         out.println(output);
     }
     
-    public synchronized void getMessagesFrom() throws IOException{
+    public synchronized void getMessagesIniciarAccion() throws IOException{
         
         this.numeroMsgs = 0;
         this.totalNumeroMensajes = 0;
@@ -207,10 +212,8 @@ public class KnockKnockClient extends Thread{
              
     }
     
-    public synchronized void getMessagesFromPrueba(String fromServer) throws IOException{
+    public synchronized void getMessagesFrom(String fromServer) throws IOException{
 
-        
-        System.out.println("ILLO QUE PASA MIRA QUE CADENA RECIBO " + fromServer);
         String output = protocol.processInput(fromServer);
         this.numeroMsgs = protocol.getNumeroDeMensajes();
         this.totalNumeroMensajes = protocol.getTotalNumeroDeMensajes();
@@ -227,10 +230,7 @@ public class KnockKnockClient extends Thread{
                 System.out.println("numero de mgsg " + this.numeroMsgs);
         
             }while(numeroMsgs == 0);
-            
-            
-            
-            
+
             out.println(output);
             System.out.println("output dentro del if + " + output);
 
@@ -243,7 +243,6 @@ public class KnockKnockClient extends Thread{
             
             String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#ALL_RECEIVED";
             out.println(theOutput);
-            System.out.println("yeyo en mi ihpen");
                     
         }
         

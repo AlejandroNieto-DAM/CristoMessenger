@@ -7,6 +7,8 @@ import Controladores.KnockKnockClient;
 import Controladores.User;
 import java.awt.Image;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +44,8 @@ public class CristoMessenger extends javax.swing.JFrame{
     
     int numeroAmigos = 0;
     
-           
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         
     /**
      * Creates new form CristoMessenger
@@ -95,10 +98,7 @@ public class CristoMessenger extends javax.swing.JFrame{
                 this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
             }
         }
-
     }
-    
-    
     
     public void setActualUser(String login){
         actualUser = login;
@@ -449,6 +449,20 @@ public class CristoMessenger extends javax.swing.JFrame{
                 Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        Message m = new Message();
+        m.setId_user_orig(this.actualUser);
+        m.setId_user_dest(this.getFocusFriend());
+        m.setDate(sdf.format(timestamp));
+        m.setText(text);
+        m.setRead(0);
+        m.setSent(1);
+        this.mensjs.add(m);
+        try {
+            this.setMessages(mensjs);
+        } catch (IOException ex) {
+            Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButtonSendMessageActionPerformed
 
     
@@ -493,7 +507,7 @@ public class CristoMessenger extends javax.swing.JFrame{
             
             this.myKK.getFriendData();
             this.myKK.getFriendStatus();
-            this.myKK.getMessagesFrom();
+            this.myKK.getMessagesIniciarAccion();
             
             
             

@@ -38,6 +38,8 @@ public class KKMultiServerThread extends Thread{
             String outputLine = "";
      
      private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
 
      
     public KKMultiServerThread(Socket socket, KKServer myKKS) {
@@ -111,15 +113,13 @@ public class KKMultiServerThread extends Thread{
             outputLine = "1";
             
         }else if(inputLine.contains("CHAT")){
+            
+            if(inputLine.contains("RECEIVED_MESSAGE")){
+                this.sendReceivedMessage(inputLine);
+            } else {
+                this.sendMessage(inputLine);
+            }     
 
-            this.sendMessage(inputLine);
-
-        } else if(inputLine.contains("RECEIVED_MESSAGE")){
-            
-            System.out.println("Hemos entrao en lo que hemos recibio o no");
-            
-            this.sendReceivedMessage(inputLine);
-            
         } else if(inputLine.contains("GET_PHOTO")){
 
             out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin());
@@ -155,25 +155,47 @@ public class KKMultiServerThread extends Thread{
     
     public void sendReceivedMessage(String inputLine){
         
-        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#SERVER#CHAT#<LOGIN_ORIG#<LOGIN_DEST>#MESSAGE_SUCCESFULLY_PROCESSED#TIMESTAMP");
+        String[] datos = inputLine.split("#");
+        
+        outputLine = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#<LOGIN_ORIG#<LOGIN_DEST>#MESSAGE_SUCCESFULLY_PROCESSED#" + sdf.format(timestamp);
+
+        Boolean encontrado = false;
+        
+        for(int i = 0; i < myKKS.getHebrasSize() && !encontrado; i++){
+            if(this.myKKS.getConexionAt(i).getLogin().equals(datos[5])){
+                PrintWriter outB = this.myKKS.getConexionAt(i).getOutputStream();
+                outB.println(outputLine);
+                encontrado = true;
+            }
+        } 
     }
     
     public void sendMessage(String inputLine) throws SQLException{
         
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Boolean encontrado = false;
-        
-        for(int i = 0; i < myKKS.getHebrasSize() && !encontrado; i++){
-            String loginFriend = this.kkp.getFriend(inputLine);
+        String loginFriend = this.kkp.getFriend(inputLine);
+   
+        for(int i = 0; i < myKKS.getHebrasSize() && !encontrado; i++){ 
             if(this.myKKS.getConexionAt(i).getLogin().equals(loginFriend)){
                 PrintWriter outB = this.myKKS.getConexionAt(i).getOutputStream();
                 outB.println(inputLine + "#" + sdf.format(timestamp));
-                encontrado = true;
+                encontrado = true; 
             }
         }
         
+        String bien = "";
 
-        //kkp.receiveMessage(inputLine);
+        if(encontrado){
+            bien = kkp.receiveMessage(inputLine, 1);
+            //TODO INSERTAR COMO LEIDO
+        } else {
+            bien = kkp.receiveMessage(inputLine, 0);
+        }
+        
+        if(!bien.contains("Bien")){
+            out.println(outputLine);
+        }
+        
     }
     
     public PrintWriter getOutputStream(){

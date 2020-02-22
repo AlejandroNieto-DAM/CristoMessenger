@@ -247,7 +247,6 @@ public class ClientProtocol {
 
             msgsFiltrado = fromServer.substring(fromServer.indexOf("MSGS") + 5, fromServer.length());
             msgs = msgsFiltrado.split("#");
-            System.out.println("MSGS RECORTAO + " + msgs);
 
             for(String att : msgs){
                 if(contadorStt == 1){
@@ -265,6 +264,7 @@ public class ClientProtocol {
                 if(contadorStt == 4){
                     text = att;
                 }
+                
 
                 contadorStt++;
             }
@@ -274,10 +274,30 @@ public class ClientProtocol {
             m.setId_user_dest(logDest);
             m.setDate(dateHour);
             m.setText(text);
+            m.setRead(1);
+            m.setSent(1);
             
             this.msjs.add(m);
             this.myCristoMessenger.setMessages(msjs);
         }
     }
-
+    
+    
+    public void addNewMsg(String fromServer) throws IOException{
+        String[] datos = fromServer.split("#");
+        
+        Message m = new Message();
+        
+        m.setId_user_orig(datos[4]);
+        m.setId_user_dest(datos[5]);
+        m.setDate(datos[7]);
+        m.setText(datos[6]);
+        m.setRead(1);
+        m.setSent(1);
+        
+        this.msjs.add(m);
+        this.myCristoMessenger.setMessages(msjs);
+        
+    }  
+    
 }
