@@ -100,7 +100,7 @@ public class KnockKnockClient extends Thread{
     }
     
     
-    public synchronized void filtrado(String fromServer) throws IOException, InterruptedException{
+    public void filtrado(String fromServer) throws IOException, InterruptedException{
         
         System.out.println("FROM SERVER ESTO ES LO QUE RECIBO --> " + fromServer);
         
@@ -109,9 +109,11 @@ public class KnockKnockClient extends Thread{
            
         }
         
-        if(!fromServer.contains(condition) && condition != ""){
-            usando.await();
-        } 
+        if(condition != ""){
+            while(!fromServer.contains(condition)){
+                usando.await();
+            } 
+        }
         
         
 
@@ -156,7 +158,8 @@ public class KnockKnockClient extends Thread{
             
             System.out.println("Hemos terminao con la foto");
             condition = "";
-            notifyAll();
+            usando.signalAll();
+            lock.unlock();
         }
 
         if(fromServer.contains("STATUS")){    
@@ -303,16 +306,26 @@ public class KnockKnockClient extends Thread{
     }
     
     public void processMsgs(String fromServer) throws IOException{
+        System.out.println("Mira el numero de mensajes --> " + this.numeroMsgs);
        
         if(this.contadorMsgs < this.numeroMsgs){
             protocol.leerMsgs(fromServer);
             contadorMsgs++;
-        } else {
-            String theOutput = protocol.msgAllReceived();
-            out.println(theOutput);
-            condition = "";
-            notifyAll();    
+            System.out.println("Mira el contador de mensajes --> " + this.contadorMsgs);
+
+            if(this.contadorMsgs == this.numeroMsgs){
+                String theOutput = protocol.msgAllReceived();
+                out.println(theOutput);
+                System.out.println("Output de que ya los he recibio tos --> " + theOutput);
+                in.readLine();
+                condition = "";
+                usando.signalAll();
+                lock.unlock();
+            }
         }
+            
+            
+        
         
     }
     
@@ -326,18 +339,12 @@ public class KnockKnockClient extends Thread{
             if(numeroMsgs == 0){
                 output =  protocol.getMessages();
                 out.println(output);
-                System.out.println("Tamos pidiendo dias --> " + output);
             } else {
                 out.println(output);
-                System.out.println("OK_SEND --> " +  output);   
                 this.recibiendoMsg = true;
+                lock.lock();
                 condition = "MSGS";
             }
-        }
-        
-        
-        
-        
-                     
+        }               
     }
 }

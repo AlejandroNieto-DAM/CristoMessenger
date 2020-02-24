@@ -5,8 +5,6 @@
  */
 package cristoserver;
 
-import Controllers.Friend_Controller;
-import Controllers.Message_Controller;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,7 +24,6 @@ import java.util.logging.Logger;
  */
 public class KKMultiServerThread extends Thread{
     
-     boolean esperar = false;
      private Socket socket = null;
      KnockKnockProtocol kkp;
      KKServer myKKS;
@@ -62,7 +59,14 @@ public class KKMultiServerThread extends Thread{
             
             try{
                 while ((inputLine = in.readLine()) != null) {
+                    
+                    CristoServer.debug("FROMCLIENT " + inputLine);
+                    System.out.println("FROMCLIENT " + inputLine);
+
                     this.filtrado(inputLine);
+                    
+                    
+                    
                     if (outputLine.contains("BAD_LOGIN"))
                         break;
                 }
@@ -82,10 +86,7 @@ public class KKMultiServerThread extends Thread{
         }
     }
     
-    public synchronized void filtrado(String inputLine) throws FileNotFoundException, IOException, SQLException, InterruptedException{
-        CristoServer.debug("FROMCLIENT " + inputLine);
-
-        esperar = true;
+    public void filtrado(String inputLine) throws FileNotFoundException, IOException, SQLException, InterruptedException{
         
         if(inputLine.contains("OK_SEND!") && kkp.contadorPaquetes(inputLine) == 5){
 
@@ -97,7 +98,7 @@ public class KKMultiServerThread extends Thread{
 
         }else if (inputLine.contains("ALL_RECEIVED")){
            
-            outputLine = "1";
+            out.println("yeyo");
             
         }else if(inputLine.contains("CHAT")){
             
@@ -126,9 +127,6 @@ public class KKMultiServerThread extends Thread{
             out.println(outputLine);
 
         }
-        
-        //sperar = false;
-        //notifyAll();
 
         CristoServer.debug("FROMSERVER " + outputLine);
         //System.out.println(outputLine);  
@@ -166,22 +164,23 @@ public class KKMultiServerThread extends Thread{
             if(this.myKKS.getConexionAt(i).getLogin().equals(loginFriend)){
                 PrintWriter outB = this.myKKS.getConexionAt(i).getOutputStream();
                 outB.println(inputLine + "#" + sdf.format(timestamp));
+                System.out.println("Mandado");
                 encontrado = true; 
             }
         }
         
-        String bien = "";
+        /*String tryInsert = "";
 
         if(encontrado){
-            bien = kkp.receiveMessage(inputLine, 1);
+            tryInsert = kkp.receiveMessage(inputLine, 1);
             //TODO INSERTAR COMO LEIDO
         } else {
-            bien = kkp.receiveMessage(inputLine, 0);
+            tryInsert = kkp.receiveMessage(inputLine, 0);
         }
         
-        if(!bien.contains("Bien")){
-            out.println(bien);
-        }
+        if(!tryInsert.contains("Bien")){
+            out.println(tryInsert);
+        }*/
         
         
         
