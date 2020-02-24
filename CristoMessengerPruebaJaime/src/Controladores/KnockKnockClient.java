@@ -21,6 +21,9 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import java.util.Base64;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
  
 public class KnockKnockClient extends Thread{
@@ -37,11 +40,23 @@ public class KnockKnockClient extends Thread{
     BufferedReader in;
     
     
+    Boolean recibiendoMsg = false;
+    int contadorMsgs = 0;
+    
+    Lock lock;
+    Condition usando;
+    Boolean procesando = false;
+    String condition = "";
     
     RefrescarListaAmigos friendRefresh;
     
     int numeroMsgs = 0;
     int totalNumeroMensajes = 0;
+    
+    ArrayList<String> cadenas = new ArrayList();
+    ArrayList<String> decodedBytes = new ArrayList();
+    Boolean friendPhoto = false;
+    
     
     public KnockKnockClient(int port, String host, String login, String pass, JFrame frame) throws IOException{
         this.portNumber = port;
@@ -57,6 +72,8 @@ public class KnockKnockClient extends Thread{
                 new InputStreamReader(kkSocket.getInputStream()));
         
         friendRefresh = new RefrescarListaAmigos(this);
+        lock = new ReentrantLock();
+        usando = lock.newCondition();
 
     }
     
@@ -76,80 +93,105 @@ public class KnockKnockClient extends Thread{
             }
         } catch (IOException ex) {
             Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
     
     
-    public synchronized void filtrado(String fromServer) throws IOException{
+    public synchronized void filtrado(String fromServer) throws IOException, InterruptedException{
         
+        System.out.println("FROM SERVER ESTO ES LO QUE RECIBO --> " + fromServer);
+        
+        if(fromServer.contains("ENDING_MULTIMEDIA_TRANSMISSION")){
+           condition = "";
+           
+        }
+        
+        if(!fromServer.contains(condition) && condition != ""){
+            usando.await();
+        } 
+        
+        
+
         if(fromServer.contains("LOGIN_CORRECT")){
 
-                    protocol.processInput(fromServer);
+            protocol.processInput(fromServer);
 
-                    try {
-                        this.getPhoto();
-                    } catch (IOException ex) {
-                        Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+            try {
+                this.getPhoto();
+            } catch (IOException ex) {
+                Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
-                    this.a.loadPhoto();
-                    this.loginFrame.setVisible(false);
-                    this.a.setActualUser(login);
-                    this.a.setVisible(true); 
-                    this.friendRefresh.start();  
+        }
 
-                }
+        if(fromServer.contains("MSGS")){
+            if(this.recibiendoMsg){
+                this.processMsgs(fromServer);
+            } else {
+                this.getMessagesFrom(fromServer);
+            }
+            
+        }
+        
+        if(fromServer.contains("STARTING_MULTIMEDIA_TRANSMISSION_TO")){
+            lock.lock();
+            condition = "RESPONSE_MULTIMEDIA";  
+        }
 
-                if(fromServer.contains("MSGS")){
-                    this.getMessagesFrom(fromServer);
-                }
-                
-                if(fromServer.contains("STATUS")){    
-                    this.changeFriendsState(fromServer);
-                }
-                
-                if(fromServer.contains("ALLDATA_USER")){      
-                    protocol.processInput(fromServer);
-                }
-                
-                if(fromServer.contains("CHAT")){
-                    if(!fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){                      
-                        this.addNewMsg(fromServer);
-                    }
-                    
-                }          
+        if(fromServer.contains("RESPONSE_MULTIMEDIA")){
+            System.out.println("Entrando a seguir con la foto");
+            String datos[] = fromServer.split("#");
+            cadenas.add(new String(datos[7]));   
+        }
+
+        if(fromServer.contains("ENDING_MULTIMEDIA_TRANSMISSION")){
+            if(friendPhoto){
+                this.processFriendPhoto();
+            } else {
+                this.processPhoto();
+            }
+            
+            System.out.println("Hemos terminao con la foto");
+            condition = "";
+            notifyAll();
+        }
+
+        if(fromServer.contains("STATUS")){    
+            this.changeFriendsState(fromServer);
+        }
+
+        if(fromServer.contains("ALLDATA_USER")){      
+            protocol.processInput(fromServer);
+        }
+
+        if(fromServer.contains("CHAT")){
+            if(!fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){                      
+                this.addNewMsg(fromServer);
+            }   
+        }         
     }
     
     
     public void addNewMsg(String fromServer) throws IOException{
-        String datos[] = fromServer.split("#");
-        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#CHAT#RECEIVED_MESSAGE#" + datos[4] + "#TIMESTAMP");
-
-        if(this.a.getFocusFriend().equals(datos[4])){
-            protocol.addNewMsg(fromServer);
-        }
+        out.println(protocol.addNewMsg(fromServer));   
     }
     
-    public synchronized void getPhoto() throws IOException{
+    public void getPhoto() throws IOException{
+        cadenas.clear();
+        this.decodedBytes.clear();
+        
         String output = protocol.getPhoto();
-        out.println(output);
-        ArrayList<String> cadenas = new ArrayList();
-        ArrayList<String> decodedBytes = new ArrayList();
-        
-        String fromServer = in.readLine();
-        
-        while(!(fromServer = in.readLine()).contains("ENDING_MULTIMEDIA_TRANSMISSION")){
-            String datos[] = fromServer.split("#");
-            cadenas.add(new String(datos[7]));
-        }
-        
-        System.out.println("Img --> " + fromServer);
+        out.println(output);   
+    }
+    
+    public void processPhoto() throws IOException{
         for(String s : cadenas){
             decodedBytes.add(new String(Base64.getDecoder().decode(s.getBytes())));
         }
-       
-        
+  
         File file = new File("userPhoto.jpg");
         file.createNewFile();
         FileOutputStream fos = new FileOutputStream(file);
@@ -160,10 +202,47 @@ public class KnockKnockClient extends Thread{
         }
         fos.flush();
         fos.close();
+        
+        this.a.loadPhoto();
+        this.a.setActualUser(login);
+        this.loginFrame.setVisible(false);   
+        this.a.setVisible(true); 
+        this.friendRefresh.start();  
+        
+        
+        friendPhoto = true;
+        
+    }
     
+    public void getFriendPhoto() throws IOException{
+        cadenas.clear();
+        this.decodedBytes.clear();
+        
+        String output = protocol.getFriendPhoto();
+        out.println(output);   
+    }
+    
+    public void processFriendPhoto() throws IOException{
+        for(String s : cadenas){
+            decodedBytes.add(new String(Base64.getDecoder().decode(s.getBytes())));
+        }
+  
+        File file = new File("friendPhoto.jpg");
+        file.createNewFile();
+        FileOutputStream fos = new FileOutputStream(file);
+        for (String s : decodedBytes) {
+            for (char c : s.toCharArray()) {
+                fos.write(c);
+            }
+        }
+        fos.flush();
+        fos.close();
+        
+        this.a.loadFriendPhoto();
+        procesando = false;
     }
      
-    public synchronized void processMsg(String theInput) throws IOException{
+    public void processMsg(String theInput) throws IOException{
         protocol.processInput(theInput);  
     }
     
@@ -186,79 +265,79 @@ public class KnockKnockClient extends Thread{
         this.a.setFriendsOf(friendList);
     }
     
-    public synchronized void refreshFriends() throws IOException{
+    public void refreshFriends() throws IOException{
+
         ArrayList<User> friendList = this.a.getFriends();
         
         for(int i = 0; i < friendList.size(); i++){
             String cadena = protocol.getFriendStatus() + friendList.get(i).getLogin();
             out.println(cadena);
-        }
-  
+        }  
     }
     
-    
-    public synchronized void sendMessage(String text) throws IOException{
+    public void sendMessage(String text) throws IOException{
         String output = protocol.sendMessage(text);
         out.println(output);
     }
       
-    public synchronized void getFriendStatus() throws IOException{
+    public void getFriendStatus() throws IOException{
         String output = protocol.getFriendStatus();
         out.println(output);  
     }
     
-    public synchronized void getFriendData() throws IOException{
+    public void getFriendData() throws IOException{
         String output = protocol.getFriendData();
         out.println(output);
     }
     
-    public synchronized void getMessagesIniciarAccion() throws IOException{
-        
+    public void getMessagesIniciarAccion() throws IOException{        
         this.numeroMsgs = 0;
         this.totalNumeroMensajes = 0;
-
+        this.contadorMsgs = 0;
+        protocol.restar = 1;
+        this.recibiendoMsg = false;
+        
         String output =  protocol.getMessages();
         out.println(output);
              
     }
     
-    public synchronized void getMessagesFrom(String fromServer) throws IOException{
-
+    public void processMsgs(String fromServer) throws IOException{
+       
+        if(this.contadorMsgs < this.numeroMsgs){
+            protocol.leerMsgs(fromServer);
+            contadorMsgs++;
+        } else {
+            String theOutput = protocol.msgAllReceived();
+            out.println(theOutput);
+            condition = "";
+            notifyAll();    
+        }
+        
+    }
+    
+    public void getMessagesFrom(String fromServer) throws IOException{
+                
         String output = protocol.processInput(fromServer);
         this.numeroMsgs = protocol.getNumeroDeMensajes();
         this.totalNumeroMensajes = protocol.getTotalNumeroDeMensajes();
-        System.out.println("numero de mgsg " + this.numeroMsgs);
         
         if(totalNumeroMensajes != 0){ 
-            
-            do{
+            if(numeroMsgs == 0){
                 output =  protocol.getMessages();
                 out.println(output);
-                fromServer = in.readLine();
-                output = protocol.processInput(fromServer);
-                this.numeroMsgs = protocol.getNumeroDeMensajes();
-                System.out.println("numero de mgsg " + this.numeroMsgs);
-        
-            }while(numeroMsgs == 0);
-
-            out.println(output);
-            System.out.println("output dentro del if + " + output);
-
-            for(int i = 0; i < this.numeroMsgs; i++){
-                 fromServer = in.readLine();
-                 System.out.println("FROMSERVER DENTRO WHILE " + fromServer);
-                 protocol.leerMsgs(fromServer);
+                System.out.println("Tamos pidiendo dias --> " + output);
+            } else {
+                out.println(output);
+                System.out.println("OK_SEND --> " +  output);   
+                this.recibiendoMsg = true;
+                condition = "MSGS";
             }
-            
-            
-            String theOutput = protocol.msgAllReceived();
-            out.println(theOutput);
-                    
         }
         
-        this.numeroMsgs = 0;
-        this.totalNumeroMensajes = 0;
-        protocol.restar = 1;
-             
+        
+        
+        
+                     
     }
 }

@@ -62,20 +62,13 @@ public class KKMultiServerThread extends Thread{
             
             try{
                 while ((inputLine = in.readLine()) != null) {
- 
                     this.filtrado(inputLine);
-                    
-                    //System.out.println("outputline null? --> " + outputLine);
-                    
-                    if (outputLine.contains("BAD_LOGIN") || outputLine == null)
+                    if (outputLine.contains("BAD_LOGIN"))
                         break;
-
                 }
             } catch(SocketException e){
                                   
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
+            } catch (FileNotFoundException | InterruptedException ex) {
                 Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
             }
             
@@ -84,19 +77,13 @@ public class KKMultiServerThread extends Thread{
             
     
         } catch (IOException e) {
-            e.printStackTrace();
         } catch (SQLException ex) {
              Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
-         }
+        }
     }
     
     public synchronized void filtrado(String inputLine) throws FileNotFoundException, IOException, SQLException, InterruptedException{
         CristoServer.debug("FROMCLIENT " + inputLine);
-        //System.out.println(inputLine);
-        
-        /*if(esperar){
-            wait();
-        }*/
 
         esperar = true;
         
@@ -193,8 +180,10 @@ public class KKMultiServerThread extends Thread{
         }
         
         if(!bien.contains("Bien")){
-            out.println(outputLine);
+            out.println(bien);
         }
+        
+        
         
     }
     

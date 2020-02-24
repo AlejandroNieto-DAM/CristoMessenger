@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -94,19 +93,11 @@ public class ClientProtocol {
                     String nombre = this.userData(theInput);
                     this.myCristoMessenger.setFriendData(nombre);
                 }
-                
-                if(theInput.contains("CHAT")){
-                    //String nombre = this.userData(theInput);
-                    //this.myCristoMessenger.setFriendData(nombre);
-                }
-   
             }
         }
         
-        
         return theOutput;
     }
-    
     
     public String msgAllReceived(){
         return cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#ALL_RECEIVED";
@@ -118,7 +109,12 @@ public class ClientProtocol {
         return cadena;
     }
     
-    
+    public String getFriendPhoto(){
+        String cadena = "";
+        cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#GET_PHOTO#" + this.myCristoMessenger.getFocusFriend();
+        return cadena;
+    }
+     
     public String userData(String theInput){
         String cadena = ""; 
         String[] datos = theInput.split("#");
@@ -142,8 +138,7 @@ public class ClientProtocol {
         String cadena = "";
         cadena += cadenaPrincipal + "#" + dateTime + "#CLIENT#ALLDATA_USER#" + this.myCristoMessenger.getFocusFriend();
         return cadena;
-    }
-    
+    } 
     
     public String sendMessage(String text){
         String cadena = "";
@@ -174,7 +169,6 @@ public class ClientProtocol {
         return cadena;
     }
     
-    
     public void leerNumeroMensajes(String fromServer){         
         String[] msgs = fromServer.split("#");
         int contadorStt = 0;
@@ -190,7 +184,6 @@ public class ClientProtocol {
             contadorStt++;
         }  
     }
-    
     
     public int getNumeroDeMensajes(){  
         return this.numeroMensajes;
@@ -223,7 +216,6 @@ public class ClientProtocol {
                     
                     loginF = s;
                     nombre = false;
-                    System.out.println("yeyo");
                     
                 } else {
                     
@@ -247,8 +239,6 @@ public class ClientProtocol {
         myCristoMessenger.setFriendsOf(friendList);
             
     }
-    
-    
     
     public void leerMsgs(String fromServer) throws IOException{
         
@@ -299,21 +289,27 @@ public class ClientProtocol {
         }
     }
     
-    
-    public void addNewMsg(String fromServer) throws IOException{
+    public String addNewMsg(String fromServer) throws IOException{
+        String cadena = "";
         String[] datos = fromServer.split("#");
         
-        Message m = new Message();
+        if(this.myCristoMessenger.getFocusFriend().equals(datos[4])){
+           Message m = new Message();
         
-        m.setId_user_orig(datos[4]);
-        m.setId_user_dest(datos[5]);
-        m.setDate(datos[7]);
-        m.setText(datos[6]);
-        m.setRead(1);
-        m.setSent(1);
+            m.setId_user_orig(datos[4]);
+            m.setId_user_dest(datos[5]);
+            m.setDate(datos[7]);
+            m.setText(datos[6]);
+            m.setRead(1);
+            m.setSent(1);
+
+            this.msjs.add(m);
+            this.myCristoMessenger.setMessages(msjs); 
+        }
         
-        this.msjs.add(m);
-        this.myCristoMessenger.setMessages(msjs);
+        cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#CLIENT#CHAT#RECEIVED_MESSAGE#" + datos[4] + "#" + sdf.format(timestamp);
+        
+        return cadena;
         
     }  
     
