@@ -156,7 +156,7 @@ public class KnockKnockClient extends Thread{
                 this.processPhoto();
             }
             
-            System.out.println("Hemos terminao con la foto");
+            //System.out.println("Hemos terminao con la foto");
             condition = "";
             usando.signalAll();
             lock.unlock();

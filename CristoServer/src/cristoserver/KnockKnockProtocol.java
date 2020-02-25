@@ -268,7 +268,7 @@ public class KnockKnockProtocol{
         //System.out.println("Son amigos --> " + areFriends);
 
        if(existeUser1 && existeUser2 && areFriends){
-            message_controller.insertMessage(datos[4], datos[5], datos[6], userConnected);
+            message_controller.insertMessage(datos[4], datos[5], datos[2], userConnected);
             cadena = "Bien";
        } else {
             cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#FORBIDDEN_CHAT";
