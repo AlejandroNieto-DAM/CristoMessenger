@@ -250,12 +250,14 @@ public class KnockKnockClient extends Thread{
         fos.close();
         
         
-        if(contadorIcons < 2){
+        ArrayList<User> friendList = this.a.getFriends();
+        int numeroAmigos = friendList.size();
+        if(contadorIcons < numeroAmigos){
             
             cadenas.clear();
             this.decodedBytes.clear();
         
-            ArrayList<User> friendList = this.a.getFriends();
+            
             String output = protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin());
             out.println(output); 
         
@@ -348,11 +350,7 @@ public class KnockKnockClient extends Thread{
                 usando.signalAll();
                 lock.unlock();
             }
-        }
-            
-            
-        
-        
+        }    
     }
     
     public void getMessagesFrom(String fromServer) throws IOException{
