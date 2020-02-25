@@ -22,8 +22,7 @@ public class CellRenderer extends DefaultListCellRenderer {
     
         
     
-        ImageIcon imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
-        ImageIcon imageIcon2 = new ImageIcon(new ImageIcon("MarioRun1.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
+        //ImageIcon imageIcon = new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
 
         @Override
         public Component getListCellRendererComponent(
@@ -33,8 +32,11 @@ public class CellRenderer extends DefaultListCellRenderer {
             JLabel label = (JLabel) super.getListCellRendererComponent(
                     list, value, index, isSelected, cellHasFocus);
             
+            ImageIcon imageIcon = new ImageIcon(new ImageIcon("friendIcons/" + index + ".jpg" ).getImage().getScaledInstance(30, 30, Image.SCALE_DEFAULT));
+
+            
            // System.out.println("En el list cell renderer el index vale esto --> " + index);
-                label.setIcon(imageIcon);
+             label.setIcon(imageIcon);
             
             //label.setHorizontalTextPosition(JLabel.RIGHT);            
             

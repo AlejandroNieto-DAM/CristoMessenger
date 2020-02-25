@@ -77,7 +77,13 @@ public class CristoMessenger extends javax.swing.JFrame{
     }
     
     public void loadFriendPhoto(){
-       imageIconUser = new ImageIcon(new ImageIcon("friendPhoto.jpg").getImage().getScaledInstance(jLabelIconUserConnected.getWidth(), jLabelIconUserConnected.getHeight(), Image.SCALE_DEFAULT));
+        int position = 0;
+        for(int i = 0; i < this.friendList.size(); i++){
+            if(friendList.get(i).getLogin().equals(this.focusFriend)){
+                position = i;
+            }
+        }
+       imageIconUser = new ImageIcon(new ImageIcon("friendIcons/" + position + ".jpg" ).getImage().getScaledInstance(jLabelIconUserConnected.getWidth(), jLabelIconUserConnected.getHeight(), Image.SCALE_DEFAULT));
        this.jLabelIconFriend.setIcon(imageIconUser); 
     }
 
@@ -471,9 +477,7 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         this.jTextFieldMessageFromUser.setText("");
     }//GEN-LAST:event_jButtonSendMessageActionPerformed
-
-    
-    
+  
     public String getFocusFriend(){
         return this.focusFriend;
     }
@@ -504,11 +508,6 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         this.focusFriend = dest;
         
-        try {
-            this.myKK.getFriendPhoto();
-        } catch (IOException ex) {
-            Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
-        }
         
         
         try {
@@ -519,7 +518,7 @@ public class CristoMessenger extends javax.swing.JFrame{
             
             this.myKK.getFriendData();
             this.myKK.getMessagesIniciarAccion();
-            
+            this.loadFriendPhoto();
             
             
         } catch (IOException ex) {

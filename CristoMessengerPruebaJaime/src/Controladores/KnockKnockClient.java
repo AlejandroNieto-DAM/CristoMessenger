@@ -52,6 +52,7 @@ public class KnockKnockClient extends Thread{
     
     int numeroMsgs = 0;
     int totalNumeroMensajes = 0;
+    int contadorIcons = 0;
     
     ArrayList<String> cadenas = new ArrayList();
     ArrayList<String> decodedBytes = new ArrayList();
@@ -102,7 +103,7 @@ public class KnockKnockClient extends Thread{
     
     public void filtrado(String fromServer) throws IOException, InterruptedException{
         
-        System.out.println("FROM SERVER ESTO ES LO QUE RECIBO --> " + fromServer);
+        //System.out.println("FROM SERVER ESTO ES LO QUE RECIBO --> " + fromServer);
         
         if(fromServer.contains("ENDING_MULTIMEDIA_TRANSMISSION")){
            condition = "";
@@ -120,12 +121,17 @@ public class KnockKnockClient extends Thread{
         if(fromServer.contains("LOGIN_CORRECT")){
 
             protocol.processInput(fromServer);
+            
+            
 
             try {
                 this.getPhoto();
+                
             } catch (IOException ex) {
                 Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
             }
+            
+            
 
         }
 
@@ -152,11 +158,11 @@ public class KnockKnockClient extends Thread{
         if(fromServer.contains("ENDING_MULTIMEDIA_TRANSMISSION")){
             if(friendPhoto){
                 this.processFriendPhoto();
+                System.out.println("Hemos procesao una foto");
             } else {
                 this.processPhoto();
             }
-            
-            //System.out.println("Hemos terminao con la foto");
+
             condition = "";
             usando.signalAll();
             lock.unlock();
@@ -206,11 +212,9 @@ public class KnockKnockClient extends Thread{
         fos.flush();
         fos.close();
         
-        this.a.loadPhoto();
-        this.a.setActualUser(login);
-        this.loginFrame.setVisible(false);   
-        this.a.setVisible(true); 
-        this.friendRefresh.start();  
+        this.getFriendPhoto();
+        
+        
         
         
         friendPhoto = true;
@@ -221,8 +225,11 @@ public class KnockKnockClient extends Thread{
         cadenas.clear();
         this.decodedBytes.clear();
         
-        String output = protocol.getFriendPhoto();
-        out.println(output);   
+        ArrayList<User> friendList = this.a.getFriends();
+        
+        String output = protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin());
+        out.println(output);
+              
     }
     
     public void processFriendPhoto() throws IOException{
@@ -230,7 +237,8 @@ public class KnockKnockClient extends Thread{
             decodedBytes.add(new String(Base64.getDecoder().decode(s.getBytes())));
         }
   
-        File file = new File("friendPhoto.jpg");
+        File file = new File("friendIcons/" + contadorIcons + ".jpg");
+        contadorIcons++;
         file.createNewFile();
         FileOutputStream fos = new FileOutputStream(file);
         for (String s : decodedBytes) {
@@ -241,7 +249,25 @@ public class KnockKnockClient extends Thread{
         fos.flush();
         fos.close();
         
-        this.a.loadFriendPhoto();
+        
+        if(contadorIcons < 2){
+            
+            cadenas.clear();
+            this.decodedBytes.clear();
+        
+            ArrayList<User> friendList = this.a.getFriends();
+            String output = protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin());
+            out.println(output); 
+        
+        } else {
+            this.a.loadPhoto();
+            this.a.setActualUser(login);
+            this.loginFrame.setVisible(false);   
+            this.a.setVisible(true); 
+            this.friendRefresh.start(); 
+        }
+        
+        //this.a.loadFriendPhoto();
         procesando = false;
     }
      

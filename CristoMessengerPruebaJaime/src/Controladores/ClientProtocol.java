@@ -109,9 +109,9 @@ public class ClientProtocol {
         return cadena;
     }
     
-    public String getFriendPhoto(){
+    public String getFriendPhoto(String friend){
         String cadena = "";
-        cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#GET_PHOTO#" + this.myCristoMessenger.getFocusFriend();
+        cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#GET_PHOTO#" + friend;
         return cadena;
     }
      

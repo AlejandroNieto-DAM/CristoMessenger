@@ -37,7 +37,6 @@ public class KKMultiServerThread extends Thread{
      private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
      Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-
      
     public KKMultiServerThread(Socket socket, KKServer myKKS) {
         super("KKMultiServerThread");
