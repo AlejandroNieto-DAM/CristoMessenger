@@ -97,13 +97,19 @@ public class CristoMessenger extends javax.swing.JFrame{
         this.jTextArea1.setText("");
         
         Collections.sort(mensjs, Message.StuNameComparator);
+        String check = "";
         
         //System.out.println("mensjss size en la vista locooo --< " + mensjs.size());
         for(int i = 0; i < mensjs.size(); i++){
-            if (mensjs.get(i).getId_user_orig().equals(actualUser)){    
-                this.jTextArea1.setText(this.jTextArea1.getText() + "\t\t\t" + mensjs.get(i).getText() + "\n");
+            if(mensjs.get(i).getRead() == true){
+                check = " " + "✓✓";
             } else {
-                this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + "\n");
+                check = " " + "✓";
+            }
+            if (mensjs.get(i).getId_user_orig().equals(actualUser)){    
+                this.jTextArea1.setText(this.jTextArea1.getText() + "\t\t\t" + mensjs.get(i).getText() + check + "\n");
+            } else {
+                this.jTextArea1.setText(this.jTextArea1.getText() + mensjs.get(i).getText() + check + "\n");
             }
         }
     }

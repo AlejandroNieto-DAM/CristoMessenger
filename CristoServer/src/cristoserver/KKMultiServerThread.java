@@ -98,7 +98,11 @@ public class KKMultiServerThread extends Thread{
            
             out.println("");
             
-        }else if(inputLine.contains("CHAT")){
+        } else if (inputLine.contains("PHOTO_RECEIVED")){
+           
+            out.println("");
+            
+        } else if(inputLine.contains("CHAT")){
             
             if(inputLine.contains("RECEIVED_MESSAGE")){
                 this.sendReceivedMessage(inputLine);
@@ -139,16 +143,8 @@ public class KKMultiServerThread extends Thread{
         String[] datos = inputLine.split("#");
         
         outputLine = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[5] + "#" + kkp.getLogin() + "#MESSAGE_SUCCESFULLY_PROCESSED#" + sdf.format(timestamp);
-
-        Boolean encontrado = false;
+        out.println(outputLine);
         
-        for(int i = 0; i < myKKS.getHebrasSize() && !encontrado; i++){
-            if(this.myKKS.getConexionAt(i).getLogin().equals(datos[5])){
-                PrintWriter outB = this.myKKS.getConexionAt(i).getOutputStream();
-                outB.println(outputLine);
-                encontrado = true;
-            }
-        } 
     }
     
     public void sendMessage(String inputLine) throws SQLException{
@@ -169,7 +165,7 @@ public class KKMultiServerThread extends Thread{
         }
         
         String tryInsert = "";
-        tryInsert = kkp.receiveMessage(inputLine, 0);
+        tryInsert = kkp.receiveMessage(inputLine);
         
         if(!tryInsert.contains("Bien")){
             out.println(tryInsert);

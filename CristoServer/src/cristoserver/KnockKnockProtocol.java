@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,24 +22,18 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class KnockKnockProtocol{
     
     private String cadenaPrincipal;
     
     private ArrayList<User> usuarios;
-    private ArrayList<Friend> friends;
     private ArrayList<Message> messages;
     
-    
-    
+
     private String login_user;
     private String focusedFriend;
-    
-    //private LocalDateTime dateTime;
-    
+        
     private Message_Controller message_controller;
     private Friend_Controller friend_controller;
     private User_Controller user_controller;
@@ -57,15 +50,12 @@ public class KnockKnockProtocol{
     
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-
-    
+ 
     KnockKnockProtocol(){
         
         cadenaPrincipal = "PROTOCOLCRISTOMESSENGER1.0";
                 
         usuarios = new ArrayList();
-        friends = new ArrayList();
         messages = new ArrayList();
         
         user_controller = new User_Controller();
@@ -76,7 +66,6 @@ public class KnockKnockProtocol{
         login_user = "";
         focusedFriend = "";
         
-        //dateTime = LocalDateTime.now();
         
         contadorMsg = 0;
     }
@@ -93,7 +82,7 @@ public class KnockKnockProtocol{
     public String processInput(String theInput) throws SQLException, IOException {
         String theOutput = null;
         
-        this.friends.clear();
+        
         this.usuarios.clear();
   
         if(theInput.startsWith(cadenaPrincipal)){
@@ -255,7 +244,7 @@ public class KnockKnockProtocol{
     }
     
     
-    public String receiveMessage(String theInput, int userConnected) throws SQLException{
+    public String receiveMessage(String theInput) throws SQLException{
         String cadena = "";
         String[] datos = theInput.split("#");
         
@@ -268,7 +257,7 @@ public class KnockKnockProtocol{
         //System.out.println("Son amigos --> " + areFriends);
 
        if(existeUser1 && existeUser2 && areFriends){
-            message_controller.insertMessage(datos[4], datos[5], datos[2], userConnected);
+            message_controller.insertMessage(datos[4], datos[5], datos[6], datos[1]);
             cadena = "Bien";
        } else {
             cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#FORBIDDEN_CHAT";

@@ -141,22 +141,22 @@ public class Message_Model extends ConnectToBD{
         }
         
         for(int i = 0; i < messages.size(); i++){
-            if(messages.get(i).getRead() == false){
+            if(messages.get(i).getRead() == false && messages.get(i).getId_user_orig().equals(login_dest)){
+                                
                 String query = "update " + this.getDBName() + ".message "
                         + "set read_msg = 1 "
                         + "where datetime = '" + messages.get(i).getDate() + "' "
-                        + "and id_user_orig = '" + messages.get(i).getId_user_orig() + "' "
-                        + "and id_user_dest = '" + messages.get(i).getId_user_dest() + "'";
-                
+                        + "and id_user_orig = '" + login_dest + "' "
+                        + "and id_user_dest = '" + login_orig + "'";
+
                 PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
                 preparedStmt.executeUpdate();
+                
             }
-        }
-        
-        
+        }      
     }
 
-    public void insertMessage(String login, String login_dest, String text, int userDestState){
+    public void insertMessage(String login, String login_dest, String text, String datetime){
        
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         
@@ -165,8 +165,8 @@ public class Message_Model extends ConnectToBD{
             PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
             preparedStmt.setString (1, login);
             preparedStmt.setString (2, login_dest);
-            preparedStmt.setString (3, sdf.format(timestamp));
-            preparedStmt.setInt (4, userDestState);
+            preparedStmt.setString (3, datetime);
+            preparedStmt.setInt (4, 0);
             preparedStmt.setInt (5, 1);
             preparedStmt.setString (6, text);
                        

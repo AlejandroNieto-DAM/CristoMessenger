@@ -37,7 +37,7 @@ public class Message_Controller {
         return a;
     }
     
-    public void insertMessage(String login, String dest, String text, int userDestState){
-        this.myMessageModel.insertMessage(login, dest, text, userDestState);
+    public void insertMessage(String login, String dest, String text, String datetime){
+        this.myMessageModel.insertMessage(login, dest, text, datetime);
     }
 }

@@ -14,6 +14,8 @@ public class CristoServer extends javax.swing.JFrame {
     /**
      * Creates new form CristoServer
      */
+    Boolean started = false;
+    
     public CristoServer() {
         initComponents();
     }
@@ -94,8 +96,11 @@ public class CristoServer extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        KKServer mykkServer = new KKServer(Integer.parseInt(jTextField1.getText()));
-        mykkServer.start();
+        if(started == false){
+            KKServer mykkServer = new KKServer(Integer.parseInt(jTextField1.getText()));
+            mykkServer.start();
+            started = false;
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
