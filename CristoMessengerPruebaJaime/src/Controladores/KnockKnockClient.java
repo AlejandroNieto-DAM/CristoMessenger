@@ -11,6 +11,7 @@ package Controladores;
  * @author alejandronieto
  */
 
+import Classes.BarraNotificaciones;
 import Classes.User;
 import Classes.RefrescarListaAmigos;
 import Vista.CristoMessenger;
@@ -59,6 +60,10 @@ public class KnockKnockClient extends Thread{
     Boolean friendPhoto = false;
     
     
+    ArrayList<String> notificaciones = new ArrayList();
+    BarraNotificaciones notis;
+    
+    
     public KnockKnockClient(int port, String host, String login, String pass, JFrame frame) throws IOException{
         this.portNumber = port;
         this.hostName = host;
@@ -75,6 +80,8 @@ public class KnockKnockClient extends Thread{
         friendRefresh = new RefrescarListaAmigos(this);
         lock = new ReentrantLock();
         usando = lock.newCondition();
+        
+        notis = new BarraNotificaciones(this);
 
     }
     
@@ -125,6 +132,9 @@ public class KnockKnockClient extends Thread{
         if(fromServer.contains("LOGIN_CORRECT")){
             protocol.processInput(fromServer);
             
+            out.println(this.protocol.getUserData());
+            
+            
             try {
                 this.getPhoto();
                 
@@ -148,7 +158,7 @@ public class KnockKnockClient extends Thread{
         }
 
         if(fromServer.contains("RESPONSE_MULTIMEDIA")){
-            System.out.println(fromServer);
+            //System.out.println(fromServer);
             String datos[] = fromServer.split("#");
             cadenas.add(new String(datos[7]));   
         }
@@ -156,7 +166,7 @@ public class KnockKnockClient extends Thread{
         if(fromServer.contains("ENDING_MULTIMEDIA_TRANSMISSION")){
             if(friendPhoto){
                 this.processFriendPhoto();
-                System.out.println("Hemos procesao una foto");
+                //System.out.println("Hemos procesao una foto");
             } else {
                 String output = this.processPhoto();
                 out.println(output);
@@ -171,13 +181,23 @@ public class KnockKnockClient extends Thread{
             this.changeFriendsState(fromServer);
         }
 
-        if(fromServer.contains("ALLDATA_USER")){      
+        if(fromServer.contains("ALLDATA_USER")){
+            
             protocol.processInput(fromServer);
         }
 
         if(fromServer.contains("CHAT")){
-            if(!fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){                      
-                this.addNewMsg(fromServer);
+            if(!fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){
+                String[] datos = fromServer.split("#");
+                System.out.println("Focused frined --> " + this.a.getFocusFriend());
+                System.out.println("Focused frined --> " + datos[4]);
+                if(this.a.getFocusFriend().equals(datos[4])){
+                    this.addNewMsg(fromServer);
+                } else {
+                    String cadena = "Tienes un nuevo mensaje de " + datos[4];
+                    notificaciones.add(cadena);
+                }
+                
             }   
         }         
     }
@@ -212,10 +232,8 @@ public class KnockKnockClient extends Thread{
         fos.close();
         
         this.getFriendPhoto();
-        
-        
-        
-        String cadena = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#PHOTO_RECEIVED#" + this.login;
+  
+        String cadena = this.protocol.photoReceived(this.login);
         
         friendPhoto = true;
         
@@ -252,7 +270,8 @@ public class KnockKnockClient extends Thread{
         
         ArrayList<User> friendList = this.a.getFriends();
         
-        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#PHOTO_RECEIVED#" + protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin()));
+        
+        out.println(this.protocol.photoReceived(protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin())));
         
         contadorIcons++;
         
@@ -271,6 +290,7 @@ public class KnockKnockClient extends Thread{
             this.loginFrame.setVisible(false);   
             this.a.setVisible(true); 
             this.friendRefresh.start(); 
+            this.notis.start();
         }
         
         procesando = false;
@@ -297,6 +317,18 @@ public class KnockKnockClient extends Thread{
         }
         
         this.a.setFriendsOf(friendList);
+    }
+    
+    public void sendNotificationChar(String c){
+        this.a.addNotificationChar(c);
+    }
+    
+    public void sendFinalNotificacion(){
+        this.a.sendFinalNotificacion();
+    }
+    
+    public ArrayList getNotificaciones(){
+        return this.notificaciones;
     }
     
     public void refreshFriends() throws IOException{
@@ -337,17 +369,17 @@ public class KnockKnockClient extends Thread{
     }
     
     public void processMsgs(String fromServer) throws IOException{
-        System.out.println("Mira el numero de mensajes --> " + this.numeroMsgs);
+        //System.out.println("Mira el numero de mensajes --> " + this.numeroMsgs);
        
         if(this.contadorMsgs < this.numeroMsgs){
             protocol.leerMsgs(fromServer);
             contadorMsgs++;
-            System.out.println("Mira el contador de mensajes --> " + this.contadorMsgs);
+            //System.out.println("Mira el contador de mensajes --> " + this.contadorMsgs);
 
             if(this.contadorMsgs == this.numeroMsgs){
                 String theOutput = protocol.msgAllReceived();
                 out.println(theOutput);
-                System.out.println("Output de que ya los he recibio tos --> " + theOutput);
+                //System.out.println("Output de que ya los he recibio tos --> " + theOutput);
                 in.readLine();
                 condition = "";
                 usando.signalAll();

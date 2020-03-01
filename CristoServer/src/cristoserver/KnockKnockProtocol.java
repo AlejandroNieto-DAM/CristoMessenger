@@ -110,8 +110,12 @@ public class KnockKnockProtocol{
                  pass = pass.substring(1, pass.length());
 
                  int existe = user_controller.getExistUser(login, pass);  
-                  
+                 String state = "";
                  if(existe == 1){
+                    state = user_controller.getUserState(login);
+                 }
+                  
+                 if(existe == 1 && state.contains("NOT_CONNECTED")){
                     System.out.println("Este usuario existe.");
                     CristoServer.debug("Este usuario existe");
                     user_controller.setConnected(login);

@@ -85,13 +85,21 @@ public class ClientProtocol {
                 }
 
                 if(theInput.contains("STATUS")){
+
                     String status = this.friendStatus(theInput);
                     this.myCristoMessenger.setFriendStatus(status);
+                    
                 }
                 
                 if(theInput.contains("ALLDATA_USER")){
-                    String nombre = this.userData(theInput);
-                    this.myCristoMessenger.setFriendData(nombre);
+                    String[] datos = theInput.split("#");
+                    
+                    if(datos[4].equals(this.login)){
+                        this.processUserData(theInput);
+                    } else {
+                        String nombre = this.userData(theInput);
+                        this.myCristoMessenger.setFriendData(nombre);
+                    }
                 }
             }
         }
@@ -133,6 +141,21 @@ public class ClientProtocol {
         
         return cadena;
     }
+    
+    
+    public void processUserData(String theInput){
+        String cadena = ""; 
+        String[] datos = theInput.split("#");
+        cadena = datos[5] + " " + datos[6] + " " + datos[7];
+        this.myCristoMessenger.setActualUserInfo(cadena);
+    }
+    
+    
+    public String getUserData(){
+        String cadena = "";
+        cadena += cadenaPrincipal + "#" + dateTime + "#CLIENT#ALLDATA_USER#" + this.login;
+        return cadena;
+    } 
     
     public String getFriendData(){
         String cadena = "";
@@ -287,6 +310,12 @@ public class ClientProtocol {
             this.msjs.add(m);
             this.myCristoMessenger.setMessages(msjs);
         }
+    }
+    
+    public String photoReceived(String login){
+        String cadena = "";
+        cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#CLIENT#PHOTO_RECEIVED#" + login;
+        return cadena;
     }
     
     public String addNewMsg(String fromServer) throws IOException{
