@@ -37,9 +37,6 @@ public class KnockKnockProtocol{
     private Message_Controller message_controller;
     private Friend_Controller friend_controller;
     private User_Controller user_controller;
-    
-    private PrintWriter out;
-    private BufferedReader in;
 
     public int contadorMsg;
     
@@ -70,19 +67,9 @@ public class KnockKnockProtocol{
         contadorMsg = 0;
     }
     
-    
-    public void setPrintWriter(PrintWriter a){
-        this.out = a;
-    }
-    
-    public void setBufferedReader(BufferedReader a){
-        this.in = a;
-    }
-    
     public String processInput(String theInput) throws SQLException, IOException {
         String theOutput = null;
-        
-        
+
         this.usuarios.clear();
   
         if(theInput.startsWith(cadenaPrincipal)){
@@ -255,10 +242,6 @@ public class KnockKnockProtocol{
         Boolean existeUser1 = user_controller.findUser(datos[4]);
         Boolean existeUser2 = user_controller.findUser(datos[5]); 
         Boolean areFriends = friend_controller.getRelation(datos[4], datos[5]);
-        
-        //System.out.println("Existe 1 --> " + existeUser1);
-        //System.out.println("Existe 2 --> " + existeUser2);
-        //System.out.println("Son amigos --> " + areFriends);
 
        if(existeUser1 && existeUser2 && areFriends){
             message_controller.insertMessage(datos[4], datos[5], datos[6], datos[1]);
@@ -288,7 +271,14 @@ public class KnockKnockProtocol{
     public String sendMsg(int i){
         
         String cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#MSGS";
-        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText() ; 
+        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText() + "#"; 
+        
+        if(messages.get(i).getRead()){
+            cadena += "LEIDO";
+        } else {
+            cadena += "NO_LEIDO";
+        }
+        
         return cadena;
         
     }
@@ -370,5 +360,28 @@ public class KnockKnockProtocol{
        }
        
        return contadorPaquetes;
+    }
+    
+    public String startingMultimedia(){
+        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin();
+        return cadena;
+    }
+    
+    public String endingMultimedia(){
+        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#ENDING_MULTIMEDIA_TRANSMISSION#" + this.getLogin();
+        return cadena;
+    }
+    
+    public String sendReceivedMessage(String theInput){
+        String[] datos = theInput.split("#");
+        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[5] + "#" + this.getLogin() + "#MESSAGE_SUCCESFULLY_PROCESSED#" + sdf.format(timestamp);
+        return cadena;
+    }
+    
+    public String sendMessage(String theInput){
+        String[] datos = theInput.split("#");  
+        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[4] + "#" + datos[5] + "#" + datos[6] + "#";
+        return cadena;
+        
     }
 }

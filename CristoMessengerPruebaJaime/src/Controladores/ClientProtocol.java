@@ -34,9 +34,7 @@ public class ClientProtocol {
     CristoMessenger myCristoMessenger;
     ArrayList<Message> msjs = new ArrayList();
     ArrayList<User> friendList = new ArrayList();
-    
-    LocalDateTime dateTime;
-    
+        
     int numeroMensajes;
     int totalNumeroMensajes;
     
@@ -52,19 +50,15 @@ public class ClientProtocol {
         this.passwd = pass;
         myCristoMessenger = a;
         msjs = new ArrayList();
-        dateTime = LocalDateTime.now();
         numeroMensajes = 0;
         totalNumeroMensajes = 0;
     }
     
     public String processInput(String theInput){
         String theOutput = null;
-          
-        
-        System.out.println("FROM SERVER --> " + theInput);
-        
+            
         if(state == LOGGING){
-            theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#LOGIN#" + login + "#" + passwd;
+            theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#CLIENT#LOGIN#" + login + "#" + passwd;
             state = LOGGED;
             
         } else if (state == LOGGED){
@@ -81,11 +75,10 @@ public class ClientProtocol {
                 if(theInput.contains("#MSGS#")){
                     this.msjs.clear();
                     this.leerNumeroMensajes(theInput);
-                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT#MSGS#OK_SEND!";
+                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#CLIENT#MSGS#OK_SEND!";
                 }
 
                 if(theInput.contains("STATUS")){
-
                     String status = this.friendStatus(theInput);
                     this.myCristoMessenger.setFriendStatus(status);
                     
@@ -141,25 +134,23 @@ public class ClientProtocol {
         
         return cadena;
     }
-    
-    
+      
     public void processUserData(String theInput){
         String cadena = ""; 
         String[] datos = theInput.split("#");
         cadena = datos[5] + " " + datos[6] + " " + datos[7];
         this.myCristoMessenger.setActualUserInfo(cadena);
     }
-    
-    
+     
     public String getUserData(){
         String cadena = "";
-        cadena += cadenaPrincipal + "#" + dateTime + "#CLIENT#ALLDATA_USER#" + this.login;
+        cadena += cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#ALLDATA_USER#" + this.login;
         return cadena;
     } 
     
     public String getFriendData(){
         String cadena = "";
-        cadena += cadenaPrincipal + "#" + dateTime + "#CLIENT#ALLDATA_USER#" + this.myCristoMessenger.getFocusFriend();
+        cadena += cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#ALLDATA_USER#" + this.myCristoMessenger.getFocusFriend();
         return cadena;
     } 
     
@@ -219,7 +210,7 @@ public class ClientProtocol {
     public String getMessages(){
         this.msjs.clear();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis() - 24 * restar * 60 * 60 * 1000L);
-        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + dateTime + "#CLIENT" + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend() + "#" + sdf.format(timestamp);
+        String theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#CLIENT" + "#MSGS#" + login + "#" + myCristoMessenger.getFocusFriend() + "#" + sdf.format(timestamp);
         restar++;
         return theOutput;
     }
@@ -272,6 +263,7 @@ public class ClientProtocol {
             String logDest = "";
             String dateHour = "";
             String text = "";
+            String read = "";
             String msgsFiltrado = "";
             String[] msgs = null;
 
@@ -295,6 +287,10 @@ public class ClientProtocol {
                     text = att;
                 }
                 
+                if(contadorStt == 5){
+                    read = att;
+                }
+                
 
                 contadorStt++;
             }
@@ -304,7 +300,13 @@ public class ClientProtocol {
             m.setId_user_dest(logDest);
             m.setDate(dateHour);
             m.setText(text);
-            m.setRead(1);
+            
+            if(read.equals("LEIDO")){
+               m.setRead(1);  
+            } else {
+               m.setRead(0);   
+            }
+            
             m.setSent(1);
             
             this.msjs.add(m);

@@ -7,6 +7,7 @@ package cristoserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -17,6 +18,7 @@ public class KKServer extends Thread{
     
     int portNumber;
     boolean listening;
+    ServerSocket serverSocket;
     
     ArrayList<KKMultiServerThread> conexiones;
     
@@ -30,7 +32,8 @@ public class KKServer extends Thread{
     
     @Override
     public void run(){
-        try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
+        try { 
+            serverSocket = new ServerSocket(portNumber);
             while (listening) {
 	            conexiones.add(new KKMultiServerThread(serverSocket.accept(), this)); 
                     conexiones.get(conexiones.size() - 1).start(); 
@@ -43,12 +46,22 @@ public class KKServer extends Thread{
         }
     }
     
+    public void parar() throws IOException, SQLException{
+        for(int i = 0; i < conexiones.size(); i++){
+            conexiones.get(i).getProtocol().setDisconnected();
+            conexiones.get(i).stop();
+        }
+        
+        serverSocket.close();
+        this.stop();
+        
+    }
+    
     
     public int getHebrasSize(){
         return conexiones.size();
     }
-    
-    
+       
     public KKMultiServerThread getConexionAt(int i){
         return conexiones.get(i);
     }

@@ -44,6 +44,8 @@ public class CristoMessenger extends javax.swing.JFrame{
     
     int numeroAmigos = 0;
     
+    public Boolean canWheeled = true;
+    
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         
@@ -475,6 +477,15 @@ public class CristoMessenger extends javax.swing.JFrame{
 
     private void jTextArea1MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_jTextArea1MouseWheelMoved
         System.out.println("Que pasa demonio");
+ 
+        if(canWheeled == true){
+            canWheeled = false;
+            try {
+                this.myKK.getMessagesIniciarAccion(this.myKK.getDiasParaAtras());
+            } catch (IOException ex) {
+                Logger.getLogger(CristoMessenger.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }     
     }//GEN-LAST:event_jTextArea1MouseWheelMoved
 
     private void jListFriendsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jListFriendsValueChanged
@@ -512,7 +523,7 @@ public class CristoMessenger extends javax.swing.JFrame{
             }
 
             this.myKK.getFriendData();
-            this.myKK.getMessagesIniciarAccion();
+            this.myKK.getMessagesIniciarAccion(0);
             this.loadFriendPhoto();
 
         } catch (IOException ex) {
@@ -539,10 +550,13 @@ public class CristoMessenger extends javax.swing.JFrame{
         m.setText(text);
         m.setRead(0);
         m.setSent(1);
+        
         if(this.mensjs == null){
             this.mensjs = new ArrayList();
         }
+        
         this.mensjs.add(m);
+        
         try {
             this.setMessages(mensjs);
         } catch (IOException ex) {

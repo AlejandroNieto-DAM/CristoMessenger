@@ -5,6 +5,11 @@
  */
 package cristoserver;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author alejandronieto
@@ -15,6 +20,7 @@ public class CristoServer extends javax.swing.JFrame {
      * Creates new form CristoServer
      */
     Boolean started = false;
+    KKServer mykkServer;
     
     public CristoServer() {
         initComponents();
@@ -55,6 +61,7 @@ public class CristoServer extends javax.swing.JFrame {
 
         jTextField1.setText("Port");
 
+        jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
@@ -92,14 +99,26 @@ public class CristoServer extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        if(started == true){
+            try {
+                try {
+                    mykkServer.parar();
+                } catch (SQLException ex) {
+                    Logger.getLogger(CristoServer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(CristoServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            jTextField1.setText("Puerto");
+            started = false;
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(started == false){
-            KKServer mykkServer = new KKServer(Integer.parseInt(jTextField1.getText()));
+            mykkServer = new KKServer(Integer.parseInt(jTextField1.getText()));
             mykkServer.start();
-            started = false;
+            started = true;
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

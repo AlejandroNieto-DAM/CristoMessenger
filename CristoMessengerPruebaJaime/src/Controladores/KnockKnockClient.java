@@ -43,6 +43,7 @@ public class KnockKnockClient extends Thread{
     
     Boolean recibiendoMsg = false;
     int contadorMsgs = 0;
+    int diasParaAtras = 0;
     
     Lock lock;
     Condition usando;
@@ -96,17 +97,22 @@ public class KnockKnockClient extends Thread{
         out.println(fromUser);
         
         try {
-            while((fromServer = in.readLine()) != null){   
-                this.filtrado(fromServer);
-            }
-            
-            kkSocket.close();
-            
+            try{
+                while((fromServer = in.readLine()) != null){   
+                    if(fromServer.startsWith("PROTOCOLCRISTOMESSENGER1.0")){
+                        this.filtrado(fromServer);
+                    }
+                }
+            } catch (SocketException ex){
+                Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                kkSocket.close();
+            } 
         } catch (IOException ex) {
             Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
             Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
 
     }
     
@@ -116,9 +122,8 @@ public class KnockKnockClient extends Thread{
         //System.out.println("FROM SERVER ESTO ES LO QUE RECIBO --> " + fromServer);
         
         if(fromServer.contains("ENDING_MULTIMEDIA_TRANSMISSION")){
-           System.out.println(fromServer);
-           condition = "";
-           
+           //System.out.println(fromServer);
+           condition = "";   
         }
         
         if(condition != ""){
@@ -126,14 +131,11 @@ public class KnockKnockClient extends Thread{
                 usando.await();
             } 
         }
-        
-        
 
         if(fromServer.contains("LOGIN_CORRECT")){
             protocol.processInput(fromServer);
             
             out.println(this.protocol.getUserData());
-            
             
             try {
                 this.getPhoto();
@@ -158,7 +160,6 @@ public class KnockKnockClient extends Thread{
         }
 
         if(fromServer.contains("RESPONSE_MULTIMEDIA")){
-            //System.out.println(fromServer);
             String datos[] = fromServer.split("#");
             cadenas.add(new String(datos[7]));   
         }
@@ -166,7 +167,6 @@ public class KnockKnockClient extends Thread{
         if(fromServer.contains("ENDING_MULTIMEDIA_TRANSMISSION")){
             if(friendPhoto){
                 this.processFriendPhoto();
-                //System.out.println("Hemos procesao una foto");
             } else {
                 String output = this.processPhoto();
                 out.println(output);
@@ -189,8 +189,8 @@ public class KnockKnockClient extends Thread{
         if(fromServer.contains("CHAT")){
             if(!fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){
                 String[] datos = fromServer.split("#");
-                System.out.println("Focused frined --> " + this.a.getFocusFriend());
-                System.out.println("Focused frined --> " + datos[4]);
+                //System.out.println("Focused frined --> " + this.a.getFocusFriend());
+                //System.out.println("Focused frined --> " + datos[4]);
                 if(this.a.getFocusFriend().equals(datos[4])){
                     this.addNewMsg(fromServer);
                 } else {
@@ -295,10 +295,6 @@ public class KnockKnockClient extends Thread{
         
         procesando = false;
     }
-     
-    public void processMsg(String theInput) throws IOException{
-        protocol.processInput(theInput);  
-    }
     
     public void changeFriendsState(String fromServer){
         ArrayList<User> friendList = this.a.getFriends();
@@ -323,10 +319,6 @@ public class KnockKnockClient extends Thread{
         this.a.addNotificationChar(c);
     }
     
-    public void sendFinalNotificacion(){
-        this.a.sendFinalNotificacion();
-    }
-    
     public ArrayList getNotificaciones(){
         return this.notificaciones;
     }
@@ -343,6 +335,7 @@ public class KnockKnockClient extends Thread{
     
     public void sendMessage(String text) throws IOException{
         String output = protocol.sendMessage(text);
+        System.out.println("Mira el mensaje que mando --> " + output);
         out.println(output);
     }
       
@@ -356,15 +349,24 @@ public class KnockKnockClient extends Thread{
         out.println(output);
     }
     
-    public void getMessagesIniciarAccion() throws IOException{        
+    public void getMessagesIniciarAccion(int restar) throws IOException{        
         this.numeroMsgs = 0;
         this.totalNumeroMensajes = 0;
         this.contadorMsgs = 0;
-        protocol.restar = 1;
+        
+        if(restar == 0){
+            protocol.restar = 1;
+        } else {
+            protocol.restar = restar;
+        }
+        
         this.recibiendoMsg = false;
         
         String output =  protocol.getMessages();
+        System.out.println("PERO MIRA LO QUE MANDO --> " +  output);
         out.println(output);
+        
+       
              
     }
     
@@ -379,13 +381,28 @@ public class KnockKnockClient extends Thread{
             if(this.contadorMsgs == this.numeroMsgs){
                 String theOutput = protocol.msgAllReceived();
                 out.println(theOutput);
+                this.diasParaAtras = protocol.restar;
+                this.a.canWheeled = true;
                 //System.out.println("Output de que ya los he recibio tos --> " + theOutput);
-                in.readLine();
+                //in.readLine();
                 condition = "";
                 usando.signalAll();
                 lock.unlock();
             }
         }    
+    }
+    
+    
+    public void deleteNotification(String id_user_notification){
+        for(int i = 0; i < this.notificaciones.size(); i++){
+            if(notificaciones.get(i).contains(id_user_notification)){
+                notificaciones.remove(i);
+            }
+        }
+    }
+    
+    public int getDiasParaAtras(){
+        return this.diasParaAtras;
     }
     
     public void getMessagesFrom(String fromServer) throws IOException{

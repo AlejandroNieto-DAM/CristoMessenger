@@ -44,7 +44,7 @@ public class BarraNotificaciones extends Thread {
             
             fin = System.currentTimeMillis();
             
-            if(notificaciones != null){
+            if(notificaciones != null && notificaciones.size() != 0){
             
                 
                 if((fin2 - inicio2) / 1000 > 3){

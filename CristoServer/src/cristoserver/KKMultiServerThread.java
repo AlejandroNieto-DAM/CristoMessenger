@@ -34,8 +34,8 @@ public class KKMultiServerThread extends Thread{
      String inputLine = ""; 
             String outputLine = "";
      
-     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
      
     public KKMultiServerThread(Socket socket, KKServer myKKS) {
@@ -57,26 +57,28 @@ public class KKMultiServerThread extends Thread{
                              socket.getInputStream()));
             
             try{
+                
                 while ((inputLine = in.readLine()) != null) {
                     
                     CristoServer.debug("FROMCLIENT " + inputLine);
                     System.out.println("FROMCLIENT " + inputLine);
 
                     this.filtrado(inputLine);
-                    
-                    
-                    
+
                     if (outputLine.contains("BAD_LOGIN"))
                         break;
                 }
+                
             } catch(SocketException e){
                                   
             } catch (FileNotFoundException | InterruptedException ex) {
                 Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
+            } finally{
+                kkp.setDisconnected();
+                socket.close();
             }
             
-            kkp.setDisconnected();
-            socket.close();
+            
             
     
         } catch (IOException e) {
@@ -112,7 +114,7 @@ public class KKMultiServerThread extends Thread{
 
         } else if(inputLine.contains("GET_PHOTO")){
 
-            out.println("PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin());
+            out.println(kkp.startingMultimedia());
             kkp.loadFile(inputLine);
 
             while(kkp.getSeparador() > 0 ){
@@ -120,7 +122,7 @@ public class KKMultiServerThread extends Thread{
             }
             outputLine = kkp.getPhotoUser();
 
-            out.println("PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#ENDING_MULTIMEDIA_TRANSMISSION#" + this.getLogin());
+            out.println(kkp.endingMultimedia());
 
 
         } else {
@@ -128,10 +130,7 @@ public class KKMultiServerThread extends Thread{
             outputLine = kkp.processInput(inputLine);
             out.println(outputLine);
 
-        }
-
-        CristoServer.debug("FROMSERVER " + outputLine);
-        //System.out.println(outputLine);                
+        }  
     }
     
     public String getLogin(){
@@ -140,9 +139,7 @@ public class KKMultiServerThread extends Thread{
     
     public void sendReceivedMessage(String inputLine){
         
-        String[] datos = inputLine.split("#");
-        
-        outputLine = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[5] + "#" + kkp.getLogin() + "#MESSAGE_SUCCESFULLY_PROCESSED#" + sdf.format(timestamp);
+        outputLine = kkp.sendReceivedMessage(inputLine);
         out.println(outputLine);
         
     }
@@ -152,9 +149,7 @@ public class KKMultiServerThread extends Thread{
         Boolean encontrado = false;
         String loginFriend = this.kkp.getFriend(inputLine);
         
-        
-        String[] datos = inputLine.split("#");  
-        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[4] + "#" + datos[5] + "#" + datos[6] + "#";
+        String cadena = kkp.sendMessage(inputLine);
         
         for(int i = 0; i < myKKS.getHebrasSize() && !encontrado; i++){ 
             if(this.myKKS.getConexionAt(i).getLogin().equals(loginFriend)){
@@ -171,6 +166,10 @@ public class KKMultiServerThread extends Thread{
             out.println(tryInsert);
         }
   
+    }
+    
+    public KnockKnockProtocol getProtocol(){
+        return kkp;
     }
     
     public PrintWriter getOutputStream(){
