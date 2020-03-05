@@ -109,7 +109,7 @@ public class CristoServer extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(CristoServer.class.getName()).log(Level.SEVERE, null, ex);
             }
-            jTextField1.setText("Puerto");
+            jTextField1.setText("Port");
             started = false;
         }
     }//GEN-LAST:event_jButton2ActionPerformed

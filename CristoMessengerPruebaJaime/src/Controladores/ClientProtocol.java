@@ -4,11 +4,15 @@ package Controladores;
 import Classes.User;
 import Classes.Message;
 import Vista.CristoMessenger;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -34,6 +38,9 @@ public class ClientProtocol {
     CristoMessenger myCristoMessenger;
     ArrayList<Message> msjs = new ArrayList();
     ArrayList<User> friendList = new ArrayList();
+    
+    int separador = 0;
+
         
     int numeroMensajes;
     int totalNumeroMensajes;
@@ -42,6 +49,10 @@ public class ClientProtocol {
     
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+    
+    
+    File file;
+    FileInputStream fin = null;
 
      
     ClientProtocol(String login, String pass, CristoMessenger a){
@@ -269,48 +280,90 @@ public class ClientProtocol {
 
             msgsFiltrado = fromServer.substring(fromServer.indexOf("MSGS") + 5, fromServer.length());
             msgs = msgsFiltrado.split("#");
-
-            for(String att : msgs){
-                if(contadorStt == 1){
-                    logOr = att;
-                }
-
-                if(contadorStt == 2){
-                    logDest = att;
-                }
-
-                if(contadorStt == 3){
-                    dateHour = att;
-                }
-
-                if(contadorStt == 4){
-                    text = att;
-                }
-                
-                if(contadorStt == 5){
-                    read = att;
-                }
-                
-
-                contadorStt++;
-            }
-
-            Message m = new Message();
-            m.setId_user_orig(logOr);
-            m.setId_user_dest(logDest);
-            m.setDate(dateHour);
-            m.setText(text);
             
-            if(read.equals("LEIDO")){
-               m.setRead(1);  
+            int contadorFiltro = 0;
+            for(String s : msgs){
+                contadorFiltro++;
+            }
+            
+            if(contadorFiltro == 4){
+                
+                for(String att : msgs){
+                    if(contadorStt == 1){
+                        logOr = att;
+                    }
+
+                    if(contadorStt == 2){
+                        logDest = att;
+                    }
+
+                    if(contadorStt == 3){
+                        dateHour = att;
+                    }
+
+                    if(contadorStt == 4){
+                        text = att;
+                    }
+
+                    contadorStt++;
+                }
+
+                Message m = new Message();
+                m.setId_user_orig(logOr);
+                m.setId_user_dest(logDest);
+                m.setDate(dateHour);
+                m.setText(text);
+                m.setRead(1);  
+                m.setSent(1);
+
+                this.msjs.add(m);
+                this.myCristoMessenger.setMessages(msjs);
+                
             } else {
-               m.setRead(0);   
+                
+               for(String att : msgs){
+                    if(contadorStt == 1){
+                        logOr = att;
+                    }
+
+                    if(contadorStt == 2){
+                        logDest = att;
+                    }
+
+                    if(contadorStt == 3){
+                        dateHour = att;
+                    }
+
+                    if(contadorStt == 4){
+                        text = att;
+                    }
+
+                    if(contadorStt == 5){
+                        read = att;
+                    }
+
+
+                    contadorStt++;
+                }
+
+                Message m = new Message();
+                m.setId_user_orig(logOr);
+                m.setId_user_dest(logDest);
+                m.setDate(dateHour);
+                m.setText(text);
+
+                if(read.equals("LEIDO")){
+                   m.setRead(1);  
+                } else {
+                   m.setRead(0);   
+                }
+
+                m.setSent(1);
+
+                this.msjs.add(m);
+                this.myCristoMessenger.setMessages(msjs); 
             }
             
-            m.setSent(1);
-            
-            this.msjs.add(m);
-            this.myCristoMessenger.setMessages(msjs);
         }
     }
     
@@ -343,5 +396,68 @@ public class ClientProtocol {
         return cadena;
         
     }  
+    
+    
+    public int getSeparador(){
+        return separador;
+    }
+    
+    public void loadFile(String ruta) throws FileNotFoundException{
+ 
+        try{
+            file = new File(ruta);
+            fin = new FileInputStream(file);
+        } catch(FileNotFoundException e){
+            
+        }
+        
+        separador = (int)file.length();
+    }
+    
+    public String sendPhoto() throws FileNotFoundException, IOException{
+        String cadena = "";
+
+        int  i = 0;
+        int contador = 0;
+        int[] fileContent;
+        int bytesPorLeer = 511;
+        String toEncode = "";
+        
+        cadena = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#MULTIMEDIA_CHAT_TRANSMISION#" + this.login + "#" + this.myCristoMessenger.getFocusFriend() + "#";
+
+        if(separador > bytesPorLeer){
+            fileContent = new int[bytesPorLeer];
+            cadena += bytesPorLeer + "#";
+        } else {
+            fileContent = new int[separador];
+            bytesPorLeer = separador;
+            cadena += separador + "#";
+        }
+
+        while(contador < bytesPorLeer){
+            i = fin.read();
+            fileContent[contador] = i;
+            toEncode += (char)i;
+            
+            contador++;
+        }
+
+        String encodedString = Base64.getEncoder().encodeToString(toEncode.getBytes());
+        
+        cadena += encodedString;
+        
+        System.out.println("Pero mira el encode --> " + encodedString);
+
+        contador = 0;
+
+        separador -= 512; 
+        
+        if(separador < 0){
+            separador = 0;
+            fin.close();
+        }
+  
+        return cadena;
+    }
     
 }

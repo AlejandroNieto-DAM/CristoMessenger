@@ -5,15 +5,12 @@
  */
 package cristoserver;
 
-import Classes.Friend;
 import Classes.Message;
 import Classes.User;
 import Controllers.Friend_Controller;
 import Controllers.Message_Controller;
 import Controllers.User_Controller;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.io.FileInputStream;
@@ -271,13 +268,13 @@ public class KnockKnockProtocol{
     public String sendMsg(int i){
         
         String cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#MSGS";
-        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText() + "#"; 
+        cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText(); 
         
-        if(messages.get(i).getRead()){
-            cadena += "LEIDO";
+        /*if(messages.get(i).getRead()){
+            cadena += "#LEIDO";
         } else {
-            cadena += "NO_LEIDO";
-        }
+            cadena += "#NO_LEIDO";
+        }*/
         
         return cadena;
         

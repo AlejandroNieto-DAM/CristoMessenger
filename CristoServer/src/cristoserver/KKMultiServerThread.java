@@ -60,8 +60,8 @@ public class KKMultiServerThread extends Thread{
                 
                 while ((inputLine = in.readLine()) != null) {
                     
-                    CristoServer.debug("FROMCLIENT " + inputLine);
-                    System.out.println("FROMCLIENT " + inputLine);
+                    //CristoServer.debug("FROMCLIENT " + inputLine);
+                    //System.out.println("FROMCLIENT " + inputLine);
 
                     this.filtrado(inputLine);
 
@@ -98,13 +98,25 @@ public class KKMultiServerThread extends Thread{
 
         }else if (inputLine.contains("ALL_RECEIVED")){
            
-            out.println("");
+            //out.println("");
             
         } else if (inputLine.contains("PHOTO_RECEIVED")){
            
-            out.println("");
+            //out.println("");
             
-        } else if(inputLine.contains("CHAT")){
+        } else if(inputLine.contains("STARTING_MULTIMEDIA_CHAT")){
+            
+            this.startingMultimediaChat(inputLine);
+        
+        } else if(inputLine.contains("ENDING_MULTIMEDIA_CHAT")){ 
+            
+            this.endingMultimediaChat(inputLine);
+            
+        }else if(inputLine.contains("MULTIMEDIA_CHAT_TRANSMISION")){
+            
+            this.multimediaChatMsg(inputLine);
+        
+        }else if(inputLine.contains("CHAT")){
             
             if(inputLine.contains("RECEIVED_MESSAGE")){
                 this.sendReceivedMessage(inputLine);
@@ -131,6 +143,39 @@ public class KKMultiServerThread extends Thread{
             out.println(outputLine);
 
         }  
+    }
+    
+    public void startingMultimediaChat(String theInput){
+        String[] datos = theInput.split("#");
+        PrintWriter outU = getOutputUser(datos[5]);
+        outU.println(theInput);
+    }
+    
+    public void multimediaChatMsg(String theInput){
+        String[] datos = theInput.split("#");
+        PrintWriter outU = getOutputUser(datos[5]);
+        outU.println(theInput);
+    }
+    
+    public void endingMultimediaChat(String theInput){
+        String[] datos = theInput.split("#");
+        PrintWriter outU = getOutputUser(datos[5]);
+        outU.println(theInput);
+        //System.out.println("Terminao supuestamente");
+    }
+    
+    public PrintWriter getOutputUser(String user){
+        Boolean encontrado = false;
+        PrintWriter outB = null;
+        for(int i = 0; i < myKKS.getHebrasSize() && !encontrado; i++){ 
+            if(this.myKKS.getConexionAt(i).getLogin().equals(user)){
+                outB = this.myKKS.getConexionAt(i).getOutputStream();
+                encontrado = true; 
+            }
+        }
+        
+        return outB;
+        
     }
     
     public String getLogin(){
