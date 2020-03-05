@@ -17,6 +17,8 @@ import Classes.RefrescarListaAmigos;
 import Vista.CristoMessenger;
 import java.io.*;
 import java.net.*;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -64,6 +66,11 @@ public class KnockKnockClient extends Thread{
     
     ArrayList<String> notificaciones = new ArrayList();
     BarraNotificaciones notis;
+    
+    int contadorFiles = 0;
+    
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
     
     
     public KnockKnockClient(int port, String host, String login, String pass, JFrame frame) throws IOException{
@@ -113,8 +120,7 @@ public class KnockKnockClient extends Thread{
             Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
             Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-
+        }
     }
     
     
@@ -123,7 +129,6 @@ public class KnockKnockClient extends Thread{
         //System.out.println("FROM SERVER ESTO ES LO QUE RECIBO --> " + fromServer);
         
         if(fromServer.contains("ENDING_MULTIMEDIA_TRANSMISSION") || fromServer.contains("ENDING_MULTIMEDIA_CHAT")){
-           //System.out.println("PERO MIRA SI TERMINA " + fromServer);
            condition = "";   
         }
         
@@ -167,7 +172,6 @@ public class KnockKnockClient extends Thread{
             
         } else if(fromServer.contains("ENDING_MULTIMEDIA_CHAT")){
             
-            System.out.println("Terminao");
             this.processMultimediaReceived();
             
             condition = "";
@@ -204,14 +208,14 @@ public class KnockKnockClient extends Thread{
         } else if(fromServer.contains("CHAT")){
             if(!fromServer.contains("MESSAGE_SUCCESFULLY_PROCESSED")){
                 String[] datos = fromServer.split("#");
-                //System.out.println("Focused frined --> " + this.a.getFocusFriend());
-                //System.out.println("Focused frined --> " + datos[4]);
+                
                 if(this.myCristoMessengerScreen.getFocusFriend().equals(datos[4])){
                     this.addNewMsg(fromServer);
                 } else {
                     String cadena = "Tienes un nuevo mensaje de " + datos[4];
                     notificaciones.add(cadena);
                 }
+                
                 
             }   
         }         
@@ -284,8 +288,7 @@ public class KnockKnockClient extends Thread{
         fos.close();
         
         ArrayList<User> friendList = this.myCristoMessengerScreen.getFriends();
-        
-        
+ 
         out.println(this.protocol.photoReceived(protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin())));
         
         contadorIcons++;
@@ -378,28 +381,22 @@ public class KnockKnockClient extends Thread{
         this.recibiendoMsg = false;
         
         String output =  protocol.getMessages();
-        System.out.println("PERO MIRA LO QUE MANDO --> " +  output);
         out.println(output);
-        
-       
-             
+         
     }
     
     public void processMsgs(String fromServer) throws IOException{
-        //System.out.println("Mira el numero de mensajes --> " + this.numeroMsgs);
        
         if(this.contadorMsgs < this.numeroMsgs){
             protocol.leerMsgs(fromServer);
             contadorMsgs++;
-            //System.out.println("Mira el contador de mensajes --> " + this.contadorMsgs);
 
             if(this.contadorMsgs == this.numeroMsgs){
                 String theOutput = protocol.msgAllReceived();
                 out.println(theOutput);
                 this.diasParaAtras = protocol.restar;
                 this.myCristoMessengerScreen.canWheeled = true;
-                //System.out.println("Output de que ya los he recibio tos --> " + theOutput);
-                //in.readLine();
+                
                 condition = "";
                 usando.signalAll();
                 lock.unlock();
@@ -440,23 +437,27 @@ public class KnockKnockClient extends Thread{
     }
     
     
-    public void sendMultimedia(String ruta) throws IOException{
+    public void actualizarNotificaciones(){
+        for(String s  : notificaciones){
+            if(s.contains(this.myCristoMessengerScreen.getFocusFriend())){
+                notificaciones.remove(s);
+            }
+        }
+    }
+    
+    
+    public void sendMultimedia(String ruta, String extension) throws IOException{
         
         
-        out.println("PROTOCOLCRISTOMESSENGER1.0#HORA/FECHA#CLIENT#STARTING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend() + "#jpg");
-        
-        //System.out.println("Ruta --> " + ruta);
-        
+        out.println("PROTOCOLCRISTOMESSENGER1.0#HORA/FECHA#CLIENT#STARTING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend() + "#" + extension);
+                
         this.protocol.loadFile(ruta);
-        
         
         while(protocol.getSeparador() > 0 ){
             String cadena = protocol.sendPhoto();
             out.println(cadena);
         }
-        //out.println(protocol.sendPhoto());
 
-        
         out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#ENDING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend());
         
     }
@@ -467,11 +468,10 @@ public class KnockKnockClient extends Thread{
 
         for (String s : this.cadenas) {
             decodeLines.add(new String(Base64.getDecoder().decode(s)));
-            System.out.println("Mira la cadena a decodear --> " + s);
         }
         
         try{
-            File file = new File("multimedias/CristoMessengerImage"+ 1 + ".jpg");
+            File file = new File("multimedias/CristoMessenger" + sdf.format(timestamp) + "." + this.extension);
             file.createNewFile();
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 for (String s : decodeLines) {
@@ -485,6 +485,8 @@ public class KnockKnockClient extends Thread{
         } catch (IOException ex) {
             
         }
+        
+        contadorFiles++;
         
     }
 }

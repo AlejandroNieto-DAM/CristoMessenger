@@ -1,6 +1,5 @@
 package Controladores;
 
-
 import Classes.User;
 import Classes.Message;
 import Vista.CristoMessenger;
@@ -10,20 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author alejandronieto
- */
 public class ClientProtocol {
     
     private final String cadenaPrincipal;
@@ -446,7 +434,7 @@ public class ClientProtocol {
         
         cadena += encodedString;
         
-        System.out.println("Pero mira el encode --> " + encodedString);
+        //System.out.println("Pero mira el encode --> " + encodedString);
 
         contador = 0;
 

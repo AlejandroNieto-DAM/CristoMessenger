@@ -1,6 +1,5 @@
 package Vista;
 
-
 import Controladores.KnockKnockClient;
 import java.awt.Image;
 import java.io.IOException;
@@ -8,16 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author alejandronieto
- */
 public class CristoMessengerLogin extends javax.swing.JFrame {
 
     ImageIcon imageIcon;     
@@ -35,9 +24,7 @@ public class CristoMessengerLogin extends javax.swing.JFrame {
         this.jTextField1.setText("1234");
         //this.jTextField2.setText("172.26.235.72");
         this.jTextField2.setText("192.168.0.201");
-        
-        
-        
+  
     }
     
     

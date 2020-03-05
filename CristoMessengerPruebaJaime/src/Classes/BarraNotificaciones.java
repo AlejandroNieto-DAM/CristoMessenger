@@ -34,7 +34,7 @@ public class BarraNotificaciones extends Thread {
     public void run(){
         while(true){
 
-            if((fin - inicio) / 1000 > 10){
+            if((fin - inicio) / 1000 > 5){
                 
                 notificaciones = this.myKKClient.getNotificaciones();
                 

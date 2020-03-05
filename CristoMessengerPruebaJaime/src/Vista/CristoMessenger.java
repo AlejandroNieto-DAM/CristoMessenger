@@ -535,6 +535,7 @@ public class CristoMessenger extends javax.swing.JFrame{
 
             this.myKK.getFriendData();
             this.myKK.getMessagesIniciarAccion(0);
+            this.myKK.actualizarNotificaciones();
             this.loadFriendPhoto();
 
         } catch (IOException ex) {
@@ -595,8 +596,8 @@ public class CristoMessenger extends javax.swing.JFrame{
         this.jTextFieldUserSelectedInListName.setText(data);
     }
     
-    public void sendStartingTransmisionMultimedia(String ruta) throws IOException{
-        this.myKK.sendMultimedia(ruta);
+    public void sendStartingTransmisionMultimedia(String ruta, String extension) throws IOException{
+        this.myKK.sendMultimedia(ruta, extension);
     }
      
     /**

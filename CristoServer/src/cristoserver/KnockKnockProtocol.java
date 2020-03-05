@@ -270,11 +270,11 @@ public class KnockKnockProtocol{
         String cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#MSGS";
         cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText(); 
         
-        /*if(messages.get(i).getRead()){
+        if(messages.get(i).getRead()){
             cadena += "#LEIDO";
         } else {
             cadena += "#NO_LEIDO";
-        }*/
+        }
         
         return cadena;
         

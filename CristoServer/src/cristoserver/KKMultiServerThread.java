@@ -132,8 +132,7 @@ public class KKMultiServerThread extends Thread{
             while(kkp.getSeparador() > 0 ){
                 out.println(kkp.getPhotoUser());
             }
-            outputLine = kkp.getPhotoUser();
-
+            
             out.println(kkp.endingMultimedia());
 
 
