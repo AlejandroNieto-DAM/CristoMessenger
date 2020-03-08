@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cristoserver;
+package Controllers;
 
 import Classes.Message;
 import Classes.User;
 import Controllers.Friend_Controller;
 import Controllers.Message_Controller;
 import Controllers.User_Controller;
+import cristoserver.CristoServer;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -44,8 +45,10 @@ public class KnockKnockProtocol{
     
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+    
+    boolean leidos = false;
  
-    KnockKnockProtocol(){
+    KnockKnockProtocol(boolean leidos){
         
         cadenaPrincipal = "PROTOCOLCRISTOMESSENGER1.0";
                 
@@ -62,6 +65,10 @@ public class KnockKnockProtocol{
         
         
         contadorMsg = 0;
+        
+        this.leidos = leidos;
+        
+        
     }
     
     public String processInput(String theInput) throws SQLException, IOException {
@@ -100,14 +107,14 @@ public class KnockKnockProtocol{
                  }
                   
                  if(existe == 1 && state.contains("NOT_CONNECTED")){
-                    System.out.println("Este usuario existe.");
-                    CristoServer.debug("Este usuario existe");
+                    //System.out.println("Este usuario existe.");
+                    //CristoServer.debug("Este usuario existe");
                     user_controller.setConnected(login);
                     this.login_user = login;
                     theOutput = getFriends(login);
                  } else {
-                     System.out.println("Este usuario no existe.");
-                     CristoServer.debug("Este usuario no existe");
+                     //System.out.println("Este usuario no existe.");
+                     //CristoServer.debug("Este usuario no existe");
                      theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#ERROR#BAD_LOGIN";
                  }
      
@@ -270,11 +277,14 @@ public class KnockKnockProtocol{
         String cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#MSGS";
         cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText(); 
         
-        if(messages.get(i).getRead()){
-            cadena += "#LEIDO";
-        } else {
-            cadena += "#NO_LEIDO";
+        if(this.leidos){
+            if(messages.get(i).getRead()){
+              cadena += "#LEIDO";
+            } else {
+                cadena += "#NO_LEIDO";
+            }  
         }
+        
         
         return cadena;
         
@@ -371,14 +381,13 @@ public class KnockKnockProtocol{
     
     public String sendReceivedMessage(String theInput){
         String[] datos = theInput.split("#");
-        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[5] + "#" + this.getLogin() + "#MESSAGE_SUCCESFULLY_PROCESSED#" + sdf.format(timestamp);
+        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" +  this.getLogin() + "#" + datos[5] + "#MESSAGE_SUCCESFULLY_PROCESSED#" + sdf.format(timestamp);
         return cadena;
     }
     
     public String sendMessage(String theInput){
         String[] datos = theInput.split("#");  
         String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[4] + "#" + datos[5] + "#" + datos[6] + "#";
-        return cadena;
-        
+        return cadena; 
     }
 }

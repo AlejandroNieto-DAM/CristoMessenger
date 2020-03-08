@@ -17,6 +17,7 @@ import Classes.RefrescarListaAmigos;
 import Vista.CristoMessenger;
 import java.io.*;
 import java.net.*;
+import java.security.Key;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
@@ -27,6 +28,10 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
  
 public class KnockKnockClient extends Thread{
@@ -72,8 +77,15 @@ public class KnockKnockClient extends Thread{
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
     
+    private static final String ALGO = "AES";
+    private static final byte[] keyValue =
+            new byte[]{'T', 'h', 'e', 'B', 'e', 's', 't', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y'};
     
-    public KnockKnockClient(int port, String host, String login, String pass, JFrame frame) throws IOException{
+    
+    boolean encrypt;
+    
+    
+    public KnockKnockClient(int port, String host, String login, String pass, JFrame frame, boolean encrypt) throws IOException{
         this.portNumber = port;
         this.hostName = host;
         this.login = login;
@@ -92,6 +104,7 @@ public class KnockKnockClient extends Thread{
         
         notis = new BarraNotificaciones(this);
 
+        this.encrypt = encrypt;
     }
     
     
@@ -102,13 +115,27 @@ public class KnockKnockClient extends Thread{
         String fromUser = "";
 
         fromUser = protocol.processInput(null);
-        out.println(fromUser);
+        this.salida(fromUser);
         
         try {
             try{
                 while((fromServer = in.readLine()) != null){   
-                    if(fromServer.startsWith("PROTOCOLCRISTOMESSENGER1.0")){
-                        this.filtrado(fromServer);
+                    
+                    String cadenaADecodear = fromServer;
+                    
+                    System.out.println("ENTRADA --> " + fromServer);
+                    if(encrypt){ 
+                        
+                        try {
+                            cadenaADecodear = KnockKnockClient.decrypt(fromServer);
+                        } catch (Exception ex) {
+                            Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                    }
+                    
+                    if(cadenaADecodear.startsWith("PROTOCOLCRISTOMESSENGER1.0")){
+                        this.filtrado(cadenaADecodear);
                     }
                 }
             } catch (SocketException ex){
@@ -141,8 +168,8 @@ public class KnockKnockClient extends Thread{
         if(fromServer.contains("LOGIN_CORRECT")){
             protocol.processInput(fromServer);
             
-            out.println(this.protocol.getUserData());
-            
+            this.salida(this.protocol.getUserData());
+   
             try {
                 this.getPhoto();
                 
@@ -158,7 +185,6 @@ public class KnockKnockClient extends Thread{
             }
             
         } else if(fromServer.contains("STARTING_MULTIMEDIA_CHAT")){
-            System.out.println("Starting");
             lock.lock();
             condition = "MULTIMEDIA_CHAT";
             cadenas.clear();
@@ -180,7 +206,6 @@ public class KnockKnockClient extends Thread{
         
         } else if(fromServer.contains("MULTIMEDIA_CHAT_TRANSMISION")){
             String datos[] = fromServer.split("#");
-            System.out.println("CADENA RECEIVIDA --> " + fromServer);
             cadenas.add(new String(datos[7])); 
         
         } else if(fromServer.contains("RESPONSE_MULTIMEDIA")){
@@ -192,7 +217,7 @@ public class KnockKnockClient extends Thread{
                 this.processFriendPhoto();
             } else {
                 String output = this.processPhoto();
-                out.println(output);
+                this.salida(output);
             }
 
             condition = "";
@@ -223,7 +248,7 @@ public class KnockKnockClient extends Thread{
     
     
     public void addNewMsg(String fromServer) throws IOException{
-        out.println(protocol.addNewMsg(fromServer));   
+        this.salida(protocol.addNewMsg(fromServer));
     }
     
     public void getPhoto() throws IOException{
@@ -231,7 +256,7 @@ public class KnockKnockClient extends Thread{
         this.decodedBytes.clear();
         
         String output = protocol.getPhoto();
-        out.println(output);   
+        this.salida(output);   
     }
     
     public String processPhoto() throws IOException{
@@ -267,7 +292,8 @@ public class KnockKnockClient extends Thread{
         ArrayList<User> friendList = this.myCristoMessengerScreen.getFriends();
         
         String output = protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin());
-        out.println(output);
+
+        this.salida(output);
               
     }
     
@@ -289,7 +315,8 @@ public class KnockKnockClient extends Thread{
         
         ArrayList<User> friendList = this.myCristoMessengerScreen.getFriends();
  
-        out.println(this.protocol.photoReceived(protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin())));
+        this.salida(this.protocol.photoReceived(friendList.get(contadorIcons).getLogin()));
+        //System.out.println("RECIBIDA " + friendList.get(contadorIcons).getLogin());
         
         contadorIcons++;
         
@@ -300,7 +327,8 @@ public class KnockKnockClient extends Thread{
             this.decodedBytes.clear();
 
             String output = protocol.getFriendPhoto(friendList.get(contadorIcons).getLogin());
-            out.println(output); 
+            //System.out.println("Mira esto --> " + friendList.get(contadorIcons).getLogin());
+            this.salida(output); 
         
         } else {
             this.myCristoMessengerScreen.loadPhoto();
@@ -347,24 +375,23 @@ public class KnockKnockClient extends Thread{
         
         for(int i = 0; i < friendList.size(); i++){
             String cadena = protocol.getFriendStatus() + friendList.get(i).getLogin();
-            out.println(cadena);
+            this.salida(cadena);
         }  
     }
     
     public void sendMessage(String text) throws IOException{
         String output = protocol.sendMessage(text);
-        System.out.println("Mira el mensaje que mando --> " + output);
-        out.println(output);
+        this.salida(output);
     }
       
     public void getFriendStatus() throws IOException{
         String output = protocol.getFriendStatus();
-        out.println(output);  
+        this.salida(output);
     }
     
     public void getFriendData() throws IOException{
         String output = protocol.getFriendData();
-        out.println(output);
+        this.salida(output);
     }
     
     public void getMessagesIniciarAccion(int restar) throws IOException{        
@@ -381,7 +408,7 @@ public class KnockKnockClient extends Thread{
         this.recibiendoMsg = false;
         
         String output =  protocol.getMessages();
-        out.println(output);
+        this.salida(output);
          
     }
     
@@ -393,7 +420,7 @@ public class KnockKnockClient extends Thread{
 
             if(this.contadorMsgs == this.numeroMsgs){
                 String theOutput = protocol.msgAllReceived();
-                out.println(theOutput);
+                this.salida(theOutput);
                 this.diasParaAtras = protocol.restar;
                 this.myCristoMessengerScreen.canWheeled = true;
                 
@@ -426,9 +453,9 @@ public class KnockKnockClient extends Thread{
         if(totalNumeroMensajes != 0){ 
             if(numeroMsgs == 0){
                 output =  protocol.getMessages();
-                out.println(output);
+                this.salida(output);
             } else {
-                out.println(output);
+                this.salida(output);
                 this.recibiendoMsg = true;
                 lock.lock();
                 condition = "MSGS";
@@ -438,27 +465,32 @@ public class KnockKnockClient extends Thread{
     
     
     public void actualizarNotificaciones(){
-        for(String s  : notificaciones){
-            if(s.contains(this.myCristoMessengerScreen.getFocusFriend())){
-                notificaciones.remove(s);
+
+        //TODOOOOOOO BORRAR NOTIS
+        for(int i = 0; i < this.notificaciones.size(); i++){
+            if(this.notificaciones.get(i).contains(this.myCristoMessengerScreen.getFocusFriend())){
+                notificaciones.remove(i);
             }
         }
+        
     }
     
     
     public void sendMultimedia(String ruta, String extension) throws IOException{
         
         
-        out.println("PROTOCOLCRISTOMESSENGER1.0#HORA/FECHA#CLIENT#STARTING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend() + "#" + extension);
-                
+        String startingMC = "PROTOCOLCRISTOMESSENGER1.0#HORA/FECHA#CLIENT#STARTING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend() + "#" + extension;
+        this.salida(startingMC);
+        
         this.protocol.loadFile(ruta);
         
         while(protocol.getSeparador() > 0 ){
             String cadena = protocol.sendPhoto();
-            out.println(cadena);
+            this.salida(cadena);
         }
 
-        out.println("PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#ENDING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend());
+        String endMC = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#ENDING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend();
+        this.salida(endMC);
         
     }
     
@@ -488,5 +520,72 @@ public class KnockKnockClient extends Thread{
         
         contadorFiles++;
         
+    }
+    
+    
+    public synchronized void salida(String salida){
+        
+        
+        
+        int contadorEspacios = 76;
+        
+        if(encrypt){
+            
+            String cadena = "";
+            try {
+                cadena = KnockKnockClient.encrypt(salida);
+            } catch (Exception ex) {
+                Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            String send = "";
+        
+            for(int i = 0; i < cadena.length(); i++){
+                if(i == contadorEspacios){
+                    contadorEspacios += 77;
+                } else {
+                   send += cadena.charAt(i);
+                }
+
+            }
+            
+            System.out.println("SALIDA DE MI CLIENTE --> " + send);
+            
+            out.println(send);
+            
+        } else {
+            out.println(salida);
+        }
+    }
+    
+    
+    public static String encrypt(String data) throws Exception {
+        Key key = generateKey();
+        Cipher c = Cipher.getInstance(ALGO);
+        c.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encVal = c.doFinal(data.getBytes());
+        return new BASE64Encoder().encode(encVal);
+    }
+
+    /**
+     * Decrypt a string with AES algorithm.
+     *
+     * @param encryptedData is a string
+     * @return the decrypted string
+     */
+    public static String decrypt(String encryptedData) throws Exception {
+        Key key = generateKey();
+        Cipher c = Cipher.getInstance(ALGO);
+        c.init(Cipher.DECRYPT_MODE, key);
+        byte[] decordedValue = new BASE64Decoder().decodeBuffer(encryptedData);
+        byte[] decValue = c.doFinal(decordedValue);
+        return new String(decValue);
+    }
+
+    /**
+     * Generate a new encryption key.
+     */
+    private static Key generateKey() throws Exception {
+        return new SecretKeySpec(keyValue, ALGO);
     }
 }

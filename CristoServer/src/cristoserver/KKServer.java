@@ -5,6 +5,7 @@
  */
 package cristoserver;
 
+import Controllers.KKMultiServerThread;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.sql.SQLException;
@@ -18,15 +19,19 @@ public class KKServer extends Thread{
     
     int portNumber;
     boolean listening;
+    
     ServerSocket serverSocket;
-    
+
     ArrayList<KKMultiServerThread> conexiones;
+    CristoServer myCS;
     
-    KKServer(int port){
+
+    KKServer(int port, CristoServer myCS){
         super();
         portNumber = port;
         listening = true;
         conexiones = new ArrayList();
+        this.myCS = myCS;
         
     }
     
@@ -35,7 +40,7 @@ public class KKServer extends Thread{
         try { 
             serverSocket = new ServerSocket(portNumber);
             while (listening) {
-	            conexiones.add(new KKMultiServerThread(serverSocket.accept(), this)); 
+	            conexiones.add(new KKMultiServerThread(serverSocket.accept(), this, myCS.getLeidos(), myCS.getEncrypt())); 
                     conexiones.get(conexiones.size() - 1).start(); 
                     CristoServer.debug("Conexion aceptada");
                     System.out.println("Conexion aceptada");

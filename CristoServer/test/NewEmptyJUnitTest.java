@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-import cristoserver.KKMultiServerThread;
+import Controllers.KKMultiServerThread;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

@@ -5,6 +5,7 @@
  */
 package cristoserver;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -21,9 +22,14 @@ public class CristoServer extends javax.swing.JFrame {
      */
     Boolean started = false;
     KKServer mykkServer;
+    Boolean encrypt = false;
+    Boolean leidos = false;
     
     public CristoServer() {
         initComponents();
+        this.jButton4.setBackground(Color.GRAY);
+        this.jButton3.setBackground(Color.GRAY);
+
     }
     
     public static void debug(String output){
@@ -42,6 +48,8 @@ public class CristoServer extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -66,6 +74,20 @@ public class CristoServer extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
+        jButton3.setText("ENCRYPT");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jButton4.setText("LEIDOS");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -80,7 +102,13 @@ public class CristoServer extends javax.swing.JFrame {
                         .addGap(70, 70, 70)
                         .addComponent(jButton2))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton4)
+                .addGap(18, 18, 18)
+                .addComponent(jButton3)
+                .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -92,6 +120,10 @@ public class CristoServer extends javax.swing.JFrame {
                     .addComponent(jButton2))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton3)
+                    .addComponent(jButton4))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -116,12 +148,39 @@ public class CristoServer extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(started == false){
-            mykkServer = new KKServer(Integer.parseInt(jTextField1.getText()));
+            mykkServer = new KKServer(Integer.parseInt(jTextField1.getText()), this);
             mykkServer.start();
             started = true;
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        if(this.leidos){
+            this.leidos = false;
+            this.jButton4.setBackground(Color.GRAY);
+        } else {
+            this.leidos = true;
+            this.jButton4.setBackground(Color.GREEN);
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if(this.encrypt){
+            this.encrypt = false;
+            this.jButton3.setBackground(Color.GRAY);
+        } else {
+            this.encrypt = true;
+            this.jButton3.setBackground(Color.GREEN);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    public boolean getLeidos(){
+        return this.leidos;
+    }
+    
+    public boolean getEncrypt(){
+        return this.encrypt;
+    }
     /**
      * @param args the command line arguments
      */
@@ -160,6 +219,8 @@ public class CristoServer extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
     public static javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
