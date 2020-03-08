@@ -64,4 +64,8 @@ public class User_Controller {
         return a.getUrlPhoto(login);
     }
     
+    public void setDisconnectedOtherUsers(ArrayList conectados){
+        this.a.setDisconnectedOtherUsers(conectados);
+    }
+    
 }

@@ -123,7 +123,7 @@ public class KnockKnockClient extends Thread{
                     
                     String cadenaADecodear = fromServer;
                     
-                    System.out.println("ENTRADA --> " + fromServer);
+                    //System.out.println("ENTRADA --> " + fromServer);
                     if(encrypt){ 
                         
                         try {
@@ -549,7 +549,7 @@ public class KnockKnockClient extends Thread{
 
             }
             
-            System.out.println("SALIDA DE MI CLIENTE --> " + send);
+            //System.out.println("SALIDA DE MI CLIENTE --> " + send);
             
             out.println(send);
             

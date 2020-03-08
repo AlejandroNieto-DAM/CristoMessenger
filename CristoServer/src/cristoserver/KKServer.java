@@ -5,6 +5,7 @@
  */
 package cristoserver;
 
+import Controllers.ActualizarConectadosBD;
 import Controllers.KKMultiServerThread;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -25,6 +26,8 @@ public class KKServer extends Thread{
     ArrayList<KKMultiServerThread> conexiones;
     CristoServer myCS;
     
+    ActualizarConectadosBD conectados;
+    
 
     KKServer(int port, CristoServer myCS){
         super();
@@ -32,11 +35,15 @@ public class KKServer extends Thread{
         listening = true;
         conexiones = new ArrayList();
         this.myCS = myCS;
+        conectados = new ActualizarConectadosBD(this);
         
     }
     
     @Override
     public void run(){
+        
+        conectados.start();
+        
         try { 
             serverSocket = new ServerSocket(portNumber);
             while (listening) {

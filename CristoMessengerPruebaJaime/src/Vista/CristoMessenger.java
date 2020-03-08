@@ -526,7 +526,8 @@ public class CristoMessenger extends javax.swing.JFrame{
         }
 
         this.focusFriend = dest;
-
+        this.jLabel1.setText("");
+        
         try {
 
             if(this.mensjs != null){
@@ -536,6 +537,7 @@ public class CristoMessenger extends javax.swing.JFrame{
             this.myKK.getFriendData();
             this.myKK.getMessagesIniciarAccion(0);
             this.myKK.actualizarNotificaciones();
+            
             this.loadFriendPhoto();
 
         } catch (IOException ex) {

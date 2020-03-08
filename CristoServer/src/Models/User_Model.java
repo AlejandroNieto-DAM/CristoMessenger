@@ -100,9 +100,7 @@ public class User_Model extends ConnectToBD{
           preparedStmt.setString (6, "eyeyey");
           preparedStmt.setInt (7, 0);
           
-         
-          
-            
+   
           preparedStmt.execute();
 
           this.getConnector().close();
@@ -190,13 +188,9 @@ public class User_Model extends ConnectToBD{
                 + "set state = 1 "
                 + "where id_user = '" + login + "'";
 
-        
-
         PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
         
-        
-        System.out.println("query --> " + query);
-        
+                
         preparedStmt.executeUpdate();
         preparedStmt.close();
         
@@ -212,8 +206,6 @@ public class User_Model extends ConnectToBD{
         PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
         
         
-        System.out.println("query --> " + query);
-
         preparedStmt.executeUpdate();
         preparedStmt.close();
         
@@ -258,6 +250,29 @@ public class User_Model extends ConnectToBD{
         }
  
         return url;
+    }
+    
+    public void setDisconnectedOtherUsers(ArrayList conectados) throws SQLException{
+        
+        String query =  "update " + this.getDBName() + ".user set state = 0 where id_user not in (";
+                
+        for(int i = 0; i < conectados.size() - 1; i++){
+            query += "'" + conectados.get(i) + "',";
+        }
+        
+        query += "'" + conectados.get(conectados.size() - 1) + "')";
+        
+        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+        
+        
+        System.out.println("query --> " + query);
+
+        preparedStmt.executeUpdate();
+        preparedStmt.close();
+        
+        this.getConnector().close();
+        
+        
     }
     
 }

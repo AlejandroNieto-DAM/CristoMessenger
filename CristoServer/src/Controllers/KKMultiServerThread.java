@@ -384,7 +384,11 @@ public class KKMultiServerThread extends Thread{
         for(int i = 0; i < myKKS.getHebrasSize() && !encontrado; i++){ 
             if(this.myKKS.getConexionAt(i).getLogin().equals(loginFriend)){
                 PrintWriter outB = this.myKKS.getConexionAt(i).getOutputStream();
-                outB.println(this.sendMsjEncrypt(cadena + sdf.format(timestamp)));
+                if(encrypt){
+                   outB.println(this.sendMsjEncrypt(cadena + sdf.format(timestamp))); 
+                } else {
+                    outB.println(cadena + sdf.format(timestamp));
+                }
                 encontrado = true; 
             }
         }
@@ -393,11 +397,9 @@ public class KKMultiServerThread extends Thread{
         tryInsert = kkp.receiveMessage(inputLine);
         
         if(!tryInsert.contains("Bien")){
-            
-            
+   
             this.salida(tryInsert);
-            
-            
+ 
         }
   
     }
