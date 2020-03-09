@@ -78,7 +78,7 @@ public class KKServer extends Thread{
     public void borrarHebras(String login) throws InterruptedException{
         for(int i = 0;  i < conexiones.size(); i++){
             if(conexiones.get(i).getLogin().equals(login)){
-                conexiones.get(i).join();
+                conexiones.get(i).stop();
                 conexiones.remove(i);
             }
         }

@@ -95,7 +95,7 @@ public class KKMultiServerThread extends Thread{
                     }
 
                     System.out.println("ENTRADA --> " + inputLine);
-                    CristoServer.debug("ENTRADA --> " + inputLine);
+                    //CristoServer.debug("ENTRADA --> " + inputLine);
                     
                     this.filtrado(cadenaAFiltrar);
 
@@ -115,6 +115,7 @@ public class KKMultiServerThread extends Thread{
             
     
         } catch (IOException e) {
+            
         } finally{
             try {
                 this.myKKS.borrarHebras(this.login);
@@ -139,11 +140,8 @@ public class KKMultiServerThread extends Thread{
         if(inputLine.contains("OK_SEND!") && kkp.contadorPaquetes(inputLine) == 5){
 
             for(int i = 0; i < kkp.contadorMsg; i++){
-                outputLine = kkp.sendMsg(i);
-               
-                this.salida(outputLine);
-                
-                
+                outputLine = kkp.sendMsg(i);               
+                this.salida(outputLine);   
             }
 
         }else if (inputLine.contains("ALL_RECEIVED")){
@@ -435,8 +433,7 @@ public class KKMultiServerThread extends Thread{
         
         int contadorEspacios = 76;
         
-        CristoServer.debug("SALIDA --> " + send);
-        System.out.println("SALIDA --> " + send);
+        
 
         String encrypted = "";
         if(encrypt){
@@ -460,9 +457,15 @@ public class KKMultiServerThread extends Thread{
             }
             
             out.println(salida);
+            
+            //CristoServer.debug("SALIDA --> " + send);
+            //System.out.println("SALIDA --> " + send);
                         
         } else {
             out.println(send);
+            
+            //CristoServer.debug("SALIDA --> " + send);
+            //System.out.println("SALIDA --> " + send);
         }
         
     }

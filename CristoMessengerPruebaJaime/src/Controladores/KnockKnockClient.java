@@ -463,7 +463,7 @@ public class KnockKnockClient extends Thread{
                 this.salida(output);
                 this.recibiendoMsg = true;
                 lock.lock();
-                System.out.println("Mira el recibiendo msgs --> " + recibiendoMsg);
+                //System.out.println("Mira el recibiendo msgs --> " + recibiendoMsg);
                 condition = "MSGS";
             }
         }               
@@ -530,8 +530,7 @@ public class KnockKnockClient extends Thread{
     
     public synchronized void salida(String salida){
         
-        System.out.println("SALIDA --> " + salida);
-        CristoMessenger.returnException("SALIDA --> " + salida);
+        
         
         int contadorEspacios = 76;
         
@@ -557,9 +556,14 @@ public class KnockKnockClient extends Thread{
             
             
             out.println(send);
+            //System.out.println("SALIDA --> " + salida);
+        //CristoMessenger.returnException("SALIDA --> " + salida);
             
         } else {
             out.println(salida);
+            
+            //System.out.println("SALIDA --> " + salida);
+        //CristoMessenger.returnException("SALIDA --> " + salida);
         }
     }
     
