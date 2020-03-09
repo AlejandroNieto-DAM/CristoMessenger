@@ -117,7 +117,7 @@ public class ConnectToBD {
             conn = DriverManager.getConnection("jdbc:" + this.getDataBase() + ":" + this.getDBName() + ";create=true",connectionProps);
         }
         
-        CristoServer.debug("Connected to database");
+        //CristoServer.debug("Connected to database");
         return conn;
     }
         

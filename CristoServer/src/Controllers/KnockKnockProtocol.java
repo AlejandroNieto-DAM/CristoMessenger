@@ -7,10 +7,6 @@ package Controllers;
 
 import Classes.Message;
 import Classes.User;
-import Controllers.Friend_Controller;
-import Controllers.Message_Controller;
-import Controllers.User_Controller;
-import cristoserver.CristoServer;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -107,14 +103,10 @@ public class KnockKnockProtocol{
                  }
                   
                  if(existe == 1 && state.contains("NOT_CONNECTED")){
-                    //System.out.println("Este usuario existe.");
-                    //CristoServer.debug("Este usuario existe");
                     user_controller.setConnected(login);
                     this.login_user = login;
                     theOutput = getFriends(login);
                  } else {
-                     //System.out.println("Este usuario no existe.");
-                     //CristoServer.debug("Este usuario no existe");
                      theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#ERROR#BAD_LOGIN";
                  }
      
@@ -147,11 +139,11 @@ public class KnockKnockProtocol{
     
         } else {
             
-            CristoServer.debug("MENSAJE INVALIDO");  
+            theOutput = "MENSAJE INVALIDO";
             
         }
 
-        CristoServer.debug(theOutput);
+
         return theOutput;
     }
     

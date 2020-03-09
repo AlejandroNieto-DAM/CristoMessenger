@@ -137,6 +137,8 @@ public class CristoServer extends javax.swing.JFrame {
                     mykkServer.parar();
                 } catch (SQLException ex) {
                     Logger.getLogger(CristoServer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(CristoServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } catch (IOException ex) {
                 Logger.getLogger(CristoServer.class.getName()).log(Level.SEVERE, null, ex);

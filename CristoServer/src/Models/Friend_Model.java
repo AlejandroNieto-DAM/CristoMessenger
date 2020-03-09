@@ -64,9 +64,7 @@ public class Friend_Model extends ConnectToBD{
     } 
 
     public void getFriendsOf(ArrayList<User> amigos, String id_user){
-        
-        CristoServer.debug("Debug: getFriendsOf");
-        
+                
         //select * from user where id_user IN (select id_user_dest from friend where id_user_orig = '@alexinio');
         
         this.setQuery( "select id_user, state " + "from " + this.getDBName() + ".user where id_user IN ( select id_user_dest from " + this.getDBName() + ".friend where id_user_orig = '" + id_user + "')"); 
@@ -81,7 +79,6 @@ public class Friend_Model extends ConnectToBD{
 
     public Boolean getRelation(String friend1, String friend2) {
         Boolean areFriends = false;
-        //select * from friend where (id_user_orig = '@zizou' and id_user_dest = '@alexinio') or  (id_user_orig = '@alexinio' and id_user_dest = '@zizou');
         this.setQuery( "select * " + "from " + this.getDBName() + ".friend where (id_user_orig = '" + friend1 + "' and id_user_dest = '" + friend2 + "') or (id_user_orig = '" + friend2 + "' and id_user_dest = '" + friend1 + "')");
         int state = 0;
         

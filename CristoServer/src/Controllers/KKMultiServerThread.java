@@ -5,6 +5,7 @@
  */
 package Controllers;
 
+import cristoserver.CristoServer;
 import cristoserver.KKServer;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -84,8 +85,7 @@ public class KKMultiServerThread extends Thread{
                 
                 while ((inputLine = in.readLine()) != null) {
                     
-                    System.out.println("ENTRADA --> " + inputLine);
-                    
+                   
                     String cadenaAFiltrar = "";
                     if(encrypt){
                         cadenaAFiltrar = KKMultiServerThread.decrypt(inputLine);
@@ -94,6 +94,9 @@ public class KKMultiServerThread extends Thread{
                         cadenaAFiltrar = inputLine;
                     }
 
+                    System.out.println("ENTRADA --> " + inputLine);
+                    CristoServer.debug("ENTRADA --> " + inputLine);
+                    
                     this.filtrado(cadenaAFiltrar);
 
                     if (outputLine.contains("BAD_LOGIN"))
@@ -106,18 +109,29 @@ public class KKMultiServerThread extends Thread{
                 Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
             } catch (Exception ex) {
                 Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
-            } finally{
-                kkp.setDisconnected();
-                socket.close();
             }
             
             
             
     
         } catch (IOException e) {
-        } catch (SQLException ex) {
-             Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            try {
+                this.myKKS.borrarHebras(this.login);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                kkp.setDisconnected();
+                socket.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        
+         
     }
     
     public void filtrado(String inputLine) throws FileNotFoundException, IOException, SQLException, InterruptedException{
@@ -421,6 +435,7 @@ public class KKMultiServerThread extends Thread{
         
         int contadorEspacios = 76;
         
+        CristoServer.debug("SALIDA --> " + send);
         System.out.println("SALIDA --> " + send);
 
         String encrypted = "";

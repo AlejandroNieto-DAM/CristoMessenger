@@ -5,8 +5,12 @@
         <group>
             <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/Controllers/KKMultiServerThread.java</file>
             <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/cristoserver/CristoServer.java</file>
-            <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/Controllers/KnockKnockProtocol.java</file>
+            <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/cristoserver/KKServer.java</file>
+            <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/Controllers/User_Controller.java</file>
+            <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/Controllers/Friend_Controller.java</file>
             <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/Controllers/ActualizarConectadosBD.java</file>
+            <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/Models/User_Model.java</file>
+            <file>file:/Users/alejandronieto/Documents/CristoMessenger/CristoServer/src/DBConnetion/ConnectToBD.java</file>
         </group>
     </open-files>
 </project-private>

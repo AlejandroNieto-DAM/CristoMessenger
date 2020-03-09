@@ -64,7 +64,7 @@ public class User_Controller {
         return a.getUrlPhoto(login);
     }
     
-    public void setDisconnectedOtherUsers(ArrayList conectados){
+    public void setDisconnectedOtherUsers(ArrayList conectados) throws SQLException{
         this.a.setDisconnectedOtherUsers(conectados);
     }
     

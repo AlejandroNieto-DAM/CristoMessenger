@@ -123,7 +123,6 @@ public class KnockKnockClient extends Thread{
                     
                     String cadenaADecodear = fromServer;
                     
-                    //System.out.println("ENTRADA --> " + fromServer);
                     if(encrypt){ 
                         
                         try {
@@ -134,9 +133,13 @@ public class KnockKnockClient extends Thread{
                         
                     }
                     
+                    CristoMessenger.returnException("ENTRADA --> " + fromServer);
+                    System.out.println("ENTRADA --> " + fromServer);
+                    
                     if(cadenaADecodear.startsWith("PROTOCOLCRISTOMESSENGER1.0")){
                         this.filtrado(cadenaADecodear);
                     }
+                    
                 }
             } catch (SocketException ex){
                 Logger.getLogger(KnockKnockClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -399,13 +402,13 @@ public class KnockKnockClient extends Thread{
         this.totalNumeroMensajes = 0;
         this.contadorMsgs = 0;
         
+        
         if(restar == 0){
             protocol.restar = 1;
         } else {
             protocol.restar = restar;
         }
         
-        this.recibiendoMsg = false;
         
         String output =  protocol.getMessages();
         this.salida(output);
@@ -427,6 +430,8 @@ public class KnockKnockClient extends Thread{
                 condition = "";
                 usando.signalAll();
                 lock.unlock();
+                this.recibiendoMsg = false;
+
             }
         }    
     }
@@ -458,6 +463,7 @@ public class KnockKnockClient extends Thread{
                 this.salida(output);
                 this.recibiendoMsg = true;
                 lock.lock();
+                System.out.println("Mira el recibiendo msgs --> " + recibiendoMsg);
                 condition = "MSGS";
             }
         }               
@@ -466,7 +472,6 @@ public class KnockKnockClient extends Thread{
     
     public void actualizarNotificaciones(){
 
-        //TODOOOOOOO BORRAR NOTIS
         for(int i = 0; i < this.notificaciones.size(); i++){
             if(this.notificaciones.get(i).contains(this.myCristoMessengerScreen.getFocusFriend())){
                 notificaciones.remove(i);
@@ -479,17 +484,17 @@ public class KnockKnockClient extends Thread{
     public void sendMultimedia(String ruta, String extension) throws IOException{
         
         
-        String startingMC = "PROTOCOLCRISTOMESSENGER1.0#HORA/FECHA#CLIENT#STARTING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend() + "#" + extension;
+        String startingMC = this.protocol.startingMultimediaChat(extension);
         this.salida(startingMC);
         
         this.protocol.loadFile(ruta);
         
         while(protocol.getSeparador() > 0 ){
-            String cadena = protocol.sendPhoto();
+            String cadena = protocol.sendMultimediaFriend();
             this.salida(cadena);
         }
 
-        String endMC = "PROTOCOLCRISTOMESSENGER1.0#FECHA/HORA#CLIENT#ENDING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessengerScreen.getFocusFriend();
+        String endMC = this.protocol.endingMultimediaChat();
         this.salida(endMC);
         
     }
@@ -525,7 +530,8 @@ public class KnockKnockClient extends Thread{
     
     public synchronized void salida(String salida){
         
-        
+        System.out.println("SALIDA --> " + salida);
+        CristoMessenger.returnException("SALIDA --> " + salida);
         
         int contadorEspacios = 76;
         
@@ -549,7 +555,6 @@ public class KnockKnockClient extends Thread{
 
             }
             
-            //System.out.println("SALIDA DE MI CLIENTE --> " + send);
             
             out.println(send);
             

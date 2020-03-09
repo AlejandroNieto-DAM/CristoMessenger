@@ -402,7 +402,7 @@ public class ClientProtocol {
         separador = (int)file.length();
     }
     
-    public String sendPhoto() throws FileNotFoundException, IOException{
+    public String sendMultimediaFriend() throws FileNotFoundException, IOException{
         String cadena = "";
 
         int  i = 0;
@@ -445,6 +445,17 @@ public class ClientProtocol {
             fin.close();
         }
   
+        return cadena;
+    }
+    
+    
+    public String startingMultimediaChat(String extension){
+        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#CLIENT#STARTING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessenger.getFocusFriend() + "#" + extension;
+        return cadena;
+    }
+    
+    public String endingMultimediaChat(){
+        String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#CLIENT#ENDING_MULTIMEDIA_CHAT#" + this.login + "#" + this.myCristoMessenger.getFocusFriend();
         return cadena;
     }
     
