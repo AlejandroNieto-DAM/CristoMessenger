@@ -40,53 +40,55 @@ public class Friend_Model extends ConnectToBD{
         return this.query;
     }
     
-    public void viewTable(Connection con, String dbName, String query, ArrayList<User> amigos) throws SQLException {
-
-        try (Statement stmt = con.createStatement()) {
-            ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) {
-
-                String login = rs.getString("id_user");
-                int request = rs.getInt("state");
-           
-                User auxiliar = new User();
-                
-                auxiliar.setLogin(login);               
-                auxiliar.setEstadoUsuario(request);
-                amigos.add(auxiliar);
-                
-            }
-        } catch (SQLException e ) {
-            
-           CristoServer.debug(e.toString());
-           
-        }
-    } 
-
-    public void getFriendsOf(ArrayList<User> amigos, String id_user){
+    public void getFriendsOf(ArrayList<User> amigos, String id_user) throws SQLException{
                 
         //select * from user where id_user IN (select id_user_dest from friend where id_user_orig = '@alexinio');
         
         this.setQuery( "select id_user, state " + "from " + this.getDBName() + ".user where id_user IN ( select id_user_dest from " + this.getDBName() + ".friend where id_user_orig = '" + id_user + "')"); 
         
+        Statement stmt = this.getConnector().createStatement();
+        
         try {
-            this.viewTable(this.getConnector(), this.getDBName(), this.getQuery(), amigos);
-        } catch (SQLException ex) {
-            CristoServer.debug(ex.toString());
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+
+                String login = rs.getString("id_user");
+                int request = rs.getInt("state");
+
+                User auxiliar = new User();
+
+                auxiliar.setLogin(login);               
+                auxiliar.setEstadoUsuario(request);
+                amigos.add(auxiliar);
+
+            }
+          
+        } catch (SQLException e ) {
+
+           CristoServer.debug(e.toString());
+
         } 
+        
+        stmt.close();
+        this.getConnector();
         
     } 
 
-    public Boolean getRelation(String friend1, String friend2) {
+    public Boolean getRelation(String friend1, String friend2) throws SQLException {
         Boolean areFriends = false;
         this.setQuery( "select * " + "from " + this.getDBName() + ".friend where (id_user_orig = '" + friend1 + "' and id_user_dest = '" + friend2 + "') or (id_user_orig = '" + friend2 + "' and id_user_dest = '" + friend1 + "')");
         int state = 0;
         
-        try (Statement stmt = this.getConnector().createStatement()) {
+        Statement stmt = this.getConnector().createStatement();
+        try {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 state++;                
             }
+            
+            stmt.close();
+            this.getConnector().close();
+            
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }

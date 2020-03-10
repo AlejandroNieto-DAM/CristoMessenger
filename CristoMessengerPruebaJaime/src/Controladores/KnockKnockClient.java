@@ -133,8 +133,11 @@ public class KnockKnockClient extends Thread{
                         
                     }
                     
-                    CristoMessenger.returnException("ENTRADA --> " + fromServer);
-                    System.out.println("ENTRADA --> " + fromServer);
+                    //CristoMessenger.returnException("ENTRADA --> " + fromServer);
+                    if(!fromServer.contains("RESPONSE_MULTIMEDIA")){
+                        System.out.println("ENTRADA --> " + fromServer);
+                    }
+                    
                     
                     if(cadenaADecodear.startsWith("PROTOCOLCRISTOMESSENGER1.0")){
                         this.filtrado(cadenaADecodear);
@@ -563,7 +566,7 @@ public class KnockKnockClient extends Thread{
             out.println(salida);
             
             //System.out.println("SALIDA --> " + salida);
-        //CristoMessenger.returnException("SALIDA --> " + salida);
+            CristoMessenger.returnException("SALIDA --> " + salida);
         }
     }
     

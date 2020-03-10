@@ -4,6 +4,7 @@ package Controllers;
 import Classes.Friend;
 import Classes.User;
 import Models.Friend_Model;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /*
@@ -24,11 +25,11 @@ public class Friend_Controller {
         a = new Friend_Model();
     }
      
-    public void getFriendsOf(ArrayList<User> amigos, String id_user){
+    public void getFriendsOf(ArrayList<User> amigos, String id_user) throws SQLException{
         a.getFriendsOf(amigos, id_user);
     }
     
-    public Boolean getRelation(String friend1, String friend2){
+    public Boolean getRelation(String friend1, String friend2) throws SQLException{
         return a.getRelation(friend1, friend2);
     }
 }

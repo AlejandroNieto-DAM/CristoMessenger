@@ -24,7 +24,7 @@ public class Message_Controller {
         myMessageModel = new Message_Model();
     }
     
-    public void getMessages(ArrayList<Message> messages, String login){
+    public void getMessages(ArrayList<Message> messages, String login) throws SQLException{
         myMessageModel.getMessages(messages, login);
     }
     

@@ -32,14 +32,14 @@ public class ConnectToBD {
         conector = "jdbc";
         port = "3306";
         //ip = "clasedam2.ddns.net";
-        ip = "localhost";
-        //dbName = "cristomessenger";
-        dbName = "messenger";
+        ip = "192.168.0.30";
+        dbName = "cristomessengerlocal";
+        //dbName = "messenger";
         database = "mysql";
         //user = "clasedam2";
         //passwd = "root";
         user = "root";
-        passwd = "cristorey";
+        passwd = "root";
     }
     
     

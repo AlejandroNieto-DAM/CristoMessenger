@@ -43,14 +43,17 @@ public class Message_Model extends ConnectToBD{
     public String getQuery(){
         return this.query;
     }
-    
-    public void viewTable(Connection con, String dbName, String query, ArrayList<Message> messages) throws SQLException {
 
-        try (Statement stmt = con.createStatement()) {
+    public void getMessages(ArrayList<Message> messages, String login) throws SQLException{
+        
+        this.setQuery( "select * " + "from " + this.getDBName() + ".message WHERE id_user_orig = '" + login + "' or id_user_dest = '" + login + "'"); 
+        
+        Statement stmt = this.getConnector().createStatement();
+        try {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
 
-                String login = rs.getString("id_user_orig");
+                String login_orig = rs.getString("id_user_orig");
                 String login2 = rs.getString("id_user_dest");
                 String date = rs.getString("datetime");
                 int read = rs.getInt("read_msg");
@@ -60,7 +63,7 @@ public class Message_Model extends ConnectToBD{
                 
                 Message auxiliar = new Message();
 
-                auxiliar.setId_user_orig(login);
+                auxiliar.setId_user_orig(login_orig);
                 auxiliar.setId_user_dest(login2);
                 auxiliar.setDate(date);
                 auxiliar.setRead(read);
@@ -71,21 +74,16 @@ public class Message_Model extends ConnectToBD{
 
 
             }
+            
+            
+
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }
-    } 
-
-    public void getMessages(ArrayList<Message> messages, String login){
         
-        this.setQuery( "select * " + "from " + this.getDBName() + ".message WHERE id_user_orig = '" + login + "' or id_user_dest = '" + login + "'"); 
+        stmt.close();
+        this.getConnector().close();
         
-        
-        try {
-            this.viewTable(this.getConnector(), this.getDBName(), this.getQuery(), messages);
-        } catch (SQLException ex) {
-            CristoServer.debug(ex.toString());
-        } 
         
     }
     
@@ -97,6 +95,10 @@ public class Message_Model extends ConnectToBD{
             while (rs.next()) {
                 totalMensajes++;
             }
+            
+            stmt.close();
+            this.getConnector().close();
+
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }
@@ -136,6 +138,10 @@ public class Message_Model extends ConnectToBD{
 
 
             }
+            
+            stmt.close();
+            this.getConnector().close();
+
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }
@@ -151,7 +157,8 @@ public class Message_Model extends ConnectToBD{
 
                 PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
                 preparedStmt.executeUpdate();
-                
+                preparedStmt.close();
+                this.getConnector().close();   
             }
         }      
     }
@@ -171,7 +178,8 @@ public class Message_Model extends ConnectToBD{
             preparedStmt.setString (6, text);
                        
           preparedStmt.execute();
-
+          preparedStmt.close();
+          
           this.getConnector().close();
           
         } catch (Exception e) {

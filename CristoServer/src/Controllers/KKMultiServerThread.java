@@ -465,7 +465,7 @@ public class KKMultiServerThread extends Thread{
             out.println(send);
             
             //CristoServer.debug("SALIDA --> " + send);
-            //System.out.println("SALIDA --> " + send);
+            System.out.println("SALIDA --> " + send);
         }
         
     }

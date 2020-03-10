@@ -147,7 +147,7 @@ public class KnockKnockProtocol{
         return theOutput;
     }
     
-    public void loadFile(String theInput) throws FileNotFoundException{
+    public void loadFile(String theInput) throws FileNotFoundException, SQLException{
         String[] datos = theInput.split("#"); 
         String foto = this.user_controller.getUrlPhoto(datos[4]);
         try{
@@ -250,7 +250,7 @@ public class KnockKnockProtocol{
     }
     
     
-    public String getUserState(String theInput){
+    public String getUserState(String theInput) throws SQLException{
         
         String[] datos = theInput.split("#");
         
@@ -306,7 +306,7 @@ public class KnockKnockProtocol{
         
     }
         
-    public String getFriends(String login){
+    public String getFriends(String login) throws SQLException{
         
         String cadena = "";
         

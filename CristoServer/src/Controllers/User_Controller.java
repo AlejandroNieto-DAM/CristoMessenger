@@ -48,11 +48,11 @@ public class User_Controller {
         a.setDisconnected(login);
     }
     
-    public String getUserState(String login){
+    public String getUserState(String login) throws SQLException{
         return a.getUserState(login);    
     }
     
-    public int getExistUser(String login, String pass){
+    public int getExistUser(String login, String pass) throws SQLException{
         return a.getExistUser(login, pass);
     }
     
@@ -60,7 +60,7 @@ public class User_Controller {
         return a.findUser(login);
     }
     
-    public String getUrlPhoto(String login){
+    public String getUrlPhoto(String login) throws SQLException{
         return a.getUrlPhoto(login);
     }
     
