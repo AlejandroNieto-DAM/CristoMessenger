@@ -100,7 +100,7 @@ public class ClientProtocol {
     }
     
     public String msgAllReceived(){
-        return cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#ALL_RECEIVED";
+        return cadenaPrincipal + "#" + sdf.format(timestamp) + "#CLIENT#MSGS#ALL_RECEIVED";
     }
     
     public String getPhoto(){

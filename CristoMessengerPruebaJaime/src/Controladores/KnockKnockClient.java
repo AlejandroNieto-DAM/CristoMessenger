@@ -565,8 +565,8 @@ public class KnockKnockClient extends Thread{
         } else {
             out.println(salida);
             
-            //System.out.println("SALIDA --> " + salida);
-            CristoMessenger.returnException("SALIDA --> " + salida);
+            System.out.println("SALIDA --> " + salida);
+            //CristoMessenger.returnException("SALIDA --> " + salida);
         }
     }
     

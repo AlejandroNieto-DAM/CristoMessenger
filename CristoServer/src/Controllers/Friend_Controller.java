@@ -32,4 +32,8 @@ public class Friend_Controller {
     public Boolean getRelation(String friend1, String friend2) throws SQLException{
         return a.getRelation(friend1, friend2);
     }
+    
+    public void closeConnection(){
+        this.a.closeConnection();
+    }
 }

@@ -26,11 +26,17 @@ import java.util.logging.Logger;
 public class User_Model extends ConnectToBD{
     
     private String query;
+    
+    Connection myConnection;
      
     public User_Model(){
         
         super();
-       
+        try {
+            myConnection = this.getConnector();
+        } catch (SQLException ex) {
+            Logger.getLogger(User_Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void setQuery(String query){
@@ -69,7 +75,7 @@ public class User_Model extends ConnectToBD{
 
             }
             
-            
+            rs.close();
             
         } catch (SQLException e ) {
              CristoServer.debug(e.toString());
@@ -84,8 +90,7 @@ public class User_Model extends ConnectToBD{
         this.setQuery( "select id_user, name, password, surname1, surname2, state " + "from " + this.getDBName() + ".user"); 
         
         try {
-            this.viewTable(this.getConnector(), this.getDBName(), this.getQuery(), usuarios);
-            this.getConnector().close();
+            this.viewTable(myConnection, this.getDBName(), this.getQuery(), usuarios);
         } catch (SQLException ex) {
             CristoServer.debug(ex.toString());
         } 
@@ -94,7 +99,8 @@ public class User_Model extends ConnectToBD{
     
     public void insertUser(User user) throws SQLException{
         
-        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+        PreparedStatement preparedStmt = myConnection.prepareStatement(query);
+        
         try{
          
           String query = " insert into user (id_user, name, password, surname1, surname2, photo, state)"
@@ -111,26 +117,22 @@ public class User_Model extends ConnectToBD{
           
    
           preparedStmt.execute();
-          
-          
-          
           CristoServer.debug("Usuario introducido correctamente!!");
-        }
-        catch (Exception e){
+          
+        } catch (Exception e){
           CristoServer.debug("Got an exception!");
           CristoServer.debug(e.getMessage());
         }
         
         preparedStmt.close();
           
-        this.getConnector().close();
     }
     
     public void getUser(User auxiliar) throws SQLException{
         
         this.setQuery( "select * " + "from " + this.getDBName() + ".user where id_user = '" + auxiliar.getLogin() + "'"); 
         
-        Statement stmt = this.getConnector().createStatement();
+        Statement stmt = myConnection.createStatement();
         
         try  {
             ResultSet rs = stmt.executeQuery(query);
@@ -151,13 +153,12 @@ public class User_Model extends ConnectToBD{
             }
             
             
-
+            rs.close();
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }
         
         stmt.close();
-        this.getConnector().close();
         
          
     }
@@ -168,7 +169,7 @@ public class User_Model extends ConnectToBD{
         this.setQuery( "select * " + "from " + this.getDBName() + ".user where id_user = '" + login + "' and password = '" + pass + "'"); 
         
         
-        Statement stmt = this.getConnector().createStatement();
+        Statement stmt = myConnection.createStatement();
                 
         try  {
             ResultSet rs = stmt.executeQuery(query);
@@ -176,6 +177,7 @@ public class User_Model extends ConnectToBD{
                 existe++;
             }
             
+            rs.close();
             
 
         } catch (SQLException e ) {
@@ -183,7 +185,6 @@ public class User_Model extends ConnectToBD{
         }
         
         stmt.close();
-        this.getConnector().close();
         
         return existe;
     }
@@ -192,7 +193,7 @@ public class User_Model extends ConnectToBD{
         this.setQuery( "select state " + "from " + this.getDBName() + ".user where id_user = '" + login + "'");
         int state = 0;
         
-        Statement stmt = this.getConnector().createStatement();
+        Statement stmt = myConnection.createStatement();
         try {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
@@ -200,6 +201,8 @@ public class User_Model extends ConnectToBD{
                 state = rs.getInt("state");
                    
             }
+            
+            rs.close();
 
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
@@ -213,7 +216,6 @@ public class User_Model extends ConnectToBD{
         }
         
         stmt.close();
-        this.getConnector().close();
         
         return userState;
     }
@@ -223,14 +225,13 @@ public class User_Model extends ConnectToBD{
                 + "set state = 1 "
                 + "where id_user = '" + login + "'";
 
-        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+        PreparedStatement preparedStmt = myConnection.prepareStatement(query);
         
                 
         preparedStmt.executeUpdate();
         
         preparedStmt.close();
         
-        this.getConnector().close();
 
     }
     
@@ -239,12 +240,12 @@ public class User_Model extends ConnectToBD{
                 + "set state = 0 "
                 + "where id_user = '" + login + "'";
 
-        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+        PreparedStatement preparedStmt = myConnection.prepareStatement(query);
         
         preparedStmt.executeUpdate();
         preparedStmt.close();
         
-        this.getConnector().close();
+        
 
     }
     
@@ -254,13 +255,14 @@ public class User_Model extends ConnectToBD{
         int state = 0;
         Boolean existe = false;
         
-        Statement stmt = this.getConnector().createStatement();
+        Statement stmt = myConnection.createStatement();
         try {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 state++;                
             }
             
+            rs.close();
             
 
         } catch (SQLException e ) {
@@ -273,7 +275,6 @@ public class User_Model extends ConnectToBD{
         
         
         stmt.close();
-        this.getConnector().close();
         
         return existe;
 
@@ -283,7 +284,7 @@ public class User_Model extends ConnectToBD{
         this.setQuery( "select photo " + "from " + this.getDBName() + ".user where id_user = '" + login + "'");
         String url = "";
         
-        Statement stmt = this.getConnector().createStatement();
+        Statement stmt = myConnection.createStatement();
         
         try  {
             ResultSet rs = stmt.executeQuery(query);
@@ -291,6 +292,7 @@ public class User_Model extends ConnectToBD{
                 url = rs.getString("photo");
             }
             
+            rs.close();
             
 
         } catch (SQLException e ) {
@@ -298,7 +300,7 @@ public class User_Model extends ConnectToBD{
         }
         
         stmt.close();
-        this.getConnector().close();
+        
  
         return url;
     }
@@ -313,17 +315,28 @@ public class User_Model extends ConnectToBD{
         
         query += "'" + conectados.get(conectados.size() - 1) + "')";
         
-        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+        PreparedStatement preparedStmt = myConnection.prepareStatement(query);
         
         
-       //System.out.println("query --> " + query);
-
         preparedStmt.executeUpdate();
         preparedStmt.close();
         
-        this.getConnector().close();
         
         
+        
+    }
+    
+    public void closeConnection(){
+        try {
+            this.myConnection.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Friend_Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            this.getConnector().close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Friend_Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

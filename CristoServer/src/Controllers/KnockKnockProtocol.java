@@ -391,4 +391,10 @@ public class KnockKnockProtocol{
         String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[4] + "#" + datos[5] + "#" + datos[6] + "#";
         return cadena; 
     }
+
+    void closeConnections() {
+        this.user_controller.closeConnection();
+        this.message_controller.closeConnection();
+        this.friend_controller.closeConnection();
+    }
 }

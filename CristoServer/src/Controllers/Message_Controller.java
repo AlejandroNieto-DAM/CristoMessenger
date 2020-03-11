@@ -40,4 +40,8 @@ public class Message_Controller {
     public void insertMessage(String login, String dest, String text, String datetime) throws SQLException{
         this.myMessageModel.insertMessage(login, dest, text, datetime);
     }
+    
+    public void closeConnection(){
+        this.myMessageModel.closeConnection();
+    }
 }

@@ -49,6 +49,8 @@ public class KKMultiServerThread extends Thread{
      BufferedReader in;
      String inputLine = ""; 
             String outputLine = "";
+            
+     boolean ejecutar = true;
      
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -74,6 +76,7 @@ public class KKMultiServerThread extends Thread{
     
     public void run() {
         
+        while(ejecutar){
         try {
             
             out = new PrintWriter(socket.getOutputStream(), true);
@@ -124,7 +127,10 @@ public class KKMultiServerThread extends Thread{
             }
             try {
                 kkp.setDisconnected();
+                this.kkp.closeConnections();
                 socket.close();
+                ejecutar = false;
+                
             } catch (SQLException ex) {
                 Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -132,7 +138,9 @@ public class KKMultiServerThread extends Thread{
             }
         }
         
-         
+        }
+        
+        
     }
     
     public void filtrado(String inputLine) throws FileNotFoundException, IOException, SQLException, InterruptedException{

@@ -68,4 +68,8 @@ public class User_Controller {
         this.a.setDisconnectedOtherUsers(conectados);
     }
     
+    public void closeConnection(){
+        this.a.closeConnection();
+    }
+    
 }
