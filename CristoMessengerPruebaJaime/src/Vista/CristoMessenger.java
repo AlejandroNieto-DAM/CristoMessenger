@@ -179,7 +179,11 @@ public class CristoMessenger extends javax.swing.JFrame{
         
         });
         
-        jListFriends.setCellRenderer(new CellRenderer());
+        try{
+            jListFriends.setCellRenderer(new CellRenderer());
+        }catch (ClassCastException e){
+            
+        }
 
         
     }

@@ -51,7 +51,7 @@ public class KKMultiServerThread extends Thread{
             String outputLine = "";
      
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+    //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             
     private static final String ALGO = "AES";
     private static final byte[] keyValue =
@@ -388,6 +388,7 @@ public class KKMultiServerThread extends Thread{
     
     public void sendMessage(String inputLine) throws SQLException, NoSuchAlgorithmException, UnsupportedEncodingException{
         
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Boolean encontrado = false;
         String loginFriend = this.kkp.getFriend(inputLine);
         

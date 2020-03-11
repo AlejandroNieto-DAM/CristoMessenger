@@ -43,7 +43,9 @@ public class User_Model extends ConnectToBD{
     
     public void viewTable(Connection con, String dbName, String query, ArrayList<User> usuarios) throws SQLException {
 
-        try (Statement stmt = con.createStatement()) {
+        Statement stmt = con.createStatement();
+                
+        try  {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
 
@@ -67,12 +69,14 @@ public class User_Model extends ConnectToBD{
 
             }
             
-            stmt.close();
-            con.close();
+            
             
         } catch (SQLException e ) {
              CristoServer.debug(e.toString());
         }
+        
+        stmt.close();
+        con.close();
     } 
 
     public void getUsuariosLoginPasswd(ArrayList<User> usuarios){
@@ -88,14 +92,15 @@ public class User_Model extends ConnectToBD{
         
     }
     
-    public void insertUser(User user){
+    public void insertUser(User user) throws SQLException{
         
+        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
         try{
          
           String query = " insert into user (id_user, name, password, surname1, surname2, photo, state)"
             + " values (?, ?, ?, ?, ?, ?, ?)";
 
-          PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+          
           preparedStmt.setString (1, user.getLogin());
           preparedStmt.setString (2, user.getNombreUsuario());
           preparedStmt.setString (3, user.getPasswd());
@@ -107,9 +112,7 @@ public class User_Model extends ConnectToBD{
    
           preparedStmt.execute();
           
-          preparedStmt.close();
           
-          this.getConnector().close();
           
           CristoServer.debug("Usuario introducido correctamente!!");
         }
@@ -117,6 +120,10 @@ public class User_Model extends ConnectToBD{
           CristoServer.debug("Got an exception!");
           CristoServer.debug(e.getMessage());
         }
+        
+        preparedStmt.close();
+          
+        this.getConnector().close();
     }
     
     public void getUser(User auxiliar) throws SQLException{

@@ -40,7 +40,7 @@ public class KnockKnockProtocol{
     int separador = 0;
     
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+    //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
     
     boolean leidos = false;
  
@@ -107,7 +107,8 @@ public class KnockKnockProtocol{
                     this.login_user = login;
                     theOutput = getFriends(login);
                  } else {
-                     theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#ERROR#BAD_LOGIN";
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    theOutput = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#ERROR#BAD_LOGIN";
                  }
      
             } 
@@ -117,6 +118,7 @@ public class KnockKnockProtocol{
                     this.messages.clear();
                     theOutput = getTotalMsgs(theInput);  
                 } else {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     theOutput = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_MSGPKG";
                 }   
             }
@@ -125,6 +127,7 @@ public class KnockKnockProtocol{
                 if(this.contadorPaquetes(theInput) == 6){
                     theOutput = this.getUserState(theInput); 
                 } else {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     theOutput = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_PKG";
                 }                
             }
@@ -133,7 +136,8 @@ public class KnockKnockProtocol{
                 if(this.contadorPaquetes(theInput) == 5){
                    theOutput = this.getAllDataUser(theInput); 
                 } else {
-                   theOutput = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_PKG"; 
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    theOutput = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#BAD_PKG"; 
                 }
             }
     
@@ -173,7 +177,7 @@ public class KnockKnockProtocol{
         int[] fileContent;
         int bytesPorLeer = 511;
         String toEncode = "";
-
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#RESPONSE_MULTIMEDIA#" + 
                 this.login_user + "#" + 
                 (int)file.length() + "#";
@@ -218,6 +222,7 @@ public class KnockKnockProtocol{
         String datos[] = theInput.split("#");
         User focusFriend = new User();
         focusFriend.setLogin(datos[4]);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         try {
             user_controller.getUser(focusFriend);
             cadena += cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#ALLDATA_USER#" +  focusFriend.getLogin() + "#"
@@ -238,7 +243,7 @@ public class KnockKnockProtocol{
         Boolean existeUser1 = user_controller.findUser(datos[4]);
         Boolean existeUser2 = user_controller.findUser(datos[5]); 
         Boolean areFriends = friend_controller.getRelation(datos[4], datos[5]);
-
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
        if(existeUser1 && existeUser2 && areFriends){
             message_controller.insertMessage(datos[4], datos[5], datos[6], datos[1]);
             cadena = "Bien";
@@ -253,7 +258,7 @@ public class KnockKnockProtocol{
     public String getUserState(String theInput) throws SQLException{
         
         String[] datos = theInput.split("#");
-        
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#STATUS#" + datos[5];
         
         String status = user_controller.getUserState(datos[5]);
@@ -265,7 +270,7 @@ public class KnockKnockProtocol{
     }
     
     public String sendMsg(int i){
-        
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#MSGS";
         cadena += "#" + messages.get(i).getId_user_orig() + "#" + messages.get(i).getId_user_dest() + "#" + messages.get(i).getDate() + "#" + messages.get(i).getText(); 
         
@@ -288,7 +293,7 @@ public class KnockKnockProtocol{
         
         String[] receive = theInput.split("#");
         
-        
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         try {
             message_controller.getMessages1(messages, receive[4], receive[5], receive[6]);
             this.focusedFriend = receive[5];
@@ -311,7 +316,7 @@ public class KnockKnockProtocol{
         String cadena = "";
         
         friend_controller.getFriendsOf(this.usuarios, login);
-
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         cadena = cadenaPrincipal + "#" + sdf.format(timestamp) + "#SERVER#LOGIN_CORRECT#" + login + "#FRIENDS";
         
         String substringFriends = "";  
@@ -362,22 +367,26 @@ public class KnockKnockProtocol{
     }
     
     public String startingMultimedia(){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#STARTING_MULTIMEDIA_TRANSMISSION_TO#" + this.getLogin();
         return cadena;
     }
     
     public String endingMultimedia(){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#ENDING_MULTIMEDIA_TRANSMISSION#" + this.getLogin();
         return cadena;
     }
     
     public String sendReceivedMessage(String theInput){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String[] datos = theInput.split("#");
         String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" +  this.getLogin() + "#" + datos[5] + "#MESSAGE_SUCCESFULLY_PROCESSED#" + sdf.format(timestamp);
         return cadena;
     }
     
     public String sendMessage(String theInput){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String[] datos = theInput.split("#");  
         String cadena = "PROTOCOLCRISTOMESSENGER1.0#" + sdf.format(timestamp) + "#SERVER#CHAT#" + datos[4] + "#" + datos[5] + "#" + datos[6] + "#";
         return cadena; 

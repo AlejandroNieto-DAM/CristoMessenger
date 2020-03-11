@@ -86,12 +86,14 @@ public class Friend_Model extends ConnectToBD{
                 state++;                
             }
             
-            stmt.close();
-            this.getConnector().close();
+            
             
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }
+        
+        stmt.close();
+        this.getConnector().close();
         
         if(state == 2){
             areFriends = true;

@@ -87,21 +87,26 @@ public class Message_Model extends ConnectToBD{
         
     }
     
-    public int getTotalMessagesOfAConversation(String login_orig, String login_dest){
+    public int getTotalMessagesOfAConversation(String login_orig, String login_dest) throws SQLException{
         int totalMensajes = 0;
         this.setQuery( "select * " + "from " + this.getDBName() + ".message WHERE (id_user_orig = '" + login_orig + "' and id_user_dest = '" + login_dest + "') or " + "(id_user_orig = '" + login_dest + "' and id_user_dest = '" + login_orig + "')"); 
-        try (Statement stmt = this.getConnector().createStatement()) {
+        
+        Statement stmt = this.getConnector().createStatement();
+        
+        try  {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
                 totalMensajes++;
             }
             
-            stmt.close();
-            this.getConnector().close();
+            
 
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }
+        
+        stmt.close();
+        this.getConnector().close();
         
         return totalMensajes;
     }
@@ -112,8 +117,9 @@ public class Message_Model extends ConnectToBD{
 
         this.setQuery( "select * " + "from " + this.getDBName() + ".message WHERE ((id_user_orig = '" + login_orig + "' and id_user_dest = '" + login_dest + "') or " + "(id_user_orig = '" + login_dest + "' and id_user_dest = '" + login_orig + "')) and datetime BETWEEN '" + previousDate + "' and '" + sdf.format(timestamp) + "'"); 
         
+        Statement stmt = this.getConnector().createStatement();
         
-        try (Statement stmt = this.getConnector().createStatement()) {
+        try  {
             ResultSet rs = stmt.executeQuery(query);
             while (rs.next()) {
 
@@ -139,12 +145,14 @@ public class Message_Model extends ConnectToBD{
 
             }
             
-            stmt.close();
-            this.getConnector().close();
+            
 
         } catch (SQLException e ) {
             CristoServer.debug(e.toString());
         }
+        
+        stmt.close();
+        this.getConnector().close();
         
         for(int i = 0; i < messages.size(); i++){
             if(messages.get(i).getRead() == false && messages.get(i).getId_user_orig().equals(login_dest)){
@@ -154,6 +162,8 @@ public class Message_Model extends ConnectToBD{
                         + "where datetime = '" + messages.get(i).getDate() + "' "
                         + "and id_user_orig = '" + login_dest + "' "
                         + "and id_user_dest = '" + login_orig + "'";
+                
+                messages.get(i).setRead(1);
 
                 PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
                 preparedStmt.executeUpdate();
@@ -163,13 +173,12 @@ public class Message_Model extends ConnectToBD{
         }      
     }
 
-    public void insertMessage(String login, String login_dest, String text, String datetime){
-       
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        
+    public void insertMessage(String login, String login_dest, String text, String datetime) throws SQLException{
+               
+        PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
         try{
            String query = " insert into message values (?, ?, ?, ?, ?, ?)";
-            PreparedStatement preparedStmt = this.getConnector().prepareStatement(query);
+           
             preparedStmt.setString (1, login);
             preparedStmt.setString (2, login_dest);
             preparedStmt.setString (3, datetime);
@@ -178,14 +187,16 @@ public class Message_Model extends ConnectToBD{
             preparedStmt.setString (6, text);
                        
           preparedStmt.execute();
-          preparedStmt.close();
           
-          this.getConnector().close();
           
         } catch (Exception e) {
             CristoServer.debug("Got an exception!");
             CristoServer.debug(e.getMessage());
         }
+        
+        preparedStmt.close();
+          
+        this.getConnector().close();
     }
 
 

@@ -31,7 +31,7 @@ public class User_Controller {
         a.getUsuariosLoginPasswd(usuarios);
     }
     
-    public void insertUser(User user){
+    public void insertUser(User user) throws SQLException{
         CristoServer.debug("Debug: insertUser");
         a.insertUser(user);
     }

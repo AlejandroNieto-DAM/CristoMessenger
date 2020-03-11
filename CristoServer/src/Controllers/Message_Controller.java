@@ -32,12 +32,12 @@ public class Message_Controller {
         myMessageModel.getMessages1(messages, login, login_dest, date);
     }
     
-    public int getTotalMessagesOfAConversation(String login, String login_dest){
+    public int getTotalMessagesOfAConversation(String login, String login_dest) throws SQLException{
         int a = myMessageModel.getTotalMessagesOfAConversation(login, login_dest);
         return a;
     }
     
-    public void insertMessage(String login, String dest, String text, String datetime){
+    public void insertMessage(String login, String dest, String text, String datetime) throws SQLException{
         this.myMessageModel.insertMessage(login, dest, text, datetime);
     }
 }
