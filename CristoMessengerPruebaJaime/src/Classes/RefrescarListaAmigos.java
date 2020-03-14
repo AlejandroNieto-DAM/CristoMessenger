@@ -29,7 +29,7 @@ public class RefrescarListaAmigos extends Thread {
     public void run(){
         while(true){
 
-            if((fin - inicio) / 1000 > 2){
+            if((fin - inicio) / 1000 > 15){
                 
                 try {
                     //System.out.println("Ojo que se viene act");
